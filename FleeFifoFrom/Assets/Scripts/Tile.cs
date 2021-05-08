@@ -1,18 +1,79 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
-public class Tile : MonoBehaviour
+public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    // Start is called before the first frame update
-    void Start()
+    public Vector2 ID { get; set; }
+    public bool Interactable { get; set; }
+
+    private FieldManager _fieldManager;
+
+    [SerializeField] private Color _heightlightColor;
+    private Color _defaultColor;
+    
+    private Action _onHighlight;
+    private Action _onDefault;
+    private Material _material;
+
+    public Meeple _meeple;
+
+    private Transform _transform;
+
+    private void Awake()
     {
+        _fieldManager = FindObjectOfType<FieldManager>();
+        _transform = transform;
         
+        _material = transform.GetChild(0).GetComponent<Renderer>().material;
+        _defaultColor = _material.color;
+
+        _onHighlight += () => ChangeColor(_heightlightColor);
+        _onDefault += () => ChangeColor(_defaultColor);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OnPointerDown(PointerEventData eventData)
     {
+        if(!Interactable)
+            return;
         
+        _fieldManager.OnTileClicked(ID, _meeple);
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if(Interactable)
+            _onHighlight?.Invoke();
+        else
+            _onDefault?.Invoke();
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        _onDefault?.Invoke();
+    }
+
+    private void ChangeColor(Color color)
+    {
+        _material.color = color;
+    }
+
+    public void SetMeeple(Meeple meeple)
+    {
+        if (_meeple != null)
+        {
+            Debug.LogWarning($"There is already {_meeple} on tile {ID}");
+        }
+        else
+        {
+            _meeple = meeple;
+            var meepleTransform = _meeple.transform;
+            meepleTransform.parent = _transform;
+            meepleTransform.localPosition = Vector3.zero;
+        }
     }
 }
