@@ -10,10 +10,26 @@ public class FieldManager : MonoBehaviour
 
     public enum DebugGameState
     {
-        Default, Authorize, Swap, Riot, Revive, Reprioritize, Retreat, Villager
+        Default,
+        Authorize,
+        Swap, // 2 Steps
+        Riot,
+        Revive,
+        Reprioritize,
+        Retreat, // 2 Steps
+        Villager
     }
 
-    public DebugGameState CurrentGameState;
+    private DebugGameState _gameState;
+    public DebugGameState CurrentGameState
+    {
+        get => _gameState;
+        set
+        {
+            _gameState = value;
+            UpdateInteractability();
+        }
+    }
 
     private void Awake()
     {
@@ -39,7 +55,7 @@ public class FieldManager : MonoBehaviour
             }
         }
     }
-    
+
     private void PopulateFieldRandomly()
     {
         if (_field == null)
@@ -69,7 +85,7 @@ public class FieldManager : MonoBehaviour
                 Swap(tile, _field[0][0]);
                 break;
             case DebugGameState.Riot:
-                Riot(new []{tile});
+                Riot(new[] {tile});
                 break;
             case DebugGameState.Revive:
                 Revive(tile);
@@ -86,18 +102,21 @@ public class FieldManager : MonoBehaviour
                         Retreat(knight, tile);
                     }
                 }
+
                 break;
             case DebugGameState.Villager:
                 var commoner = Instantiate(_meeplePrefabs[1]);
                 Villager(commoner, tile);
                 break;
+            
         }
+        UpdateInteractability();
     }
 
     public void Authorize(Tile tile)
     {
         var meeple = tile.RemoveMeeple();
-        
+
         // Debug
         Debug.Log($"Authorize piece: {meeple}");
         Destroy(meeple.gameObject);
@@ -142,5 +161,127 @@ public class FieldManager : MonoBehaviour
     public void Villager(Meeple villager, Tile tile)
     {
         tile.SetMeeple(villager);
+    }
+
+    private void DisableInteraction()
+    {
+        foreach (var tiles in _field)
+        {
+            foreach (var tile in tiles)
+            {
+                tile.Interactable = false;
+            }
+        }
+    }
+
+    public void UpdateInteractability()
+    {
+        DisableInteraction();
+        
+        switch (CurrentGameState)
+        {
+            case DebugGameState.Default:
+                break;
+            case DebugGameState.Authorize: // TODO
+                List<int> lastEmpty = new List<int>(); 
+                List<int> newEmpty = new List<int>();
+                for (var i = 0; i < _field.Length; i++)
+                {
+                    var fields = _field[i];
+                    for (var j = 0; j < fields.Length; j++)
+                    {
+                        var tile = fields[j];
+                        
+                        // not empty
+                        if (tile.Meeple != null)
+                        {
+                            // injured
+                            if (tile.Meeple.CurrentState == Meeple.State.Injured)
+                                tile.Interactable = false;
+                            
+                            // top tile
+                            if (i == 0)
+                                tile.Interactable = true;
+                            
+                            // previous tile is empty
+                            else if (lastEmpty.Contains(j) || lastEmpty.Contains(j - 1))
+                                tile.Interactable = true;
+                        }
+                        // empty
+                        else
+                        {
+                            tile.Interactable = false;
+                            newEmpty.Add(j);
+                        }
+                    }
+
+                    // row is fully occupied, abort
+                    if(newEmpty.Count == 0)
+                        return;
+
+                    lastEmpty = new List<int>(newEmpty);
+                    newEmpty.Clear();
+                }
+                break;
+            case DebugGameState.Swap:
+                foreach (var tiles in _field)
+                {
+                    foreach (var tile in tiles)
+                    {
+                        if(tile.Meeple != null) 
+                            tile.Interactable = tile.Meeple.CurrentState != Meeple.State.Injured;
+                    }
+                }
+                break;
+            case DebugGameState.Riot: 
+                foreach (var tiles in _field)
+                {
+                    foreach (var tile in tiles)
+                    {
+                        if(tile.Meeple != null) 
+                            tile.Interactable = tile.Meeple.CurrentState != Meeple.State.Injured;
+                    }
+                }
+                break;
+            case DebugGameState.Revive:
+                foreach (var tiles in _field)
+                {
+                    foreach (var tile in tiles)
+                    {
+                        if(tile.Meeple != null) 
+                            tile.Interactable = tile.Meeple.CurrentState == Meeple.State.Injured;
+                    }
+                }
+                break;
+            case DebugGameState.Reprioritize:
+                foreach (var tiles in _field)
+                {
+                    foreach (var tile in tiles)
+                    {
+                        if(tile.Meeple != null) 
+                            tile.Interactable = tile.Meeple.CurrentState != Meeple.State.Injured;
+                        
+                    }
+                }
+                break;
+            case DebugGameState.Retreat:
+                foreach (var tiles in _field)
+                {
+                    foreach (var tile in tiles)
+                    {
+                        tile.Interactable = (tile.Meeple == null);
+                    }
+                }
+                break;
+            case DebugGameState.Villager:
+                foreach (var tiles in _field)
+                {
+                    foreach (var tile in tiles)
+                    {
+                        tile.Interactable = (tile.Meeple == null);
+                    }
+                }
+                break;
+        }
     }
 }
