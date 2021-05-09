@@ -20,7 +20,7 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
     private Action _onDefault;
     private Material _material;
 
-    public Meeple _meeple;
+    public Meeple Meeple { get; private set; }
 
     private Transform _transform;
 
@@ -41,7 +41,7 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
         if(!Interactable)
             return;
         
-        _fieldManager.OnTileClicked(ID, _meeple);
+        _fieldManager.OnTileClicked(this);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -64,16 +64,24 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
 
     public void SetMeeple(Meeple meeple)
     {
-        if (_meeple != null)
+        if (Meeple != null)
         {
-            Debug.LogWarning($"There is already {_meeple} on tile {ID}");
+            Debug.LogWarning($"There is already {Meeple} on tile {ID}");
         }
         else
         {
-            _meeple = meeple;
-            var meepleTransform = _meeple.transform;
+            Meeple = meeple;
+            var meepleTransform = Meeple.transform;
             meepleTransform.parent = _transform;
             meepleTransform.localPosition = Vector3.zero;
         }
+    }
+
+    public Meeple RemoveMeeple()
+    {
+        var meeple = Meeple;
+        Meeple.transform.parent = null;
+        Meeple = null;
+        return meeple;
     }
 }
