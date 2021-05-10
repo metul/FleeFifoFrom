@@ -1,12 +1,19 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class FieldManager : MonoBehaviour
 {
+    [SerializeField] private Meeple[] _villagerPrefabs;
+    [SerializeField] private Knight _knightPrefab;
+    
     [SerializeField] private Transform[] _rows;
-    [SerializeField] private Meeple[] _meeplePrefabs;
+    [SerializeField] private Transform[] _squads;
+    
     private Tile[][] _field;
+    private Tile[][] _battleField;
 
     public enum DebugGameState
     {
@@ -33,40 +40,53 @@ public class FieldManager : MonoBehaviour
 
     private void Awake()
     {
-        InitField();
-        PopulateFieldRandomly();
+        _field = GetField(_rows);
+        _battleField = GetField(_squads);
     }
 
-    private void InitField()
+    private void Start()
+    {
+        PopulateFieldRandomly();
+        PopulateBattlefield();
+    }
+
+    private Tile[][] GetField(Transform[] sourceArray)
     {
         // init field reference
-        _field = new Tile[_rows.Length][];
-        for (var i = 0; i < _rows.Length; i++)
+        var field = new Tile[sourceArray.Length][];
+        for (var i = 0; i < sourceArray.Length; i++)
         {
-            var tiles = _rows[i].GetComponentsInChildren<Tile>();
-            _field[i] = tiles;
+            var tiles = sourceArray[i].GetComponentsInChildren<Tile>();
+            field[i] = tiles;
 
+            // set id's
             for (var j = 0; j < tiles.Length; j++)
             {
                 tiles[j].ID = new Vector2(i, j);
-
-                // DEBUG set tiles to interactable
-                tiles[j].Interactable = true;
             }
         }
+        return field;
     }
-
+    
     private void PopulateFieldRandomly()
     {
-        if (_field == null)
-            InitField();
-
+        // TODO consider fixed knight positions
         foreach (var tiles in _field)
         {
             foreach (var tile in tiles)
             {
-                var meeple = Instantiate(_meeplePrefabs[Random.Range(0, _meeplePrefabs.Length - 1)]);
-                tile.SetMeeple(meeple);
+                tile.SetMeeple(Instantiate(GetRandomVillagerPrefab()));
+            }
+        }
+    }
+
+    private void PopulateBattlefield()
+    {
+        foreach (var tiles in _battleField)
+        {
+            foreach (var tile in tiles)
+            {
+                tile.SetMeeple(Instantiate(_knightPrefab));
             }
         }
     }
@@ -94,19 +114,10 @@ public class FieldManager : MonoBehaviour
                 Reprioritize(tile);
                 break;
             case DebugGameState.Retreat:
-                foreach (var meeplePrefab in _meeplePrefabs)
-                {
-                    if (meeplePrefab.GetType() == typeof(Knight))
-                    {
-                        var knight = (Knight) Instantiate(meeplePrefab);
-                        Retreat(knight, tile);
-                    }
-                }
-
+                Retreat(Instantiate(_knightPrefab), tile);
                 break;
             case DebugGameState.Villager:
-                var commoner = Instantiate(_meeplePrefabs[1]);
-                Villager(commoner, tile);
+                Villager(Instantiate(GetRandomVillagerPrefab()), tile);
                 break;
             
         }
@@ -172,6 +183,11 @@ public class FieldManager : MonoBehaviour
                 tile.Interactable = false;
             }
         }
+    }
+
+    private Meeple GetRandomVillagerPrefab()
+    {
+        return _villagerPrefabs[Random.Range(0, _villagerPrefabs.Length)];
     }
 
     public void UpdateInteractability()

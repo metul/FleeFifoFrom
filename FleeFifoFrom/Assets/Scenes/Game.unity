@@ -396,6 +396,65 @@ Transform:
   m_Father: {fileID: 1561981291}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &357313928
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 357313930}
+  - component: {fileID: 357313929}
+  m_Layer: 0
+  m_Name: FieldManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &357313929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357313928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2d18d40e2d084c4fbb09179f12d2008, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _villagerPrefabs:
+  - {fileID: 7640830836080027946, guid: 1edb1c19722ec714fa8e759e6dedef5c, type: 3}
+  - {fileID: 365634993346496815, guid: 754fbc69541b9f24eb1212a54a6232ae, type: 3}
+  - {fileID: 2865988018397362392, guid: 3222732e23f777c4dbd7a18b67a06ad7, type: 3}
+  _knightPrefab: {fileID: 2147780265545091318, guid: 409b81da57c6f4c4b925de8cf79342c1, type: 3}
+  _rows:
+  - {fileID: 2121936493}
+  - {fileID: 309065460}
+  - {fileID: 19680912}
+  - {fileID: 1477927324}
+  - {fileID: 1011963808}
+  _squads:
+  - {fileID: 183426316}
+  - {fileID: 93227115}
+  - {fileID: 1966952455}
+  - {fileID: 1475737896}
+--- !u!4 &357313930
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357313928}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.4588222, y: -1.6235647, z: -1.5128975}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &371142469
 GameObject:
   m_ObjectHideFlags: 0
@@ -1809,7 +1868,7 @@ Transform:
   - {fileID: 1966952455}
   - {fileID: 1475737896}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1007658419
 PrefabInstance:
@@ -3585,7 +3644,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1561981291}
-  - component: {fileID: 1561981292}
   m_Layer: 0
   m_Name: Field
   m_TagString: Untagged
@@ -3613,29 +3671,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1561981292
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1561981290}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2d18d40e2d084c4fbb09179f12d2008, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _rows:
-  - {fileID: 2121936493}
-  - {fileID: 309065460}
-  - {fileID: 19680912}
-  - {fileID: 1477927324}
-  - {fileID: 1011963808}
-  _meeplePrefabs:
-  - {fileID: 2147780265545091318, guid: 409b81da57c6f4c4b925de8cf79342c1, type: 3}
-  - {fileID: 7640830836080027946, guid: 1edb1c19722ec714fa8e759e6dedef5c, type: 3}
-  - {fileID: 2865988018397362392, guid: 3222732e23f777c4dbd7a18b67a06ad7, type: 3}
-  - {fileID: 365634993346496815, guid: 754fbc69541b9f24eb1212a54a6232ae, type: 3}
 --- !u!1001 &1572012115
 PrefabInstance:
   m_ObjectHideFlags: 0
