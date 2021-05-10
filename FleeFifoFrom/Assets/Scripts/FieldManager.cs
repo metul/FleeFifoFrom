@@ -31,7 +31,9 @@ public class FieldManager : MonoBehaviour
         Reprioritize,
         RetreatChooseTile,
         RetreatChooseKnight,
-        Villager
+        Villager,
+        ResetTurnSelect,
+        ResetTurnMove
     }
 
     private DebugGameState _gameState;
