@@ -22,7 +22,7 @@ public class ButtonManager : MonoBehaviour
     public void Swap()
     {
         Debug.Log("Player chose the swap action");
-        _fieldManager.CurrentGameState = FieldManager.DebugGameState.Swap;
+        _fieldManager.CurrentGameState = FieldManager.DebugGameState.Swap1;
     }
 
     public void Riot()
@@ -56,7 +56,7 @@ public class ButtonManager : MonoBehaviour
     public void Retreat()
     {
         Debug.Log("Player chose the retreat action");
-        _fieldManager.CurrentGameState = FieldManager.DebugGameState.Retreat;
+        _fieldManager.CurrentGameState = FieldManager.DebugGameState.RetreatChooseTile;
     }
 
     public void Recall()

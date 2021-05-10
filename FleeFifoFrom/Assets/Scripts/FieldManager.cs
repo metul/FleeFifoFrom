@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using Random = UnityEngine.Random;
 
 public class FieldManager : MonoBehaviour
@@ -15,15 +16,21 @@ public class FieldManager : MonoBehaviour
     private Tile[][] _field;
     private Tile[][] _battleField;
 
+    #region Placeholder
+    
     public enum DebugGameState
     {
         Default,
         Authorize,
-        Swap, // 2 Steps
-        Riot,
+        Swap1,
+        Swap2,
+        Riot, // <- current debug state
+        RiotChooseKnight,
+        RiotChoosePath,
         Revive,
         Reprioritize,
-        Retreat, // 2 Steps
+        RetreatChooseTile,
+        RetreatChooseKnight,
         Villager
     }
 
@@ -38,6 +45,15 @@ public class FieldManager : MonoBehaviour
         }
     }
 
+    // store tile references for multi step actions
+    
+    private Tile _storeTile;
+    private List<Tile> _storeRiotPath;
+
+    #endregion
+
+    #region Setup
+    
     private void Awake()
     {
         _field = GetField(_rows);
@@ -90,46 +106,16 @@ public class FieldManager : MonoBehaviour
             }
         }
     }
+    
+    #endregion
 
-    public void OnTileClicked(Tile tile)
-    {
-        switch (CurrentGameState)
-        {
-            case DebugGameState.Default:
-                Debug.Log($"Tile {tile.ID} has been klicked");
-                break;
-            case DebugGameState.Authorize:
-                Authorize(tile);
-                break;
-            case DebugGameState.Swap:
-                Swap(tile, _field[0][0]);
-                break;
-            case DebugGameState.Riot:
-                Riot(new[] {tile});
-                break;
-            case DebugGameState.Revive:
-                Revive(tile);
-                break;
-            case DebugGameState.Reprioritize:
-                Reprioritize(tile);
-                break;
-            case DebugGameState.Retreat:
-                Retreat(Instantiate(_knightPrefab), tile);
-                break;
-            case DebugGameState.Villager:
-                Villager(Instantiate(GetRandomVillagerPrefab()), tile);
-                break;
-            
-        }
-        UpdateInteractability();
-    }
-
+    #region Field Actions
+    
     public void Authorize(Tile tile)
     {
         var meeple = tile.RemoveMeeple();
 
-        // Debug
-        Debug.Log($"Authorize piece: {meeple}");
+        // TODO Authorize: store away piece instead of destroy
         Destroy(meeple.gameObject);
     }
 
@@ -141,12 +127,11 @@ public class FieldManager : MonoBehaviour
         tile2.SetMeeple(meeple1);
     }
 
-    public void Riot(Tile[] path)
+    public void Riot(List<Tile> path)
     {
         // Debug
-        for (var i = 0; i < path.Length; i++)
+        foreach (var tile in path)
         {
-            var tile = path[i];
             tile.Meeple.CurrentState = Meeple.State.Injured;
         }
     }
@@ -164,8 +149,9 @@ public class FieldManager : MonoBehaviour
             : Meeple.State.Default;
     }
 
-    public void Retreat(Knight knight, Tile tile)
+    public void Retreat(Tile battlefrontTile, Tile tile)
     {
+        var knight = battlefrontTile.RemoveMeeple();
         tile.SetMeeple(knight);
     }
 
@@ -173,8 +159,122 @@ public class FieldManager : MonoBehaviour
     {
         tile.SetMeeple(villager);
     }
+    
+    #endregion
 
-    private void DisableInteraction()
+    #region Interaction (state-depending)
+    
+    public void ProcessClickedTile(Tile tile)
+    {
+        switch (CurrentGameState)
+        {
+            case DebugGameState.Default:
+                Debug.Log($"Tile {tile.ID} has been klicked");
+                break;
+            case DebugGameState.Authorize:
+                Authorize(tile);
+                CurrentGameState = DebugGameState.Default;
+                break;
+            case DebugGameState.Swap1:
+                _storeTile = tile;
+                CurrentGameState = DebugGameState.Swap2;
+                break;
+            case DebugGameState.Swap2:
+                Swap(tile, _storeTile);
+                _storeTile = null;
+                CurrentGameState = DebugGameState.Default;
+                break;
+            case DebugGameState.Riot:
+                _storeRiotPath = new List<Tile>();
+                _storeRiotPath.Add(tile);
+                Riot(_storeRiotPath);
+                CurrentGameState = DebugGameState.Default;
+                break;
+            case DebugGameState.RiotChooseKnight:
+                _storeRiotPath = new List<Tile>();
+                _storeRiotPath.Add(tile);
+                CurrentGameState = DebugGameState.RiotChoosePath;
+                break;
+            case DebugGameState.RiotChoosePath:
+                _storeRiotPath.Add(tile);
+                if (tile.ID == Vector2.zero)
+                {
+                    Riot(_storeRiotPath);
+                    CurrentGameState = DebugGameState.Default;
+                }
+                else
+                    CurrentGameState = DebugGameState.RiotChoosePath;
+                break;
+            case DebugGameState.Revive:
+                Revive(tile);
+                CurrentGameState = DebugGameState.Default;
+                break;
+            case DebugGameState.Reprioritize:
+                Reprioritize(tile);
+                CurrentGameState = DebugGameState.Default;
+                break;
+            case DebugGameState.RetreatChooseTile:
+                _storeTile = tile;
+                CurrentGameState = DebugGameState.RetreatChooseKnight;
+                break;
+            case DebugGameState.RetreatChooseKnight:
+                Retreat(tile, _storeTile);
+                _storeTile = null;
+                CurrentGameState = DebugGameState.Default;
+                break;
+            case DebugGameState.Villager:
+                Villager(Instantiate(GetRandomVillagerPrefab()), tile);
+                CurrentGameState = DebugGameState.Default;
+                break;
+        }
+    }
+
+    public void UpdateInteractability()
+    {
+        switch (CurrentGameState)
+        {
+            case DebugGameState.Default:
+                DisableAllTiles();
+                DisableBattlefield();
+                break;
+            case DebugGameState.Authorize:
+                EnableAuthorizable();
+                break;
+            case DebugGameState.Swap1:
+                EnableInjuryBased(false);
+                break;
+            case DebugGameState.Swap2:
+                EnableInjuryBased(false);
+                _storeTile.Interactable = false;
+                break;
+            case DebugGameState.Riot:
+                EnableInjuryBased(false);
+                break;
+            case DebugGameState.RiotChooseKnight:
+                EnableKnights();
+                break;
+            case DebugGameState.RiotChoosePath:
+                EnableRiotPath(_storeRiotPath);
+                break;
+            case DebugGameState.Revive:
+                EnableInjuryBased(true);
+                break;
+            case DebugGameState.Reprioritize:
+                EnableInjuryBased(false);
+                break;
+            case DebugGameState.RetreatChooseTile:
+                EnableEmptyTiles();
+                break;
+            case DebugGameState.RetreatChooseKnight:
+                EnableBattlefield();
+                break;
+            case DebugGameState.Villager:
+                EnableEmptyTiles();
+                break;
+        }
+    }
+
+    private void DisableAllTiles()
     {
         foreach (var tiles in _field)
         {
@@ -185,119 +285,132 @@ public class FieldManager : MonoBehaviour
         }
     }
 
+    private void EnableEmptyTiles()
+    {
+        foreach (var tiles in _field)
+        {
+            foreach (var tile in tiles)
+            {
+                tile.Interactable = (tile.Meeple == null);
+            }
+        }
+    }
+
+    private void EnableInjuryBased(bool enableInjured)
+    {
+        foreach (var tiles in _field)
+        {
+            foreach (var tile in tiles)
+            {
+                if (tile.Meeple != null)
+                {
+                    if(enableInjured)
+                        tile.Interactable = tile.Meeple.CurrentState == Meeple.State.Injured;
+                    else
+                        tile.Interactable = tile.Meeple.CurrentState != Meeple.State.Injured;
+                }
+                else
+                    tile.Interactable = false;
+            }
+        }
+    }
+
+    private void EnableKnights()
+    {
+        foreach (var tiles in _field)
+        {
+            foreach (var tile in tiles)
+            {
+                tile.Interactable = (tile.Meeple.GetType() == typeof(Knight));
+            }
+        }
+    }
+
+    private void EnableAuthorizable()
+    {
+        // TODO enable interaction for authorize
+        List<int> lastEmpty = new List<int>(); 
+        List<int> newEmpty = new List<int>();
+        for (var i = 0; i < _field.Length; i++)
+        {
+            var fields = _field[i];
+            for (var j = 0; j < fields.Length; j++)
+            {
+                var tile = fields[j];
+                        
+                // not empty
+                if (tile.Meeple != null)
+                {
+                    // injured
+                    if (tile.Meeple.CurrentState == Meeple.State.Injured)
+                        tile.Interactable = false;
+                            
+                    // top tile
+                    if (i == 0)
+                        tile.Interactable = true;
+                            
+                    // previous tile is empty
+                    else if (lastEmpty.Contains(j) || lastEmpty.Contains(j - 1))
+                        tile.Interactable = true;
+                }
+                // empty
+                else
+                {
+                    tile.Interactable = false;
+                    newEmpty.Add(j);
+                }
+            }
+
+            // row is fully occupied, abort
+            if(newEmpty.Count == 0)
+                return;
+
+            lastEmpty = new List<int>(newEmpty);
+            newEmpty.Clear();
+        }
+    }
+
+    private void EnableRiotPath(List<Tile> path)
+    {
+        var currentID = path[path.Count - 1].ID;
+        foreach (var tiles in _battleField)
+        {
+            foreach (var tile in tiles)
+            {
+                tile.Interactable = tile.ID.x < currentID.x &&
+                                    (tile.ID.y == currentID.y || tile.ID.y == currentID.y - 1);
+            }
+        }
+    }
+
+    private void EnableBattlefield()
+    {
+        DisableAllTiles();
+        foreach (var tiles in _battleField)
+        {
+            foreach (var tile in tiles)
+            {
+                tile.Interactable = (tile.Meeple != null);
+            }
+        }
+    }
+
+    private void DisableBattlefield()
+    {
+        foreach (var tiles in _battleField)
+        {
+            foreach (var tile in tiles)
+            {
+                tile.Interactable = false;
+            }
+        }
+    }
+    
+    #endregion
+    
+    // TODO move villager generation to game manager?
     private Meeple GetRandomVillagerPrefab()
     {
         return _villagerPrefabs[Random.Range(0, _villagerPrefabs.Length)];
-    }
-
-    public void UpdateInteractability()
-    {
-        DisableInteraction();
-        
-        switch (CurrentGameState)
-        {
-            case DebugGameState.Default:
-                break;
-            case DebugGameState.Authorize: // TODO
-                List<int> lastEmpty = new List<int>(); 
-                List<int> newEmpty = new List<int>();
-                for (var i = 0; i < _field.Length; i++)
-                {
-                    var fields = _field[i];
-                    for (var j = 0; j < fields.Length; j++)
-                    {
-                        var tile = fields[j];
-                        
-                        // not empty
-                        if (tile.Meeple != null)
-                        {
-                            // injured
-                            if (tile.Meeple.CurrentState == Meeple.State.Injured)
-                                tile.Interactable = false;
-                            
-                            // top tile
-                            if (i == 0)
-                                tile.Interactable = true;
-                            
-                            // previous tile is empty
-                            else if (lastEmpty.Contains(j) || lastEmpty.Contains(j - 1))
-                                tile.Interactable = true;
-                        }
-                        // empty
-                        else
-                        {
-                            tile.Interactable = false;
-                            newEmpty.Add(j);
-                        }
-                    }
-
-                    // row is fully occupied, abort
-                    if(newEmpty.Count == 0)
-                        return;
-
-                    lastEmpty = new List<int>(newEmpty);
-                    newEmpty.Clear();
-                }
-                break;
-            case DebugGameState.Swap:
-                foreach (var tiles in _field)
-                {
-                    foreach (var tile in tiles)
-                    {
-                        if(tile.Meeple != null) 
-                            tile.Interactable = tile.Meeple.CurrentState != Meeple.State.Injured;
-                    }
-                }
-                break;
-            case DebugGameState.Riot: 
-                foreach (var tiles in _field)
-                {
-                    foreach (var tile in tiles)
-                    {
-                        if(tile.Meeple != null) 
-                            tile.Interactable = tile.Meeple.CurrentState != Meeple.State.Injured;
-                    }
-                }
-                break;
-            case DebugGameState.Revive:
-                foreach (var tiles in _field)
-                {
-                    foreach (var tile in tiles)
-                    {
-                        if(tile.Meeple != null) 
-                            tile.Interactable = tile.Meeple.CurrentState == Meeple.State.Injured;
-                    }
-                }
-                break;
-            case DebugGameState.Reprioritize:
-                foreach (var tiles in _field)
-                {
-                    foreach (var tile in tiles)
-                    {
-                        if(tile.Meeple != null) 
-                            tile.Interactable = tile.Meeple.CurrentState != Meeple.State.Injured;
-                        
-                    }
-                }
-                break;
-            case DebugGameState.Retreat:
-                foreach (var tiles in _field)
-                {
-                    foreach (var tile in tiles)
-                    {
-                        tile.Interactable = (tile.Meeple == null);
-                    }
-                }
-                break;
-            case DebugGameState.Villager:
-                foreach (var tiles in _field)
-                {
-                    foreach (var tile in tiles)
-                    {
-                        tile.Interactable = (tile.Meeple == null);
-                    }
-                }
-                break;
-        }
     }
 }

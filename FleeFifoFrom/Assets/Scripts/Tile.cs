@@ -41,7 +41,7 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
         if(!Interactable)
             return;
         
-        _fieldManager.OnTileClicked(this);
+        _fieldManager.ProcessClickedTile(this);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
