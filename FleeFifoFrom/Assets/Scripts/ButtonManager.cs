@@ -79,4 +79,10 @@ public class ButtonManager : MonoBehaviour
         Debug.Log("Player chose the draw villager action");
         _fieldManager.CurrentGameState = FieldManager.DebugGameState.Villager;
     }
+
+    public void Undo()
+    {
+        Debug.Log("Player chose the undo action");
+        CommandProcessor.Instance.Undo();
+    }
 }
