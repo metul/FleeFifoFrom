@@ -33,6 +33,6 @@ public sealed class CommandProcessor
     /// </summary>
     public void Undo()
     {
-        _commands.Pop()?.Execute();
+        _commands.Pop()?.Reverse();
     }
 }
