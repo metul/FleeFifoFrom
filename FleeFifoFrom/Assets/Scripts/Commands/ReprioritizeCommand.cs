@@ -9,7 +9,8 @@ public class ReprioritizeCommand : ResetCommand
     }
 
     public override void Execute()
-    {
+    {   
+        //TODO: Actually reprioritize would need  to allow tapping as well
         base.Execute();
         _originalState = _tile.Meeple.CurrentState;
         _tile.Meeple.CurrentState = _tile.Meeple.CurrentState == Meeple.State.Default

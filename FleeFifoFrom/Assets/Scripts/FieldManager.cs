@@ -399,6 +399,8 @@ public class FieldManager : MonoBehaviour
     #endregion
     
     // TODO move villager generation to game manager?
+    // TODO will eventually need to seed villagers with a specific probability
+    // TODO can use random values for now
     private Meeple GetRandomVillagerPrefab()
     {
         return _villagerPrefabs[Random.Range(0, _villagerPrefabs.Length)];
