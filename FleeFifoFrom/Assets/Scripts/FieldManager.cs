@@ -112,6 +112,8 @@ public class FieldManager : MonoBehaviour
     #endregion
 
     #region Field Actions
+
+    // TODO: All issuer IDs are 0 by default, use actual client ID after network integration
     
     public void Authorize(Tile tile)
     {

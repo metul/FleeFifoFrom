@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class RetreatCommand : ResetCommand
 {
     private Tile _tile, _battleFrontTile;

@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class SwapCommand : ActionCommand
 {
     private Tile _tile1, _tile2;
