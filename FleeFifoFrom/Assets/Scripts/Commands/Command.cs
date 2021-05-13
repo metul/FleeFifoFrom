@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// Base class for commands.
 /// </summary>
-public abstract class Command
+public abstract class Command : MonoBehaviour
 {
     /// <summary>
     /// Client ID of the issuer.

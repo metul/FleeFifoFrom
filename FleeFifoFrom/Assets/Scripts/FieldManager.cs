@@ -115,33 +115,22 @@ public class FieldManager : MonoBehaviour
     
     public void Authorize(Tile tile)
     {
-        var meeple = tile.RemoveMeeple();
-
-        // TODO Authorize: store away piece instead of destroy
-        Destroy(meeple.gameObject);
+        CommandProcessor.Instance.ExecuteCommand(new AuthorizeCommand(0, tile));
     }
 
     public void Swap(Tile tile1, Tile tile2)
     {
-        var meeple1 = tile1.RemoveMeeple();
-        var meeple2 = tile2.RemoveMeeple();
-        tile1.SetMeeple(meeple2);
-        tile2.SetMeeple(meeple1);
+        CommandProcessor.Instance.ExecuteCommand(new SwapCommand(0, tile1, tile2));
     }
 
     public void Riot(List<Tile> path)
     {
-        // Debug
-        foreach (var tile in path)
-        {
-            tile.Meeple.CurrentState = Meeple.State.Injured;
-        }
+        CommandProcessor.Instance.ExecuteCommand(new RiotCommand(0, path));
     }
 
     public void Revive(Tile tile)
     {
-        // TODO which state after revival?
-        tile.Meeple.CurrentState = Meeple.State.Default;
+        CommandProcessor.Instance.ExecuteCommand(new ReviveCommand(0, tile));
     }
 
     public void Reprioritize(Tile tile)
