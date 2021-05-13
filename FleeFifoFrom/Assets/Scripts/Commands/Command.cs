@@ -15,6 +15,13 @@ public abstract class Command : MonoBehaviour
         _issuerID = issuerID;
     }
 
+    /// <summary>
+    /// Executes the issued command.
+    /// </summary>
     public abstract void Execute();
+
+    /// <summary>
+    /// Reverses the issued command.
+    /// </summary>
     public abstract void Reverse();
 }

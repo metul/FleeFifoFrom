@@ -135,20 +135,17 @@ public class FieldManager : MonoBehaviour
 
     public void Reprioritize(Tile tile)
     {
-        tile.Meeple.CurrentState = tile.Meeple.CurrentState == Meeple.State.Default
-            ? Meeple.State.Tapped
-            : Meeple.State.Default;
+        CommandProcessor.Instance.ExecuteCommand(new ReprioritizeCommand(0, tile));
     }
 
     public void Retreat(Tile battlefrontTile, Tile tile)
     {
-        var knight = battlefrontTile.RemoveMeeple();
-        tile.SetMeeple(knight);
+        CommandProcessor.Instance.ExecuteCommand(new RetreatCommand(0, battlefrontTile, tile));
     }
 
     public void Villager(Meeple villager, Tile tile)
     {
-        tile.SetMeeple(villager);
+        CommandProcessor.Instance.ExecuteCommand(new DrawVillagerCommand(0, villager, tile));
     }
     
     #endregion
