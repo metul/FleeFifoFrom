@@ -2,10 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class Player : MonoBehaviour
 {
-    public enum PlayerId
+    public enum PlayerID
     {
         Red, Blue, Yellow, Green
+    }
+    public PlayerID ID { get; set; }
+    
+    // TODO replace with nicer colors
+    public static Color RedColor = Color.red;
+    public static Color BlueColor = Color.blue;
+    public static Color YellowColor = Color.yellow;
+    public static Color GreenColor = Color.green;
+
+    public static Color GetPlayerColor(PlayerID playerID)
+    {
+        switch (playerID)
+        {
+            case PlayerID.Red:
+                return RedColor;
+            case PlayerID.Blue:
+                return BlueColor;
+            case PlayerID.Yellow:
+                return YellowColor;
+            case PlayerID.Green:
+                return GreenColor;
+            default:
+                return Color.white;
+        }
     }
 }

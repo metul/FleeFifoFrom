@@ -309,6 +309,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8971783447618496392}
     m_Modifications:
+    - target: {fileID: 7106166837653863504, guid: 396c8e294189c154780451fd86705e97, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7106166837653863504, guid: 396c8e294189c154780451fd86705e97, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7106166837653863504, guid: 396c8e294189c154780451fd86705e97, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7106166837653863533, guid: 396c8e294189c154780451fd86705e97, type: 3}
       propertyPath: m_Name
       value: Worker
@@ -526,7 +538,7 @@ MonoBehaviour:
   - {fileID: 7640830836080027946, guid: 1edb1c19722ec714fa8e759e6dedef5c, type: 3}
   - {fileID: 365634993346496815, guid: 754fbc69541b9f24eb1212a54a6232ae, type: 3}
   - {fileID: 2865988018397362392, guid: 3222732e23f777c4dbd7a18b67a06ad7, type: 3}
-  _knightPrefab: {fileID: 2147780265545091318, guid: 409b81da57c6f4c4b925de8cf79342c1, type: 3}
+  _knightPrefab: {fileID: 6829591479510192384, guid: 409b81da57c6f4c4b925de8cf79342c1, type: 3}
   _rows:
   - {fileID: 2121936493}
   - {fileID: 309065460}

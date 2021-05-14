@@ -28,6 +28,16 @@ public class ButtonManager : MonoBehaviour
         _fieldManager = FindObjectOfType<FieldManager>();
     }
 
+    public void OnActionTileClick(ActionTile actionTile)
+    {
+        Debug.Log("Action Tile has been clicked");
+    }
+
+    public void OnWorkerClick(Worker worker)
+    {
+        Debug.Log("Worker has been clicked");
+    }
+
     public void Authorize()
     {
         Debug.Log("Player chose the authorize action");
@@ -99,5 +109,10 @@ public class ButtonManager : MonoBehaviour
     {
         Debug.Log("Player chose the undo action");
         CommandProcessor.Instance.Undo();
+    }
+
+    public void EndTurn()
+    {
+        Debug.Log("End Player Turn");
     }
 }

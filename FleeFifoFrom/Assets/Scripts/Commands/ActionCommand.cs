@@ -7,8 +7,7 @@ public class ActionCommand : Command
         // TODO: Check that there are enough workers to use an action
         // TODO: Should this be a subsection of execute instead?
     }
-
-
+    
     public override void Execute()
     {
         // TODO: Decrease worker count

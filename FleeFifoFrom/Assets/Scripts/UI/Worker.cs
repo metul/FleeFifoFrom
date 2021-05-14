@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -6,23 +7,35 @@ using UnityEngine.UI;
 
 public class Worker : MonoBehaviour
 {
-    // TODO should be some kind of enum from a GameManagr class
-    // TODO set color based on player ID
-    public int PlayerId { get; private set; }
+    public Player.PlayerID PlayerId;
     
     // passed to a higher management class for reference
     public int ID { get; set; }
-
-    private void SetColor(int playerID)
+    public bool Interactable
     {
-        PlayerId = playerID;
-        
-        // TODO get player colors from some global settings
-        var player1Color = Color.red;
-        var player2Color = Color.blue;
-        var player3Color = Color.yellow;
-        var player4Color = Color.green;
+        get => _button.interactable;
+        set => _button.interactable = value;
+    }
 
+    private Button _button;
+    private ButtonManager _buttonManager;
+
+    private void Awake()
+    {
+        _button = GetComponent<Button>();
+        _buttonManager = FindObjectOfType<ButtonManager>();
+    }
+
+    private void Start()
+    {
+        SetColor(PlayerId);
+        Interactable = false;
+        _button.onClick.AddListener(() => _buttonManager.OnWorkerClick(this));
+    }
+
+    private void SetColor(Player.PlayerID playerID)
+    {
         var image = GetComponent<Image>();
+        image.color = Player.GetPlayerColor(playerID);
     }
 }
