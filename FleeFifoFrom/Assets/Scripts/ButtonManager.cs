@@ -2,11 +2,26 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ButtonManager : MonoBehaviour
 {
     // TODO replace with state manager
     private FieldManager _fieldManager;
+
+    [SerializeField] private Transform authorizeWorkerDisplay;
+    [SerializeField] private Transform swapWorkerDisplay;
+    [SerializeField] private Transform riotWorkerDisplay;
+    
+    
+    // card & action tile states:
+    // objective:   - draw card
+    // countermand1 - draw card
+    //              - (select card)
+    // poach:       - select one opponent worker
+    //              - select card
+    // recall:      - select action tile
+    // cooperate:   - select one opponent worker
 
     private void Awake()
     {
