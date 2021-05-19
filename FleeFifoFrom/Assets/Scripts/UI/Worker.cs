@@ -8,9 +8,6 @@ using UnityEngine.UI;
 public class Worker : MonoBehaviour
 {
     public Player.PlayerID PlayerId;
-    
-    // passed to a higher management class for reference
-    public int ID { get; set; }
     public ActionTile Tile { get; set; }
     public bool Interactable
     {

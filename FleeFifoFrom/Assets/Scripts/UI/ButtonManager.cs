@@ -156,13 +156,13 @@ public class ButtonManager : MonoBehaviour
     {
         switch (CurrentResetState)
         {
-            case DebugResetState.Cooperate:
-                var w1 = worker.Tile.RemoveWorker(worker.ID);
+            case DebugResetState.Cooperate: 
+                worker.Tile.RemoveWorker(worker);
                 Debug.Log($"TODO: return worker {worker} to player {worker.PlayerId}");
                 CurrentResetState = DebugResetState.Default;
                 break;
             case DebugResetState.PoachSelectWorker:
-                var w2 = worker.Tile.RemoveWorker(worker.ID);
+                worker.Tile.RemoveWorker(worker);
                 Debug.Log($"TODO: poach worker {worker} from player {worker.PlayerId}");
                 CurrentResetState = DebugResetState.PoachSelectCard;
                 break;

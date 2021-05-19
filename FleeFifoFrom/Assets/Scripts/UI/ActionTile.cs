@@ -40,23 +40,20 @@ public class ActionTile : MonoBehaviour
         for (var i = 0; i < _workers.Count; i++)
         {
             var worker = _workers[i];
-            worker.ID = i;
             worker.Tile = this;
         }
     }
 
     public void AddWorker(Worker worker)
     {
-        worker.ID = _workers.Count;
         worker.Tile = this;
         _workers.Add(worker);
         worker.transform.parent = _transform;
     }
 
-    public Worker RemoveWorker(int id)
+    public Worker RemoveWorker(Worker worker)
     {
-        var worker = _workers[id];
-        _workers.RemoveAt(id);
+        _workers.Remove(worker);
         worker.transform.parent = null;
         return worker;
     }
