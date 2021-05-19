@@ -61,6 +61,7 @@ public class AuthorizeCommand : ActionCommand
     public override void CheckFeasibility()
     {
         //TODO Step 1: Start loop from tile 1
+        /* Psuedo
         if(piece.exists)
         {
             if (piece.injured)
@@ -82,6 +83,7 @@ public class AuthorizeCommand : ActionCommand
         else(move to next tile)
 
         //TODO: end loop
+        */
     }
 
 

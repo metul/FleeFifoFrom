@@ -31,6 +31,7 @@ public class SwapCommand : ActionCommand
     public override void CheckFeasibility()
     {
         //TODO Step 1: Start loop from tile 1
+        /*psudo
         if (piece.exists && !piece.injured)
         {
                 //TODO: Can we come up with a smart data structure for easy neighbors
@@ -41,6 +42,7 @@ public class SwapCommand : ActionCommand
         else (move to next tile)
 
         //TODO: end loop
+        */
     }
 
 }

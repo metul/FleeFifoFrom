@@ -1,16 +1,21 @@
 public class Countermand : ResetCommand
 {
-
+    public Countermand(ulong issuerID) : base(issuerID)
+    {
+    }
 
     public override void Execute()
     {
         base.Execute();
-        Player.add(Card);
 
+        //Player.add(Card);
+
+        /*
         if (CurrentPlayer.count(Card) >= 2)
         {
             Player.remove(Card);
         }
+        */
 
     }
 

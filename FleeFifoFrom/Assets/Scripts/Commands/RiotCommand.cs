@@ -56,6 +56,7 @@ public class RiotCommand : ActionCommand
     public override void CheckFeasibility()
     {
         //TODO Step 1: Start loop from tile 1
+        /* pseudo
         if (piece.exists)
         {
             if (piece.injured)
@@ -78,6 +79,7 @@ public class RiotCommand : ActionCommand
         else (move to next tile)
 
         //TODO: end loop
+        */
     }
 
 

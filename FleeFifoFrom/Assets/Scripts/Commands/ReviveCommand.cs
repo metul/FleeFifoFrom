@@ -25,6 +25,7 @@ public class ReviveCommand : ActionCommand
     {
         //TODO Step 1: Start loop from tile 1
         this.ActionPossible = false;
+        /*psuedo
         if (piece.exists)
         {
             if (piece.injured)
@@ -38,5 +39,6 @@ public class ReviveCommand : ActionCommand
         else (move to next tile)
 
         //TODO: end loop. If no injuries found, stay as false
+        */
     }
 }
