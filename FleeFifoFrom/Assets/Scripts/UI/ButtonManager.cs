@@ -27,30 +27,7 @@ public class ButtonManager : MonoBehaviour
     //              - select card
     // recall:      - select action tile
     // cooperate:   - select one opponent worker
-
-    public enum DebugResetState
-    {
-        Default,
-        CountermandDrawCard,
-        CountermandSelectCard,
-        PoachSelectWorker,
-        PoachSelectCard,
-        Recall,
-        Cooperate,
-        PayForAction
-    }
-
-    private DebugResetState _resetState;
-
-    public DebugResetState CurrentResetState
-    {
-        get => _resetState;
-        set
-        {
-            _resetState = value;
-            UpdateInteractability();
-        }
-    }
+    
 
     private void Awake()
     {
@@ -67,105 +44,67 @@ public class ButtonManager : MonoBehaviour
             _reviveWokerDisplay,
             _objectiveWorkerDisplay
         };
+
+        StateManager.OnUpdateInteractability += UpdateInteractability;
     }
 
     private void UpdateInteractability()
     {
-        switch (CurrentResetState)
+        switch (StateManager.GameState)
         {
-            case DebugResetState.CountermandDrawCard:
-                EnableActionTiles(false);
-                EnableWorkers(false);
-                EnablePlayerWorker(false);
-                EnableCardSelection(false);
+            case StateManager.State.CountermandDrawCard:
+                EnableElements(false, false, false, false);
                 break;
-            case DebugResetState.CountermandSelectCard:
-                EnableActionTiles(false);
-                EnableWorkers(false);
-                EnablePlayerWorker(false);
-                EnableCardSelection(true);
+            case StateManager.State.CountermandSelectCard:
+                EnableElements(false, false, false, true);
                 break;
-            case DebugResetState.PoachSelectWorker:
-                EnableActionTiles(false);
-                EnableWorkers(true);
-                EnablePlayerWorker(false);
-                EnableCardSelection(false);
+            case StateManager.State.PoachSelectWorker:
+                EnableElements(false, true, false, false);
                 break;
-            case DebugResetState.PoachSelectCard:
-                EnableActionTiles(false);
-                EnableWorkers(false);
-                EnablePlayerWorker(false);
-                EnableCardSelection(true);
+            case StateManager.State.PoachSelectCard:
+                EnableElements(false, false, false, true);
                 break;
-            case DebugResetState.Recall:
-                EnableActionTiles(true);
-                EnableWorkers(false);
-                EnablePlayerWorker(false);
-                EnableCardSelection(false);
+            case StateManager.State.Recall:
+                EnableElements(true, false, false, false);
                 break;
-            case DebugResetState.Cooperate:
-                EnableActionTiles(false);
-                EnableWorkers(true);
-                EnablePlayerWorker(false);
-                EnableCardSelection(false);
+            case StateManager.State.Cooperate:
+                EnableElements(false, true, false, false);
                 break;
-            case DebugResetState.PayForAction:
-                EnableActionTiles(false);
-                EnableWorkers(false);
-                EnablePlayerWorker(true);
-                EnableCardSelection(false);
+            case StateManager.State.PayForAction:
+                EnableElements(false, false, true, false);
                 break;
             default:
-                EnableActionTiles(false);
-                EnableWorkers(false);
-                EnablePlayerWorker(false);
-                EnableCardSelection(false);
+                EnableElements(false, false, false, false);
                 break;
         }
     }
 
-    private void EnablePlayerWorker(bool enabled)
-    {
-        _playerWorkerDisplay.SetWorkerInteractable(enabled);
-    }
-
-    private void EnableActionTiles(bool enabled)
+    private void EnableElements(bool tiles, bool worker, bool playerWorker, bool cards)
     {
         foreach (var actionTile in _actionTiles)
         {
-            actionTile.Interactable = enabled;
+            actionTile.Interactable = tiles;
+            actionTile.SetWorkerInteractable(worker);
         }
-    }
-
-    private void EnableWorkers(bool enabled)
-    {
-        // TODO only enable opponent worker
+        _playerWorkerDisplay.SetWorkerInteractable(playerWorker);
         
-        foreach (var actionTile in _actionTiles)
-        {
-            actionTile.SetWorkerInteractable(enabled);
-        }
-    }
-
-    private void EnableCardSelection(bool enabled)
-    {
-        Debug.Log($"Enable Card Selection: {enabled}");
+        // TODO enable card selection
     }
 
 
     public void OnActionTileClick(ActionTile actionTile)
     {
         Debug.Log("Action Tile has been clicked");
-        switch (CurrentResetState)
+        switch (StateManager.GameState)
         {
-            case DebugResetState.Recall:
+            case StateManager.State.Recall:
                 var workers = actionTile.RemoveAllWorker();
                 foreach (var worker in workers)
                 {
                     Debug.Log($"TODO: return worker {worker} to player {worker.PlayerId}");
                 }
 
-                CurrentResetState = DebugResetState.Default;
+                StateManager.GameState = StateManager.State.Default;
                 break;
             default:
                 Debug.LogWarning("This is not a state in which action tile interaction is allowed!");
@@ -175,22 +114,22 @@ public class ButtonManager : MonoBehaviour
 
     public void OnWorkerClick(Worker worker)
     {
-        switch (CurrentResetState)
+        switch (StateManager.GameState)
         {
-            case DebugResetState.Cooperate: 
+            case StateManager.State.Cooperate: 
                 worker.Tile.RemoveWorker(worker);
                 Debug.Log($"TODO: return worker {worker} to player {worker.PlayerId}");
-                CurrentResetState = DebugResetState.Default;
+                StateManager.GameState = StateManager.State.Default;
                 break;
-            case DebugResetState.PoachSelectWorker:
+            case StateManager.State.PoachSelectWorker:
                 worker.Tile.RemoveWorker(worker);
                 Debug.Log($"TODO: poach worker {worker} from player {worker.PlayerId}");
-                CurrentResetState = DebugResetState.PoachSelectCard;
+                StateManager.GameState = StateManager.State.PoachSelectCard;
                 break;
-            case DebugResetState.PayForAction:
+            case StateManager.State.PayForAction:
                 worker.Tile.RemoveWorker(worker);
                 Debug.Log($"TODO: pay worker {worker} for a previous/next (?) action");
-                CurrentResetState = DebugResetState.PoachSelectCard;
+                StateManager.GameState = StateManager.State.PoachSelectCard;
                 break;
             default:
                 Debug.LogWarning("This is not a state in which worker interaction is allowed!");
@@ -203,25 +142,25 @@ public class ButtonManager : MonoBehaviour
     public void Authorize()
     {
         Debug.Log("Player chose the authorize action");
-        _fieldManager.CurrentGameState = FieldManager.DebugGameState.Authorize;
+        StateManager.GameState = StateManager.State.Authorize;
     }
 
     public void Swap()
     {
         Debug.Log("Player chose the swap action");
-        _fieldManager.CurrentGameState = FieldManager.DebugGameState.Swap1;
+        StateManager.GameState = StateManager.State.Swap1;
     }
 
     public void Riot()
     {
         Debug.Log("Player chose the riot action");
-        _fieldManager.CurrentGameState = FieldManager.DebugGameState.Riot;
+        StateManager.GameState = StateManager.State.Riot;
     }
 
     public void Revive()
     {
         Debug.Log("Player chose the revive action");
-        _fieldManager.CurrentGameState = FieldManager.DebugGameState.Revive;
+        StateManager.GameState = StateManager.State.Revive;
     }
 
     public void Objective()
@@ -233,43 +172,43 @@ public class ButtonManager : MonoBehaviour
     public void Countermand()
     {
         Debug.Log("Player chose the countermand action");
-        CurrentResetState = DebugResetState.CountermandDrawCard;
+        StateManager.GameState = StateManager.State.CountermandDrawCard;
     }
 
     public void Reprioritize()
     {
         Debug.Log("Player chose the reprioritize action");
-        _fieldManager.CurrentGameState = FieldManager.DebugGameState.Reprioritize;
+        StateManager.GameState = StateManager.State.Reprioritize;
     }
 
     public void Retreat()
     {
         Debug.Log("Player chose the retreat action");
-        _fieldManager.CurrentGameState = FieldManager.DebugGameState.RetreatChooseTile;
+        StateManager.GameState = StateManager.State.RetreatChooseTile;
     }
 
     public void Recall()
     {
         Debug.Log("Player chose the recall action");
-        CurrentResetState = DebugResetState.Recall;
+        StateManager.GameState = StateManager.State.Recall;
     }
 
     public void Cooperate()
     {
         Debug.Log("Player chose the cooperate action");
-        CurrentResetState = DebugResetState.Cooperate;
+        StateManager.GameState = StateManager.State.Cooperate;
     }
 
     public void Poach()
     {
         Debug.Log("Player chose the poach action");
-        CurrentResetState = DebugResetState.PoachSelectCard;
+        StateManager.GameState = StateManager.State.PoachSelectCard;
     }
 
     public void Villager()
     {
         Debug.Log("Player chose the draw villager action");
-        _fieldManager.CurrentGameState = FieldManager.DebugGameState.Villager;
+        StateManager.GameState = StateManager.State.Villager;
     }
 
     public void Undo()
@@ -282,7 +221,7 @@ public class ButtonManager : MonoBehaviour
     {
         Debug.Log("End Player Turn");
         // TODO remove debug
-        CurrentResetState = DebugResetState.PayForAction;
+        StateManager.GameState = StateManager.State.PayForAction;
     }
     
     #endregion

@@ -17,38 +17,8 @@ public class FieldManager : MonoBehaviour
     private Tile[][] _battleField;
 
     #region Placeholder
-    
-    public enum DebugGameState
-    {
-        Default,
-        Authorize,
-        Swap1,
-        Swap2,
-        Riot, // <- current debug state
-        RiotChooseKnight,
-        RiotChoosePath,
-        Revive,
-        Reprioritize,
-        RetreatChooseTile,
-        RetreatChooseKnight,
-        Villager,
-        ResetTurnSelect,
-        ResetTurnMove
-    }
-
-    private DebugGameState _gameState;
-    public DebugGameState CurrentGameState
-    {
-        get => _gameState;
-        set
-        {
-            _gameState = value;
-            UpdateInteractability();
-        }
-    }
 
     // store tile references for multi step actions
-    
     private Tile _storeTile;
     private List<Tile> _storeRiotPath;
 
@@ -66,6 +36,7 @@ public class FieldManager : MonoBehaviour
     {
         PopulateFieldRandomly();
         PopulateBattlefield();
+        StateManager.OnUpdateInteractability += UpdateInteractability;
     }
 
     private Tile[][] GetField(Transform[] sourceArray)
@@ -156,110 +127,107 @@ public class FieldManager : MonoBehaviour
     
     public void ProcessClickedTile(Tile tile)
     {
-        switch (CurrentGameState)
+        switch (StateManager.GameState)
         {
-            case DebugGameState.Default:
-                Debug.Log($"Tile {tile.ID} has been klicked");
-                break;
-            case DebugGameState.Authorize:
+            case StateManager.State.Authorize:
                 Authorize(tile);
-                CurrentGameState = DebugGameState.Default;
+                StateManager.GameState = StateManager.State.Default;
                 break;
-            case DebugGameState.Swap1:
+            case StateManager.State.Swap1:
                 _storeTile = tile;
-                CurrentGameState = DebugGameState.Swap2;
+                StateManager.GameState = StateManager.State.Swap2;
                 break;
-            case DebugGameState.Swap2:
+            case StateManager.State.Swap2:
                 Swap(tile, _storeTile);
                 _storeTile = null;
-                CurrentGameState = DebugGameState.Default;
+                StateManager.GameState = StateManager.State.Default;
                 break;
-            case DebugGameState.Riot:
+            case StateManager.State.Riot:
                 _storeRiotPath = new List<Tile>();
                 _storeRiotPath.Add(tile);
                 Riot(_storeRiotPath);
-                CurrentGameState = DebugGameState.Default;
+                StateManager.GameState = StateManager.State.Default;
                 break;
-            case DebugGameState.RiotChooseKnight:
+            case StateManager.State.RiotChooseKnight:
                 _storeRiotPath = new List<Tile>();
                 _storeRiotPath.Add(tile);
-                CurrentGameState = DebugGameState.RiotChoosePath;
+                StateManager.GameState = StateManager.State.RiotChoosePath;
                 break;
-            case DebugGameState.RiotChoosePath:
+            case StateManager.State.RiotChoosePath:
                 _storeRiotPath.Add(tile);
                 if (tile.ID == Vector2.zero)
                 {
                     Riot(_storeRiotPath);
-                    CurrentGameState = DebugGameState.Default;
+                    StateManager.GameState = StateManager.State.Default;
                 }
                 else
-                    CurrentGameState = DebugGameState.RiotChoosePath;
+                    StateManager.GameState = StateManager.State.RiotChoosePath;
                 break;
-            case DebugGameState.Revive:
+            case StateManager.State.Revive:
                 Revive(tile);
-                CurrentGameState = DebugGameState.Default;
+                StateManager.GameState = StateManager.State.Default;
                 break;
-            case DebugGameState.Reprioritize:
+            case StateManager.State.Reprioritize:
                 Reprioritize(tile);
-                CurrentGameState = DebugGameState.Default;
+                StateManager.GameState = StateManager.State.Default;
                 break;
-            case DebugGameState.RetreatChooseTile:
+            case StateManager.State.RetreatChooseTile:
                 _storeTile = tile;
-                CurrentGameState = DebugGameState.RetreatChooseKnight;
+                StateManager.GameState = StateManager.State.RetreatChooseKnight;
                 break;
-            case DebugGameState.RetreatChooseKnight:
+            case StateManager.State.RetreatChooseKnight:
                 Retreat(tile, _storeTile);
                 _storeTile = null;
-                CurrentGameState = DebugGameState.Default;
+                StateManager.GameState = StateManager.State.Default;
                 break;
-            case DebugGameState.Villager:
+            case StateManager.State.Villager:
                 Villager(Instantiate(GetRandomVillagerPrefab()), tile);
-                CurrentGameState = DebugGameState.Default;
+                StateManager.GameState = StateManager.State.Default;
                 break;
         }
     }
 
     public void UpdateInteractability()
     {
-        switch (CurrentGameState)
+        switch (StateManager.GameState)
         {
-            case DebugGameState.Default:
-                DisableAllTiles();
-                DisableBattlefield();
-                break;
-            case DebugGameState.Authorize:
+            case StateManager.State.Authorize:
                 EnableAuthorizable();
                 break;
-            case DebugGameState.Swap1:
+            case StateManager.State.Swap1:
                 EnableInjuryBased(false);
                 break;
-            case DebugGameState.Swap2:
+            case StateManager.State.Swap2:
                 EnableInjuryBased(false);
                 _storeTile.Interactable = false;
                 break;
-            case DebugGameState.Riot:
+            case StateManager.State.Riot:
                 EnableInjuryBased(false);
                 break;
-            case DebugGameState.RiotChooseKnight:
+            case StateManager.State.RiotChooseKnight:
                 EnableKnights();
                 break;
-            case DebugGameState.RiotChoosePath:
+            case StateManager.State.RiotChoosePath:
                 EnableRiotPath(_storeRiotPath);
                 break;
-            case DebugGameState.Revive:
+            case StateManager.State.Revive:
                 EnableInjuryBased(true);
                 break;
-            case DebugGameState.Reprioritize:
+            case StateManager.State.Reprioritize:
                 EnableInjuryBased(false);
                 break;
-            case DebugGameState.RetreatChooseTile:
+            case StateManager.State.RetreatChooseTile:
                 EnableEmptyTiles();
                 break;
-            case DebugGameState.RetreatChooseKnight:
+            case StateManager.State.RetreatChooseKnight:
                 EnableBattlefield();
                 break;
-            case DebugGameState.Villager:
+            case StateManager.State.Villager:
                 EnableEmptyTiles();
+                break;
+            default:
+                DisableAllTiles();
+                DisableBattlefield();
                 break;
         }
     }
