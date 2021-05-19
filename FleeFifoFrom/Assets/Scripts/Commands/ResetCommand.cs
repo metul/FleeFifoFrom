@@ -24,4 +24,9 @@ public class ResetCommand : Command
         // TODO: Undo reset specific stuff?
         // TODO: Increment reset pawn. I think the remaining will be command specific
     }
+
+    public override void CheckFeasibility()
+    {
+        //TODO: Nothing, passthrough
+    }
 }

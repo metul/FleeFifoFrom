@@ -16,6 +16,9 @@ public class Player : MonoBehaviour
     public static Color YellowColor = Color.yellow;
     public static Color GreenColor = Color.green;
 
+    // TODO Add function, unless implemented in instance of PLayer
+    public void add() { }
+
     public static Color GetPlayerColor(PlayerID playerID)
     {
         switch (playerID)

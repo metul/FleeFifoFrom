@@ -12,7 +12,6 @@ public class ReviveCommand : ActionCommand
     {
         base.Execute();
         _originalState = _tile.Meeple.CurrentState;
-        // TODO which state after revival?
         _tile.Meeple.CurrentState = Meeple.State.Default;
     }
 
@@ -20,5 +19,24 @@ public class ReviveCommand : ActionCommand
     {
         base.Reverse();
         _tile.Meeple.CurrentState = _originalState;
+    }
+
+    public override void CheckFeasibility()
+    {
+        //TODO Step 1: Start loop from tile 1
+        this.ActionPossible = false;
+        if (piece.exists)
+        {
+            if (piece.injured)
+            {   
+                //Atleast one injured piece found
+                this.ActionPossible = true;
+                break;
+            }
+
+        }
+        else (move to next tile)
+
+        //TODO: end loop. If no injuries found, stay as false
     }
 }

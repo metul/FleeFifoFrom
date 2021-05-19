@@ -21,4 +21,12 @@ public class RetreatCommand : ResetCommand
         var knight = _tile.RemoveMeeple();
         _battleFrontTile.SetMeeple(knight);
     }
+
+    public override void CheckFeasibility()
+    {
+        //for each tile in Row 5
+        //If tile is empty
+        //ActionPossible = true
+        //break
+    }
 }

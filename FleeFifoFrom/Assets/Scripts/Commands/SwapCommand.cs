@@ -27,4 +27,20 @@ public class SwapCommand : ActionCommand
         tile1.SetMeeple(meeple2);
         tile2.SetMeeple(meeple1);
     }
+
+    public override void CheckFeasibility()
+    {
+        //TODO Step 1: Start loop from tile 1
+        if (piece.exists && !piece.injured)
+        {
+                //TODO: Can we come up with a smart data structure for easy neighbors
+                //Tile.CheckNeighbors();
+                //We want at least one neighbour that exists and is not injured
+                //Break if yes, since action is possible
+        }
+        else (move to next tile)
+
+        //TODO: end loop
+    }
+
 }

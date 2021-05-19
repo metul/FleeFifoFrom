@@ -24,4 +24,6 @@ public abstract class Command : MonoBehaviour
     /// Reverses the issued command.
     /// </summary>
     public abstract void Reverse();
+
+    public abstract void CheckFeasibility();
 }
