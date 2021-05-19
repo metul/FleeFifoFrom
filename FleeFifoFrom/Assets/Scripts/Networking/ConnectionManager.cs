@@ -1,8 +1,5 @@
 using MLAPI;
-using MLAPI.Logging;
 using MLAPI.Transports.UNET;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using UnityEngine;
@@ -20,7 +17,7 @@ public class ConnectionManager : MonoBehaviour
     private void Start()
     {
 #if UNITY_SERVER
-        NetworkManager.Singleton.StartServer();
+        InitializeServer();
 #endif
     }
 
@@ -30,34 +27,10 @@ public class ConnectionManager : MonoBehaviour
             _connectionPanel.SetActive(!_connectionPanel.activeSelf);
     }
 
-    private void OnEnable()
+    private void InitializeServer()
     {
-        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
-    }
-
-    private void OnDisable()
-    {
-        NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
-        NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
-    }
-
-    /// <summary>
-    /// Callback for client connection.
-    /// </summary>
-    /// <param name="obj"> ID for connected client. </param>
-    private void OnClientConnected(ulong obj)
-    {
-        NetworkLog.LogInfoServer($"Client {obj} connected at timestamp {Time.time}.");
-    }
-
-    /// <summary>
-    /// Callback for client disconnection.
-    /// </summary>
-    /// <param name="obj"> ID for disconnected client. </param>
-    private void OnClientDisconnected(ulong obj)
-    {
-        NetworkLog.LogInfoServer($"Client {obj} disconnected at timestamp {Time.time}.");
+        gameObject.AddComponent<ServerEventListener>();
+        NetworkManager.Singleton.StartServer();
     }
 
     private bool IsValidIPv4(string ipString)
