@@ -14,8 +14,11 @@ public class ObjectiveCommand : ActionCommand
 
     public override void CheckFeasibility()
     {
-        if (CurrentPlayer.count(Card) >= 5)
+        if (GameManager.CurrentPlayer.CardCount >= 5)
         { this.ActionPossible = false; }
     }
 
+    public ObjectiveCommand(ulong issuerID) : base(issuerID)
+    {
+    }
 }

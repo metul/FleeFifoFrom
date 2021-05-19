@@ -35,4 +35,7 @@ public class Player : MonoBehaviour
                 return Color.white;
         }
     }
+
+    public List<Card> Cards;
+    public int CardCount { get => Cards.Count; }
 }

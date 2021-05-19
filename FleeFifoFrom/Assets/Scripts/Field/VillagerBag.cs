@@ -38,7 +38,7 @@ public class VillagerBag: MonoBehaviour
 
     //TODO: Either this is a static method, or the Reset command uses an instance of villager bag
     // I think it makes sense to have a global VillgerBag object
-    public void DrawVillager()
+    public static void DrawVillager()
     {
         //TODO: Draw random object from collection
     }
