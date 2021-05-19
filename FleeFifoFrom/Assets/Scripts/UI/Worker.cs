@@ -11,6 +11,7 @@ public class Worker : MonoBehaviour
     
     // passed to a higher management class for reference
     public int ID { get; set; }
+    public ActionTile Tile { get; set; }
     public bool Interactable
     {
         get => _button.interactable;
