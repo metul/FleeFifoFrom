@@ -15,6 +15,8 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] private ActionTile _reviveWokerDisplay;
     [SerializeField] private ActionTile _objectiveWorkerDisplay;
 
+    [SerializeField] private ActionTile _playerWorkerDisplay;
+
     private ActionTile[] _actionTiles;
 
     // card & action tile states:
@@ -34,7 +36,8 @@ public class ButtonManager : MonoBehaviour
         PoachSelectWorker,
         PoachSelectCard,
         Recall,
-        Cooperate
+        Cooperate,
+        PayForAction
     }
 
     private DebugResetState _resetState;
@@ -70,42 +73,60 @@ public class ButtonManager : MonoBehaviour
     {
         switch (CurrentResetState)
         {
-            case DebugResetState.Default:
-                EnableActionTiles(false);
-                EnableWorkers(false);
-                EnableCardSelection(false);
-                break;
             case DebugResetState.CountermandDrawCard:
                 EnableActionTiles(false);
                 EnableWorkers(false);
+                EnablePlayerWorker(false);
                 EnableCardSelection(false);
                 break;
             case DebugResetState.CountermandSelectCard:
                 EnableActionTiles(false);
                 EnableWorkers(false);
+                EnablePlayerWorker(false);
                 EnableCardSelection(true);
                 break;
             case DebugResetState.PoachSelectWorker:
                 EnableActionTiles(false);
                 EnableWorkers(true);
+                EnablePlayerWorker(false);
                 EnableCardSelection(false);
                 break;
             case DebugResetState.PoachSelectCard:
                 EnableActionTiles(false);
                 EnableWorkers(false);
+                EnablePlayerWorker(false);
                 EnableCardSelection(true);
                 break;
             case DebugResetState.Recall:
                 EnableActionTiles(true);
                 EnableWorkers(false);
+                EnablePlayerWorker(false);
                 EnableCardSelection(false);
                 break;
             case DebugResetState.Cooperate:
                 EnableActionTiles(false);
                 EnableWorkers(true);
+                EnablePlayerWorker(false);
+                EnableCardSelection(false);
+                break;
+            case DebugResetState.PayForAction:
+                EnableActionTiles(false);
+                EnableWorkers(false);
+                EnablePlayerWorker(true);
+                EnableCardSelection(false);
+                break;
+            default:
+                EnableActionTiles(false);
+                EnableWorkers(false);
+                EnablePlayerWorker(false);
                 EnableCardSelection(false);
                 break;
         }
+    }
+
+    private void EnablePlayerWorker(bool enabled)
+    {
+        _playerWorkerDisplay.SetWorkerInteractable(enabled);
     }
 
     private void EnableActionTiles(bool enabled)
@@ -164,6 +185,11 @@ public class ButtonManager : MonoBehaviour
             case DebugResetState.PoachSelectWorker:
                 worker.Tile.RemoveWorker(worker);
                 Debug.Log($"TODO: poach worker {worker} from player {worker.PlayerId}");
+                CurrentResetState = DebugResetState.PoachSelectCard;
+                break;
+            case DebugResetState.PayForAction:
+                worker.Tile.RemoveWorker(worker);
+                Debug.Log($"TODO: pay worker {worker} for a previous/next (?) action");
                 CurrentResetState = DebugResetState.PoachSelectCard;
                 break;
             default:
@@ -255,6 +281,8 @@ public class ButtonManager : MonoBehaviour
     public void EndTurn()
     {
         Debug.Log("End Player Turn");
+        // TODO remove debug
+        CurrentResetState = DebugResetState.PayForAction;
     }
     
     #endregion
