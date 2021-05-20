@@ -26,5 +26,11 @@ public class DPosition {
     );
   }
 
+  public bool Equals(DPosition other) {
+    return (
+      IsValid && other.IsValid && other.Row == Row && other.Col == Col
+    );
+  }
+
   // TODO: also perhaps we need a CanJumpTo() for kids?
 }

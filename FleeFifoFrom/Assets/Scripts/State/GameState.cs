@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameState {
@@ -126,6 +127,47 @@ public class GameState {
 
   public PlayerID TurnPlayerID() {
     return Players[TurnPlayer];
+  }
+
+  public DMeeple[] MatchingMeepleOnBoard(System.Func<DMeeple, bool> check) {
+    List<DMeeple> result = new List<DMeeple>();
+
+    for (ushort i = 1; i <= Rules.ROWS; i++) {
+      for (ushort j = 1; j <= i; j++) {
+        DMeeple meeple = AtPosition(Board[i][j]);
+        if (meeple != null && check(meeple)) {
+          result.Add(meeple);
+        }
+      }
+    }
+
+    return result.ToArray();
+  }
+
+  public DPosition[] MatchingPositions(System.Func<DPosition, bool> check) {
+    List<DPosition> result = new List<DPosition>();
+
+    for (ushort i = 1; i <= Rules.ROWS; i++) {
+      for (ushort j = 1; j <= j; j++) {
+        if (check(Board[i][j])) {
+          result.Add(Board[i][j]);
+        }
+      }
+    }
+
+    return result.ToArray();
+  }
+
+  public DMeeple? AtPosition(DPosition position) {
+    return Villagers.First(v => v.Position.Equals(position));
+  }
+
+  public bool IsEmpty(DPosition position) {
+    return AtPosition(position) == null;
+  }
+
+  public DPosition[] EmptyPositions() {
+    return MatchingPositions(p => IsEmpty(p));
   }
 
   public DVillager[] VillagerBag() {
