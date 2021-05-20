@@ -2,13 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player 
 {
+    public Player(PlayerID id)
+    {
+        ID = id;
+    }
     public enum PlayerID
     {
         Red, Blue, Yellow, Green
     }
-    public PlayerID ID { get; set; }
+    public PlayerID ID { get; private set; }
     
     // TODO replace with nicer colors
     public static Color RedColor = Color.red;

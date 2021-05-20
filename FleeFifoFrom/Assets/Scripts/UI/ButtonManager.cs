@@ -45,7 +45,7 @@ public class ButtonManager : MonoBehaviour
             _objectiveWorkerDisplay
         };
 
-        StateManager.OnUpdateInteractability += UpdateInteractability;
+        StateManager.OnStateUpdate += UpdateInteractability;
     }
 
     private void UpdateInteractability()
