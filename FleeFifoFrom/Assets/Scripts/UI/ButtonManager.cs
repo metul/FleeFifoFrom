@@ -42,24 +42,28 @@ public class ButtonManager : MonoBehaviour
     {
         Debug.Log("Player chose the authorize action");
         _fieldManager.CurrentGameState = FieldManager.DebugGameState.Authorize;
+        CommunicationManager.Instance.PublishAction(_fieldManager.CurrentGameState);
     }
 
     public void Swap()
     {
         Debug.Log("Player chose the swap action");
         _fieldManager.CurrentGameState = FieldManager.DebugGameState.Swap1;
+        CommunicationManager.Instance.PublishAction(_fieldManager.CurrentGameState);
     }
 
     public void Riot()
     {
         Debug.Log("Player chose the riot action");
         _fieldManager.CurrentGameState = FieldManager.DebugGameState.Riot;
+        CommunicationManager.Instance.PublishAction(_fieldManager.CurrentGameState);
     }
 
     public void Revive()
     {
         Debug.Log("Player chose the revive action");
         _fieldManager.CurrentGameState = FieldManager.DebugGameState.Revive;
+        CommunicationManager.Instance.PublishAction(_fieldManager.CurrentGameState);
     }
 
     public void Objective()

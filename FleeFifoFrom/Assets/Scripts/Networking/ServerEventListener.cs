@@ -2,9 +2,11 @@ using MLAPI;
 using MLAPI.Logging;
 using UnityEngine;
 
+/// <summary>
+/// Listener class for server events.
+/// </summary>
 public class ServerEventListener : MonoBehaviour
 {
-
     private void OnEnable()
     {
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
