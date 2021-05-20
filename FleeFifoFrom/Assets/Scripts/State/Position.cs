@@ -1,5 +1,9 @@
+using System;
+
+[Serializable]
 public class DPosition {
   public readonly ushort Row;
+
   public readonly ushort Col;
 
   public bool IsValid {
@@ -26,11 +30,15 @@ public class DPosition {
     );
   }
 
+  // TODO: also perhaps we need a CanJumpTo() for kids?
+
   public bool Equals(DPosition other) {
     return (
       IsValid && other.IsValid && other.Row == Row && other.Col == Col
     );
   }
 
-  // TODO: also perhaps we need a CanJumpTo() for kids?
+  public override string ToString() {
+    return $"[{Row}, {Col}]";
+  }
 }

@@ -31,6 +31,7 @@ public class GameState {
   public DPosition[][] Board { get; private set; }
   public DWorker[] Workers { get; private set; }
   public DKnight[] Knights { get; private set; }
+  public DMeeple[] Meeple { get; private set; }
   public DVillager[] Villagers { get; private set; }
   readonly PlayerID[] Players;
   public ushort TurnPlayer;
@@ -46,19 +47,25 @@ public class GameState {
     Players = players;
     _initializeBoard();
     _initializeWorkers();
+
     _initializeKnights();
     _initializeVillagers();
     _drawMeeple();
+
+    Meeple = new DMeeple[Villagers.Length + Knights.Length];
+    Villagers.CopyTo(Meeple, 0);
+    Knights.CopyTo(Meeple, Villagers.Length);
+
     _initializeTurn();
   }
 
   private void _initializeBoard() {
     Board = new DPosition[Rules.ROWS][];
 
-    for (int i = 1; i <= Rules.ROWS; i++) {
-      Board[i] = new DPosition[i];
-      for (int j = 1; j <= i; j++) {
-        Board[i][j] = new DPosition((ushort) i, (ushort) j);
+    for (int i = 0; i < Rules.ROWS; i++) {
+      Board[i] = new DPosition[i + 1];
+      for (int j = 0; j < i + 1; j++) {
+        Board[i][j] = new DPosition((ushort) (i + 1), (ushort) (j + 1));
       }
     }
   }
@@ -99,11 +106,7 @@ public class GameState {
 
     // TODO: perhaps some knights also should be placed on the board?
 
-    for (ushort i = 1; i <= Rules.ROWS; i++) {
-      for (ushort j = 1; j <= i; j++) {
-        DrawVillager().Draw(Board[i][j]);
-      }
-    }
+    TraverseBoard(p => DrawVillager().Draw(p));
   }
 
   private void _initializeTurn() {
@@ -129,45 +132,12 @@ public class GameState {
     return Players[TurnPlayer];
   }
 
-  public DMeeple[] MatchingMeepleOnBoard(System.Func<DMeeple, bool> check) {
-    List<DMeeple> result = new List<DMeeple>();
-
-    for (ushort i = 1; i <= Rules.ROWS; i++) {
-      for (ushort j = 1; j <= i; j++) {
-        DMeeple meeple = AtPosition(Board[i][j]);
-        if (meeple != null && check(meeple)) {
-          result.Add(meeple);
-        }
+  public void TraverseBoard(System.Action<DPosition> action) {
+    foreach (DPosition[] row in Board) {
+      foreach (DPosition pos in row) {
+        action(pos);
       }
     }
-
-    return result.ToArray();
-  }
-
-  public DPosition[] MatchingPositions(System.Func<DPosition, bool> check) {
-    List<DPosition> result = new List<DPosition>();
-
-    for (ushort i = 1; i <= Rules.ROWS; i++) {
-      for (ushort j = 1; j <= j; j++) {
-        if (check(Board[i][j])) {
-          result.Add(Board[i][j]);
-        }
-      }
-    }
-
-    return result.ToArray();
-  }
-
-  public DMeeple? AtPosition(DPosition position) {
-    return Villagers.First(v => v.Position.Equals(position));
-  }
-
-  public bool IsEmpty(DPosition position) {
-    return AtPosition(position) == null;
-  }
-
-  public DPosition[] EmptyPositions() {
-    return MatchingPositions(p => IsEmpty(p));
   }
 
   public DVillager[] VillagerBag() {
@@ -178,14 +148,5 @@ public class GameState {
     DVillager[] bag = VillagerBag();
     return bag[Random.Range(0, bag.Length)];
   }
-
-  public int AuthorizedVillagers(PlayerID player) {
-    return Villagers.Where(v => v.State == DMeeple.MeepleState.Authorized && v.Rescuer == player).ToArray().Length;
-  }
-
-  public DWorker[] AvailableWorkers(PlayerID player) {
-    return Workers.Where(w => w.State == DWorker.WorkerState.InPool && w.ControlledBy == player).ToArray();
-  }
-
   #endregion
 }
