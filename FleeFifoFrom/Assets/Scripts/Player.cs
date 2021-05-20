@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public enum PlayerID
-    {
-        Red, Blue, Yellow, Green
-    }
     public PlayerID ID { get; set; }
     
     // TODO replace with nicer colors

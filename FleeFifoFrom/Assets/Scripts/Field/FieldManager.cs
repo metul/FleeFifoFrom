@@ -37,6 +37,8 @@ public class FieldManager : MonoBehaviour
         PopulateFieldRandomly();
         PopulateBattlefield();
         StateManager.OnUpdateInteractability += UpdateInteractability;
+
+        Debug.Log(GameState.Instance.Workers[6].ControlledBy);
     }
 
     private Tile[][] GetField(Transform[] sourceArray)

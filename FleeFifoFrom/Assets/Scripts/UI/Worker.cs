@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class Worker : MonoBehaviour
 {
-    public Player.PlayerID PlayerId;
+    public PlayerID PlayerId;
     public ActionTile Tile { get; set; }
     public bool Interactable
     {
@@ -27,7 +27,7 @@ public class Worker : MonoBehaviour
         _button.onClick.AddListener(() => _buttonManager.OnWorkerClick(this));
     }
 
-    private void SetColor(Player.PlayerID playerID)
+    private void SetColor(PlayerID playerID)
     {
         var image = GetComponent<Image>();
         image.color = Player.GetPlayerColor(playerID);
