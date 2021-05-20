@@ -22,12 +22,18 @@ public class GameState {
   #endregion
 
   #region properties
+  public enum TurnTypes {
+    ActionTurn,
+    ResetTurn,
+  }
 
   public DPosition[][] Board { get; private set; }
   public DWorker[] Workers { get; private set; }
   public DKnight[] Knights { get; private set; }
   public DVillager[] Villagers { get; private set; }
   readonly PlayerID[] Players;
+  public ushort TurnPlayer;
+  public TurnTypes TurnType;
 
   #endregion
 
@@ -42,6 +48,7 @@ public class GameState {
     _initializeKnights();
     _initializeVillagers();
     _drawMeeple();
+    _initializeTurn();
   }
 
   private void _initializeBoard() {
@@ -98,9 +105,28 @@ public class GameState {
     }
   }
 
+  private void _initializeTurn() {
+    TurnPlayer = 0;
+    TurnType = TurnTypes.ActionTurn;
+  }
+
   #endregion
 
   #region utility functions
+
+  public void rotateTurn() {
+    if (TurnType == TurnTypes.ActionTurn) {
+      TurnType = TurnTypes.ResetTurn;
+      TurnPlayer = (ushort) ((TurnPlayer + 2) % Players.Length);
+    } else {
+      TurnType = TurnTypes.ActionTurn;
+      TurnPlayer = (ushort) ((TurnPlayer - 1) % Players.Length);
+    }
+  }
+
+  public PlayerID TurnPlayerID() {
+    return Players[TurnPlayer];
+  }
 
   public DVillager[] VillagerBag() {
     return Villagers.Where(v => v.State == DMeeple.MeepleState.OutOfBoard).ToArray();
