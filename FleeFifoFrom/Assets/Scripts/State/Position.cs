@@ -1,27 +1,33 @@
 using System;
 
 [Serializable]
-public class DPosition {
+public class DPosition
+{
   public readonly ushort Row;
 
   public readonly ushort Col;
 
-  public bool IsValid {
-    get {
+  public bool IsValid
+  {
+    get
+    {
       return Row > 0 && Col > 0 && Row <= Rules.ROWS && Col <= Row;
     }
   }
 
-  public DPosition(ushort row, ushort col) {
+  public DPosition(ushort row, ushort col)
+  {
     Row = row;
     Col = col;
 
-    if (!IsValid) {
+    if (!IsValid)
+    {
       throw new System.Exception($"Invalid Position: {Row}, {Col}");
     }
   }
 
-  public bool CanMoveTo(DPosition other) {
+  public bool CanMoveTo(DPosition other)
+  {
     return (
       IsValid &&
       other.IsValid &&
@@ -32,13 +38,15 @@ public class DPosition {
 
   // TODO: also perhaps we need a CanJumpTo() for kids?
 
-  public bool Equals(DPosition other) {
+  public bool Equals(DPosition other)
+  {
     return (
       IsValid && other.IsValid && other.Row == Row && other.Col == Col
     );
   }
 
-  public override string ToString() {
+  public override string ToString()
+  {
     return $"[{Row}, {Col}]";
   }
 }

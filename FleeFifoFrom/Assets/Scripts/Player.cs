@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public PlayerID ID { get; set; }
+    public DPlayer.ID ID { get; set; }
     
     // TODO replace with nicer colors
     public static Color RedColor = Color.red;
@@ -15,17 +15,17 @@ public class Player : MonoBehaviour
     // TODO Add function, unless implemented in instance of PLayer
     public void add() { }
 
-    public static Color GetPlayerColor(PlayerID playerID)
+    public static Color GetPlayerColor(DPlayer.ID playerID)
     {
         switch (playerID)
         {
-            case PlayerID.Red:
+            case DPlayer.ID.Red:
                 return RedColor;
-            case PlayerID.Blue:
+            case DPlayer.ID.Blue:
                 return BlueColor;
-            case PlayerID.Yellow:
+            case DPlayer.ID.Yellow:
                 return YellowColor;
-            case PlayerID.Green:
+            case DPlayer.ID.Green:
                 return GreenColor;
             default:
                 return Color.white;

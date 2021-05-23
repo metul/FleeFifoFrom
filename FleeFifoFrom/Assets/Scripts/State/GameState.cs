@@ -2,19 +2,22 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameState {
-
+public class GameState
+{
   #region singleton instance management
 
   private static GameState _instance = null;
-  public static GameState Instance {
-    get {
-      Initialize(Rules.DEFAULT_PLAYERS);
+  public static GameState Instance
+  {
+    get
+    {
+      Initialize(DPlayer.CreateAnonymousPlayers());
       return _instance;
     }
   }
 
-  public static void Initialize(PlayerID[] players) {
+  public static void Initialize(DPlayer[] players)
+  {
     if (_instance == null) {
       _instance = new GameState(players);
     }
@@ -23,7 +26,8 @@ public class GameState {
   #endregion
 
   #region properties
-  public enum TurnTypes {
+  public enum TurnTypes
+  {
     ActionTurn,
     ResetTurn,
   }
@@ -33,17 +37,16 @@ public class GameState {
   public DKnight[] Knights { get; private set; }
   public DMeeple[] Meeple { get; private set; }
   public DVillager[] Villagers { get; private set; }
-  readonly PlayerID[] Players;
-  public ushort TurnPlayer;
+  readonly DPlayer[] Players;
+  public ushort TurnPlayerIndex;
   public TurnTypes TurnType;
 
   #endregion
 
   #region initialization
 
-  public GameState(): this(Rules.DEFAULT_PLAYERS) {}
-
-  public GameState(PlayerID[] players) {
+  public GameState(DPlayer[] players)
+  {
     Players = players;
     _initializeBoard();
     _initializeWorkers();
@@ -59,7 +62,8 @@ public class GameState {
     _initializeTurn();
   }
 
-  private void _initializeBoard() {
+  private void _initializeBoard()
+  {
     Board = new DPosition[Rules.ROWS][];
 
     for (int i = 0; i < Rules.ROWS; i++) {
@@ -70,47 +74,65 @@ public class GameState {
     }
   }
 
-  private void _initializeWorkers() {
+  private void _initializeWorkers()
+  {
     Workers = new DWorker[Rules.WORKER_COUNT * Players.Length];
 
     for (ushort i = 0; i < Players.Length; i++) {
       for (ushort j = 0; j < Rules.WORKER_COUNT; j++) {
-        Workers[i * Rules.WORKER_COUNT + j] = new DWorker(Players[i]);
+        Workers[i * Rules.WORKER_COUNT + j] = new DWorker(Players[i].Id);
       }
     }
   }
 
-  private void _initializeKnights() {
+  private void _initializeKnights()
+  {
     Knights = new DKnight[Rules.KNIGHT_COUNT * Players.Length];
 
     // TODO: maybe we want to initialize with some knights in queue as well?
 
     for (ushort i = 0; i < Players.Length; i++) {
       for (ushort j = 0; j < Rules.KNIGHT_COUNT; j++) {
-        Knights[i * Rules.KNIGHT_COUNT + j] = new DKnight(Players[i]);
+        Knights[i * Rules.KNIGHT_COUNT + j] = new DKnight(Players[i].Id);
       }
     }
   }
 
-  private void _initializeVillagers() {
-    // TODO: this method should create random villager types, or based on game rules or whatever.
+  private void _initializeVillagers()
+  {
+    Villagers = new DVillager[
+        Rules.VILLAGERS_COUNT
+      + Rules.ELDERS_COUNT
+      + Rules.CHILDREN_COUNT
+    ];
 
-    Villagers = new DVillager[Rules.VILLAGERS_COUNT];
-
-    for (ushort i = 0; i < Rules.VILLAGERS_COUNT; i++) {
+    for (ushort i = 0; i < Rules.VILLAGERS_COUNT; i++)
+    {
       Villagers[i] = new DVillager();
+    }
+
+    for (ushort i = 0; i < Rules.ELDERS_COUNT; i++)
+    {
+      Villagers[i + Rules.VILLAGERS_COUNT] = new DElder();
+    }
+
+    for (ushort i = 0; i < Rules.CHILDREN_COUNT; i++)
+    {
+      Villagers[i + Rules.VILLAGERS_COUNT + Rules.ELDERS_COUNT] = new DChild();
     }
   }
 
-  private void _drawMeeple() {
+  private void _drawMeeple()
+  {
 
     // TODO: perhaps some knights also should be placed on the board?
 
     TraverseBoard(p => DrawVillager().Draw(p));
   }
 
-  private void _initializeTurn() {
-    TurnPlayer = 0;
+  private void _initializeTurn()
+  {
+    TurnPlayerIndex = 0;
     TurnType = TurnTypes.ActionTurn;
   }
 
@@ -118,33 +140,54 @@ public class GameState {
 
   #region utility functions
 
-  public void rotateTurn() {
-    if (TurnType == TurnTypes.ActionTurn) {
+  public void RotateTurn()
+  {
+    if (TurnType == TurnTypes.ActionTurn)
+    {
       TurnType = TurnTypes.ResetTurn;
-      TurnPlayer = (ushort) ((TurnPlayer + 2) % Players.Length);
-    } else {
+      TurnPlayerIndex = (ushort) ((TurnPlayerIndex + 2) % Players.Length);
+    }
+    else
+    {
       TurnType = TurnTypes.ActionTurn;
-      TurnPlayer = (ushort) ((TurnPlayer - 1) % Players.Length);
+      TurnPlayerIndex = (ushort) ((TurnPlayerIndex - 1) % Players.Length);
     }
   }
 
-  public PlayerID TurnPlayerID() {
-    return Players[TurnPlayer];
+  public DPlayer TurnPlayer()
+  {
+    return Players[TurnPlayerIndex];
   }
 
-  public void TraverseBoard(System.Action<DPosition> action) {
-    foreach (DPosition[] row in Board) {
-      foreach (DPosition pos in row) {
+  public DPlayer? PlayerById(DPlayer.ID id)
+  {
+    return Players.First(p => p.Id == id);
+  }
+
+  public int PlayerScore(DPlayer.ID player)
+  {
+    // TODO: later objectives and castle rewards should also be added here.
+    return this.AuthorizedVillagers(player).Length + PlayerById(player).Honor;
+  }
+
+  public void TraverseBoard(System.Action<DPosition> action)
+  {
+    foreach (DPosition[] row in Board)
+    {
+      foreach (DPosition pos in row)
+      {
         action(pos);
       }
     }
   }
 
-  public DVillager[] VillagerBag() {
+  public DVillager[] VillagerBag()
+  {
     return Villagers.Where(v => v.State == DMeeple.MeepleState.OutOfBoard).ToArray();
   }
 
-  public DVillager DrawVillager() {
+  public DVillager DrawVillager()
+  {
     DVillager[] bag = VillagerBag();
     return bag[Random.Range(0, bag.Length)];
   }
