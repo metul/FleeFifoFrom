@@ -57,14 +57,39 @@ public class FieldManager : MonoBehaviour
         return field;
     }
     
+
+    public Tile? TileByPosition(DPosition position)
+    {
+        return _field[position.Row - 1][position.Col - 1];
+    } 
     private void PopulateFieldRandomly()
     {
-        // TODO consider fixed knight positions
-        foreach (var tiles in _field)
+        var meeple = GameState.Instance.MatchingMeepleOnBoard(m => true);
+        foreach (var meep in meeple)
         {
-            foreach (var tile in tiles)
+            var tile = TileByPosition(meep.Position);
+            if (tile != null)
             {
-                tile.SetMeeple(Instantiate(GetRandomVillagerPrefab()));
+                Meeple? prefab = null;
+                if (meep.GetType() == typeof(DCommoner))
+                {
+                    prefab = _villagerPrefabs[0];
+                }
+                else if (meep.GetType() == typeof(DChild))
+                {
+                    prefab = _villagerPrefabs[1];
+                }
+                else if (meep.GetType() == typeof(DElder))
+                {
+                    prefab = _villagerPrefabs[2];
+                }
+
+                if (prefab != null)
+                {
+                    Meeple newguy = Instantiate(prefab);
+                    newguy.Core = meep;
+                    tile.SetMeeple(newguy);
+                }
             }
         }
     }
@@ -256,21 +281,17 @@ public class FieldManager : MonoBehaviour
 
     private void EnableInjuryBased(bool enableInjured)
     {
-        foreach (var tiles in _field)
-        {
-            foreach (var tile in tiles)
+        GameState.Instance.TraverseBoard(p => {
+            var tile = TileByPosition(p);
+            if (enableInjured)
             {
-                if (tile.Meeple != null)
-                {
-                    if(enableInjured)
-                        tile.Interactable = tile.Meeple.CurrentState == Meeple.State.Injured;
-                    else
-                        tile.Interactable = tile.Meeple.CurrentState != Meeple.State.Injured;
-                }
-                else
-                    tile.Interactable = false;
+                tile.Interactable = GameState.Instance.InjuredVillagerAtPosition(p);
             }
-        }
+            else
+            {
+                tile.Interactable = GameState.Instance.HealthyMeepleAtPosition(p);
+            }
+        });
     }
 
     private void EnableKnights()
@@ -287,6 +308,7 @@ public class FieldManager : MonoBehaviour
     private void EnableAuthorizable()
     {
         // TODO enable interaction for authorize
+        // TODO: switch this to read game state
         List<int> lastEmpty = new List<int>(); 
         List<int> newEmpty = new List<int>();
         for (var i = 0; i < _field.Length; i++)
@@ -300,8 +322,8 @@ public class FieldManager : MonoBehaviour
                 if (tile.Meeple != null)
                 {
                     // injured
-                    if (tile.Meeple.CurrentState == Meeple.State.Injured)
-                        tile.Interactable = false;
+                    // if (tile.Meeple.CurrentState == Meeple.State.Injured)
+                    //     tile.Interactable = false;
                             
                     // top tile
                     if (i == 0)

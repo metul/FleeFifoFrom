@@ -100,26 +100,24 @@ public class GameState
 
   private void _initializeVillagers()
   {
-    Villagers = new DVillager[
-        Rules.VILLAGERS_COUNT
-      + Rules.ELDERS_COUNT
-      + Rules.CHILDREN_COUNT
-    ];
+    List<DVillager> villagers = new List<DVillager>();
 
-    for (ushort i = 0; i < Rules.VILLAGERS_COUNT; i++)
+    for (ushort i = 0; i < Rules.COMMONERS_COUNT; i++)
     {
-      Villagers[i] = new DVillager();
+      villagers.Add(new DCommoner());
     }
 
     for (ushort i = 0; i < Rules.ELDERS_COUNT; i++)
     {
-      Villagers[i + Rules.VILLAGERS_COUNT] = new DElder();
+      villagers.Add(new DElder());
     }
 
     for (ushort i = 0; i < Rules.CHILDREN_COUNT; i++)
     {
-      Villagers[i + Rules.VILLAGERS_COUNT + Rules.ELDERS_COUNT] = new DChild();
+      villagers.Add(new DChild());
     }
+
+    Villagers = villagers.ToArray();
   }
 
   private void _drawMeeple()

@@ -91,6 +91,35 @@ public static class GameStateUtils
   }
 
   /// <summary>
+  /// Returns true if there is an injured villager at given position
+  /// </summary>
+  public static bool InjuredVillagerAtPosition(this GameState state, DPosition position)
+  {
+    var meeple = state.AtPosition(position);
+    return (
+      meeple != null
+      && meeple.GetType() == typeof(DVillager)
+      && ((DVillager) meeple).HealthState == DVillager.VillagerHealthState.Injrued
+    );
+  }
+
+  /// <summary>
+  /// Returns true if there is a healthy meeple at given position
+  /// </summary>
+  public static bool HealthyMeepleAtPosition(this GameState state, DPosition position)
+  {
+    var meeple = state.AtPosition(position);
+    return (
+      meeple != null
+      &&
+      (
+        meeple.GetType() != typeof(DVillager)
+        || ((DVillager) meeple).HealthState == DVillager.VillagerHealthState.Healthy
+      )
+    );
+  }
+
+  /// <summary>
   /// Returns whether or not the given position on the board is empty.
   /// </summary>
   public static bool IsEmpty(this GameState state, DPosition position)

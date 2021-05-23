@@ -12,6 +12,7 @@ public class DVillager : DMeeple
   public void Injure()
   {
     HealthState = VillagerHealthState.Injrued;
+    QueueState = DMeeple.MeepleQueueState.UnTapped;
   }
 
   public void Heal()
@@ -50,5 +51,6 @@ public class DVillager : DMeeple
   }
 }
 
+public class DCommoner : DVillager {}
 public class DElder : DVillager {}
 public class DChild : DVillager {}

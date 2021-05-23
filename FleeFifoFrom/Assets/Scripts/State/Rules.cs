@@ -15,7 +15,7 @@ public class Rules
 
   public const ushort ROWS = 5;
 
-  public const ushort VILLAGERS_COUNT = 32; 
+  public const ushort COMMONERS_COUNT = 32; 
 
   public const ushort ELDERS_COUNT = 12;
 
