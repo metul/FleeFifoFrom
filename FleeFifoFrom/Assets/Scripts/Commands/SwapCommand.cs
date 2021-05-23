@@ -1,48 +1,39 @@
 public class SwapCommand : ActionCommand
 {
-    private Tile _tile1, _tile2;
+    private DMeeple? _first;
+    private DMeeple? _second;
 
-    public SwapCommand(ulong issuerID, Tile tile1, Tile tile2) : base(issuerID)
+    public SwapCommand(ulong issuerID, DMeeple? first, DMeeple? second) : base(issuerID)
     {
-        _tile1 = tile1;
-        _tile2 = tile2;
+        _first = first;
+        _second = second;
     }
 
     public override void Execute()
     {
         base.Execute();
-        SwapTileMeeples(_tile1, _tile2);
+        SwapTileMeeples(_first, _second);
     }
 
     public override void Reverse()
     {
         base.Reverse();
-        SwapTileMeeples(_tile2, _tile1);
+        SwapTileMeeples(_second, _first);
     }
 
-    private void SwapTileMeeples(Tile tile1, Tile tile2)
+    private void SwapTileMeeples(DMeeple first, DMeeple second)
     {
-        var meeple1 = tile1.RemoveMeeple();
-        var meeple2 = tile2.RemoveMeeple();
-        tile1.SetMeeple(meeple2);
-        tile2.SetMeeple(meeple1);
+        DPosition tmp = first.Position.Current;
+        first.Position.Current = second.Position.Current;
+        second.Position.Current = tmp;
     }
 
-    public override void CheckFeasibility()
+    public override bool IsFeasibile()
     {
-        //TODO Step 1: Start loop from tile 1
-        /*psudo
-        if (piece.exists && !piece.injured)
-        {
-                //TODO: Can we come up with a smart data structure for easy neighbors
-                //Tile.CheckNeighbors();
-                //We want at least one neighbour that exists and is not injured
-                //Break if yes, since action is possible
-        }
-        else (move to next tile)
-
-        //TODO: end loop
-        */
+        return (
+            _first != null && _second != null &&
+            _first.IsHealthy() && _second.IsHealthy() &&
+            _first.Position.Current.Neighbors(_second.Position.Current)
+        );
     }
-
 }

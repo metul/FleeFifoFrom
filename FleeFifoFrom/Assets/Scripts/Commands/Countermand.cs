@@ -24,8 +24,9 @@ public class Countermand : ResetCommand
         base.Reverse();
     }
 
-    public override void CheckFeasibility()
+    public override bool IsFeasibile()
     {
+        return true;
         //TODO. Always possible, as long as pawn available
     }
 }

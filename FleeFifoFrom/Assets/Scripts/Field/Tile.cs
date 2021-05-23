@@ -6,6 +6,10 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
 {
     public Vector2 ID { get; set; }
     public bool Interactable { get; set; }
+    public DPosition Position
+    {
+        get => new DPosition((ushort) (ID.x + 1), (ushort) (ID.y + 1));
+    }
 
     private FieldManager _fieldManager;
 

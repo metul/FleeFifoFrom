@@ -21,10 +21,10 @@ public class ReviveCommand : ActionCommand
         // _tile.Meeple.CurrentState = _originalState;
     }
 
-    public override void CheckFeasibility()
+    public override bool IsFeasibile()
     {
         //TODO Step 1: Start loop from tile 1
-        this.ActionPossible = false;
+        return false;
         /*psuedo
         if (piece.exists)
         {

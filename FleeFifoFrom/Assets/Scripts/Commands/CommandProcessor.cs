@@ -24,8 +24,11 @@ public sealed class CommandProcessor
     /// <param name="command"> Command to be executed. </param>
     public void ExecuteCommand(Command command)
     {
-        _commands.Push(command);
-        command.Execute();
+        if (command.IsFeasibile())
+        {
+            _commands.Push(command);
+            command.Execute();
+        }
     }
 
     /// <summary>

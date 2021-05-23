@@ -25,5 +25,5 @@ public abstract class Command : MonoBehaviour
     /// </summary>
     public abstract void Reverse();
 
-    public abstract void CheckFeasibility();
+    public abstract bool IsFeasibile();
 }

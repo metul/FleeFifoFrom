@@ -56,18 +56,18 @@ public class FieldManager : MonoBehaviour
         }
         return field;
     }
-    
 
     public Tile? TileByPosition(DPosition position)
     {
         return _field[position.Row - 1][position.Col - 1];
-    } 
+    }
+
     private void PopulateFieldRandomly()
     {
         var meeple = GameState.Instance.MatchingMeepleOnBoard(m => true);
         foreach (var meep in meeple)
         {
-            var tile = TileByPosition(meep.Position);
+            var tile = TileByPosition(meep.Position.Current);
             if (tile != null)
             {
                 Meeple? prefab = null;
@@ -83,12 +83,21 @@ public class FieldManager : MonoBehaviour
                 {
                     prefab = _villagerPrefabs[2];
                 }
+                else if (meep.GetType() == typeof(DKnight))
+                {
+                    prefab = _knightPrefab;
+                }
 
                 if (prefab != null)
                 {
                     Meeple newguy = Instantiate(prefab);
-                    newguy.Core = meep;
+                    newguy.Initialize(meep);
                     tile.SetMeeple(newguy);
+                    meep.Position.OnChange += p => {
+                        var tile = TileByPosition(p);
+                        tile.RemoveMeeple();
+                        tile.SetMeeple(newguy);
+                    };
                 }
             }
         }
@@ -96,6 +105,7 @@ public class FieldManager : MonoBehaviour
 
     private void PopulateBattlefield()
     {
+        // TODO: map to game state knights actually.
         foreach (var tiles in _battleField)
         {
             foreach (var tile in tiles)
@@ -118,7 +128,13 @@ public class FieldManager : MonoBehaviour
 
     public void Swap(Tile tile1, Tile tile2)
     {
-        CommandProcessor.Instance.ExecuteCommand(new SwapCommand(0, tile1, tile2));
+        CommandProcessor.Instance.ExecuteCommand(
+            new SwapCommand(
+                0,    // --> TODO: should this be zero?
+                GameState.Instance.AtPosition(tile1.Position),
+                GameState.Instance.AtPosition(tile2.Position)
+            )
+        );
     }
 
     public void Riot(List<Tile> path)
@@ -296,13 +312,12 @@ public class FieldManager : MonoBehaviour
 
     private void EnableKnights()
     {
-        foreach (var tiles in _field)
-        {
-            foreach (var tile in tiles)
-            {
-                tile.Interactable = (tile.Meeple.GetType() == typeof(Knight));
-            }
-        }
+        GameState.Instance.TraverseBoard(p => {
+            var tile = TileByPosition(p);
+            var meeple = GameState.Instance.AtPosition(p);
+
+            tile.Interactable = meeple != null && meeple.GetType() == typeof(DKnight);
+        });
     }
 
     private void EnableAuthorizable()
@@ -352,15 +367,12 @@ public class FieldManager : MonoBehaviour
 
     private void EnableRiotPath(List<Tile> path)
     {
-        var currentID = path[path.Count - 1].ID;
-        foreach (var tiles in _battleField)
-        {
-            foreach (var tile in tiles)
-            {
-                tile.Interactable = tile.ID.x < currentID.x &&
-                                    (tile.ID.y == currentID.y || tile.ID.y == currentID.y - 1);
-            }
-        }
+        var last = path[path.Count - 1].Position;
+
+        GameState.Instance.TraverseBoard(p => {
+            var tile = TileByPosition(p);
+            tile.Interactable = last.CanMoveTo(p);
+        });
     }
 
     private void EnableBattlefield()

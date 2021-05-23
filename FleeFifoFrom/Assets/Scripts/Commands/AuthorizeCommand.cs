@@ -58,8 +58,9 @@ public class AuthorizeCommand : ActionCommand
         // TODO
     }
 
-    public override void CheckFeasibility()
+    public override bool IsFeasibile()
     {
+        return true;
         //TODO Step 1: Start loop from tile 1
         /* Psuedo
         if(piece.exists)

@@ -53,7 +53,7 @@ public class RiotCommand : ActionCommand
         //     tile.Meeple.CurrentState = _originalStates[index];
     }
 
-    public override void CheckFeasibility()
+    public override bool IsFeasibile()
     {
         //TODO Step 1: Start loop from tile 1
         /* pseudo
@@ -80,6 +80,7 @@ public class RiotCommand : ActionCommand
 
         //TODO: end loop
         */
+        return true;
     }
 
 

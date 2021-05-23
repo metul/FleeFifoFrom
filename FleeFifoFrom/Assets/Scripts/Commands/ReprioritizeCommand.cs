@@ -23,4 +23,9 @@ public class ReprioritizeCommand : ResetCommand
         base.Reverse();
         // _tile.Meeple.CurrentState = _originalState;
     }
+
+  public override bool IsFeasibile()
+  {
+    return true;
+  }
 }

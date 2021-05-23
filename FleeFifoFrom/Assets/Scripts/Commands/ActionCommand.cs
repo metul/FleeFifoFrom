@@ -1,11 +1,6 @@
-public class ActionCommand : Command
+public abstract class ActionCommand : Command
 {
     public ActionCommand(ulong issuerID) : base(issuerID) { }
-
-
-    //TODO: Display every action as possible originally
-    protected bool ActionPossible = true;
-
 
     public void CheckWorker()
     {
@@ -21,10 +16,5 @@ public class ActionCommand : Command
     public override void Reverse()
     {
         // TODO: Increase worker count
-    }
-
-    public override void CheckFeasibility()
-    {
-        //TODO: Nothing, passthrough
     }
 }

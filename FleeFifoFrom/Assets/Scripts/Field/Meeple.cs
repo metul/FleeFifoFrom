@@ -5,59 +5,27 @@ using UnityEngine;
 
 public abstract class Meeple: MonoBehaviour
 {
-    public DMeeple Core;
+    public DMeeple Core { get; protected set; }
 
-    // public enum State
-    // {
-    //     Default, Tapped, Injured
-    // }
-    
-    // private State _currentState;
-    // public State CurrentState
-    // {
-    //     get => _currentState;
-    //     set
-    //     {
-    //         ChangeState(value);
-    //         _currentState = value;
-    //     } 
-    // }
-    
-    // private State _stateAfterMovement = State.Tapped;
-
-    // private Action OnDefault;
-    // private Action OnTapped;
-    // private Action OnInjured;
+    protected Action OnDefault;
+    protected Action OnTapped;
 
     private void Awake()
     {
         // Debug
-        // var rend = GetComponent<Renderer>();
-        // OnDefault += () => { rend.material.color = Color.white; };
-        // OnTapped += () => { rend.material.color = Color.yellow; };
-        // OnInjured += () => { rend.material.color = Color.red; };
-        
-        // CurrentState = State.Default;
+        var rend = GetComponent<Renderer>();
+        OnDefault += () => { rend.material.color = Color.white; };
+        OnTapped += () => { rend.material.color = Color.yellow; };
     }
 
-    // public void OnMove()
-    // {
-    //     CurrentState = _stateAfterMovement;
-    // }
-    
-    // private void ChangeState(State state)
-    // {
-    //     switch (state)
-    //     {
-    //         case State.Default:
-    //             OnDefault?.Invoke();
-    //             break;
-    //         case State.Tapped:
-    //             OnTapped?.Invoke();
-    //             break;
-    //         case State.Injured:
-    //             OnInjured?.Invoke();
-    //             break;
-    //     }
-    // }
+    public virtual void Initialize(DMeeple core)
+    {
+        Core = core;
+        Core.QueueState.OnChange += q => {
+            if (q == DMeeple.MeepleQueueState.Tapped)
+                OnTapped.Invoke();
+            else if (Core.IsHealthy())
+                OnDefault.Invoke();
+        };
+    }
 }

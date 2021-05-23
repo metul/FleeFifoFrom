@@ -14,7 +14,7 @@ public class DKnight : DMeeple
   {
     if (State == MeepleState.OutOfBoard && position.IsValid)
     {
-      Position = position;
+      Position.Current = position;
       State = MeepleState.InQueue;
     }
   }

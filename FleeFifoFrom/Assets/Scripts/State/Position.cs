@@ -32,7 +32,18 @@ public class DPosition
       IsValid &&
       other.IsValid &&
       other.Row == Row - 1 &&
-      (other.Col == Col + 1 || other.Col == Col - 1)
+      (other.Col == Col - 1 || other.Col == Col)
+    );
+  }
+
+  public bool Neighbors(DPosition other)
+  {
+    return (
+      IsValid &&
+      other.IsValid &&
+      Math.Abs(Row - other.Row) <= 1 &&
+      Math.Abs(Col - other.Col) <= 1 &&
+      !Equals(other)
     );
   }
 

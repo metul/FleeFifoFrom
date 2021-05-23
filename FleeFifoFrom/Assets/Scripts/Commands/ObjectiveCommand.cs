@@ -12,10 +12,15 @@ public class ObjectiveCommand : ActionCommand
         //CurrentPlayer.remove(Card)
     }
 
-    public override void CheckFeasibility()
+    public override bool IsFeasibile()
     {
+        // TODO: this is dummy?
         if (GameStateDummy.Instance.CurrentPlayer.CardCount >= 5)
-        { this.ActionPossible = false; }
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public ObjectiveCommand(ulong issuerID) : base(issuerID)

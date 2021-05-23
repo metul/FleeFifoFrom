@@ -1,5 +1,6 @@
 public class DMeeple : DObject
 {
+  // TODO: Perhaps better naming?
   public enum MeepleState
   {
     OutOfBoard, // --> the meeple is for some reason not on the board yet
@@ -13,13 +14,14 @@ public class DMeeple : DObject
     UnTapped,   // --> the meeple is untapped
   }
 
+// TODO: perhaps State needs to be Observable as well?
   public MeepleState State { get; protected set; } = MeepleState.OutOfBoard;
-  public MeepleQueueState QueueState { get; protected set; } = MeepleQueueState.UnTapped;
-  public DPosition? Position { get; protected set; }
+  public Observable<MeepleQueueState> QueueState = new Observable<MeepleQueueState>(MeepleQueueState.UnTapped);
+  public Observable<DPosition?> Position;
 
   public DMeeple(DPosition position, MeepleState state): base()
   {
-    Position = position;
+    Position = new Observable<DPosition>(position);
     State = state;
   }
 
@@ -31,7 +33,7 @@ public class DMeeple : DObject
   protected void _authorize()
   {
     State = MeepleState.Authorized;
-    Position = null;
+    Position.Current = null;
   }
 
   protected void _deauthorize()
@@ -41,27 +43,27 @@ public class DMeeple : DObject
 
   public void Tap()
   {
-    QueueState = MeepleQueueState.Tapped;
+    QueueState.Current = MeepleQueueState.Tapped;
   }
 
   public void UnTap()
   {
-    QueueState = MeepleQueueState.UnTapped;
+    QueueState.Current = MeepleQueueState.UnTapped;
   }
 
   public void Move(DPosition position)
   {
-    if (State == MeepleState.InQueue && Position.CanMoveTo(position))
+    if (State == MeepleState.InQueue && Position.Current.CanMoveTo(position))
     {
-      Position = position;
+      Position.Current = position;
     }
   }
 
   public void MoveBack(DPosition position)
   {
-    if (State == MeepleState.InQueue && position.CanMoveTo(Position))
+    if (State == MeepleState.InQueue && position.CanMoveTo(Position.Current))
     {
-      Position = position;
+      Position.Current = position;
     }
   }
 
@@ -69,7 +71,7 @@ public class DMeeple : DObject
   {
     if (State == MeepleState.InQueue && position.IsValid)
     {
-      Position = position;
+      Position.Current = position;
     }
   }
 }

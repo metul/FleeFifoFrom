@@ -32,10 +32,7 @@ public static class GameStateUtils
   /// </summary>
   public static DMeeple[] InjuredMeeple(this GameState state)
   {
-    return state.MatchingMeepleOnBoard(m => (
-      m.GetType() == typeof(DVillager) &&
-      ((DVillager) m).HealthState == DVillager.VillagerHealthState.Injrued
-    ));
+    return state.MatchingMeepleOnBoard(m => m.IsInjured());
   }
 
   /// <summary>
@@ -86,8 +83,24 @@ public static class GameStateUtils
   {
     return state.Meeple.First(m => (
       m.State == DMeeple.MeepleState.InQueue
-      && m.Position != null && m.Position.Equals(position)
+      && m.Position.Current != null && m.Position.Current.Equals(position)
     ));
+  }
+
+  public static bool IsInjured(this DMeeple meeple)
+  {
+    return (
+      meeple.GetType() == typeof(DVillager)
+      && ((DVillager) meeple).Health.Current == DVillager.HealthStates.Injrued
+    );
+  }
+
+  public static bool IsHealthy(this DMeeple meeple)
+  {
+    return (
+      meeple.GetType() != typeof(DVillager)
+      || ((DVillager) meeple).Health.Current == DVillager.HealthStates.Healthy
+    );
   }
 
   /// <summary>
@@ -96,11 +109,7 @@ public static class GameStateUtils
   public static bool InjuredVillagerAtPosition(this GameState state, DPosition position)
   {
     var meeple = state.AtPosition(position);
-    return (
-      meeple != null
-      && meeple.GetType() == typeof(DVillager)
-      && ((DVillager) meeple).HealthState == DVillager.VillagerHealthState.Injrued
-    );
+    return meeple != null && meeple.IsInjured();
   }
 
   /// <summary>
@@ -109,14 +118,7 @@ public static class GameStateUtils
   public static bool HealthyMeepleAtPosition(this GameState state, DPosition position)
   {
     var meeple = state.AtPosition(position);
-    return (
-      meeple != null
-      &&
-      (
-        meeple.GetType() != typeof(DVillager)
-        || ((DVillager) meeple).HealthState == DVillager.VillagerHealthState.Healthy
-      )
-    );
+    return meeple != null && meeple.IsHealthy();
   }
 
   /// <summary>
