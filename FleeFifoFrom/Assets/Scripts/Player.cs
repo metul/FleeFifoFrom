@@ -2,9 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player 
 {
-    public DPlayer.ID ID { get; set; }
+    public Player(DPlayer.ID id)
+    {
+        ID = id;
+    }
+
+    public DPlayer.ID ID { get; private set; }
     
     // TODO replace with nicer colors
     public static Color RedColor = Color.red;

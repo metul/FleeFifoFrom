@@ -14,7 +14,7 @@ public class ObjectiveCommand : ActionCommand
 
     public override void CheckFeasibility()
     {
-        if (GameManager.CurrentPlayer.CardCount >= 5)
+        if (GameStateDummy.Instance.CurrentPlayer.CardCount >= 5)
         { this.ActionPossible = false; }
     }
 

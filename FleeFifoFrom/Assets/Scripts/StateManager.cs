@@ -31,14 +31,19 @@ public class StateManager : MonoBehaviour
     }
 
     private static State _gameState;
-    public static Action OnUpdateInteractability;
+    public static Action OnStateUpdate;
     public static State GameState
     {
         get => _gameState;
         set
         {
             _gameState = value;
-            OnUpdateInteractability?.Invoke();
+            OnStateUpdate?.Invoke();
         } 
+    }
+
+    private void Start()
+    {
+        GameState = State.Default;
     }
 }
