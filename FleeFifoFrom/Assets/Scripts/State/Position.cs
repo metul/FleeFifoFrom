@@ -41,8 +41,10 @@ public class DPosition
     return (
       IsValid &&
       other.IsValid &&
-      Math.Abs(Row - other.Row) <= 1 &&
-      Math.Abs(Col - other.Col) <= 1 &&
+      (
+        (Row == other.Row && Math.Abs(Col - other.Col) <= 1) ||
+        CanMoveTo(other) || other.CanMoveTo(this)
+      ) &&
       !Equals(other)
     );
   }
