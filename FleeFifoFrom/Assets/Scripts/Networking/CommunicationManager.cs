@@ -53,6 +53,6 @@ public class CommunicationManager : NetworkBehaviour
     private void ProcessActionClientRPC(ulong publisherID, FieldManager.DebugGameState state, ClientRpcParams clientRpcParams = default)
     {
         // TODO: Process action locally
-        Debug.Log($"Client {publisherID} has called the action {state}.");
+        Debug.Log($"Locally processing the action {state} issued by client {publisherID}.");
     }
 }
