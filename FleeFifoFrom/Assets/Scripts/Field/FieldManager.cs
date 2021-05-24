@@ -165,7 +165,7 @@ public class FieldManager : MonoBehaviour
     #endregion
 
     #region Interaction (state-depending)
-    
+
     public void ProcessClickedTile(Tile tile)
     {
         switch (StateManager.GameState)
@@ -332,14 +332,14 @@ public class FieldManager : MonoBehaviour
             for (var j = 0; j < fields.Length; j++)
             {
                 var tile = fields[j];
-                        
+
                 // not empty
                 if (tile.Meeple != null)
                 {
                     // injured
                     // if (tile.Meeple.CurrentState == Meeple.State.Injured)
                     //     tile.Interactable = false;
-                            
+
                     // top tile
                     if (i == 0)
                         tile.Interactable = true;
@@ -371,7 +371,17 @@ public class FieldManager : MonoBehaviour
 
         GameState.Instance.TraverseBoard(p => {
             var tile = TileByPosition(p);
-            tile.Interactable = last.CanMoveTo(p);
+            var meeple = GameState.Instance.AtPosition(p);
+            tile.Interactable = (
+                last.CanMoveTo(p) &&
+                (
+                    meeple == null ||
+                    (
+                        meeple.IsHealthy() &&
+                        meeple.GetType() != typeof(DKnight)
+                    )
+                )
+            );
         });
     }
 
