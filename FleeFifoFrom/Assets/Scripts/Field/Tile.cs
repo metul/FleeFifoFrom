@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 
 public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    // TODO: deprecate this with Position.
     public Vector2 ID { get; set; }
     public bool Interactable { get; set; }
     public DPosition Position

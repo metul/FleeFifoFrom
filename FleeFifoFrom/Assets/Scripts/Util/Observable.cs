@@ -18,4 +18,9 @@ public class Observable<T>
   {
     _current = initial;
   }
+
+  public Observable<U> Map(Func<T, U> map)
+  {
+    // TODO: ....
+  }
 }

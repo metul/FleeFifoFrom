@@ -124,6 +124,9 @@ public class GameState
   {
 
     // TODO: perhaps some knights also should be placed on the board?
+    // TODO: maybe this shouldn't be here? this should be synced across the network.
+
+    // place the knights
 
     TraverseBoard(p => DrawVillager().Draw(p));
   }

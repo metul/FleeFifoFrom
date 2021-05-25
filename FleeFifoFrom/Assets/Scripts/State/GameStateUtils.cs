@@ -87,6 +87,9 @@ public static class GameStateUtils
     ));
   }
 
+  // TODO: add TraversePath()?
+  // TODO: add PathExists()?
+
   public static bool IsInjured(this DMeeple meeple)
   {
     return (

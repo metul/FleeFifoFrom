@@ -50,6 +50,7 @@ public class DPosition
   }
 
   // TODO: also perhaps we need a CanJumpTo() for kids?
+  // TODO: also perhaps NeighboringPositions()?
 
   public bool Equals(DPosition other)
   {
