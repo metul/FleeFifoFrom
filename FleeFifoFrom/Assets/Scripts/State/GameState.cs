@@ -168,7 +168,7 @@ public class GameState
   public int PlayerScore(DPlayer.ID player)
   {
     // TODO: later objectives and castle rewards should also be added here.
-    return this.AuthorizedVillagers(player).Length + PlayerById(player).Honor;
+    return this.AuthorizedVillagers(player).Length + PlayerById(player).Honor.Score.Current;
   }
 
   public void TraverseBoard(System.Action<DPosition> action)

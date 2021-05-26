@@ -36,23 +36,11 @@ public class DPlayer
     public ID Id { get; protected set; }
     public string Name { get; protected set; }
 
-    private ushort _honorIndex;
-    public short Honor
-    {
-        get => Rules.HONOR_VALUES[_honorIndex];
-    }
+    public DHonor Honor { get; protected set; }
 
     public DPlayer(ID id, string name) {
         Id = id;
         Name = name;
-        _honorIndex = (ushort) Rules.HONOR_VALUES[Rules.HONOR_VALUES.Length / 2];
-    }
-
-    public void EarnHonor(ushort points = 1) {
-        _honorIndex = (ushort) Math.Min(_honorIndex + points, Rules.HONOR_VALUES.Length - 1);
-    }
-
-    public void EarnDisgrace(ushort points = 1) {
-        _honorIndex = (ushort) Math.Max(_honorIndex - points, 0);
+        Honor = new DHonor();
     }
 }

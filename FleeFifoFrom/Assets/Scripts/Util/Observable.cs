@@ -19,8 +19,11 @@ public class Observable<T>
     _current = initial;
   }
 
-  public Observable<U> Map(Func<T, U> map)
+  public Observable<U> Map<U>(Func<T, U> map)
   {
-    // TODO: ....
+    Observable<U> mapped = new Observable<U>(map(Current));
+    OnChange += value => mapped.Current = map(value);
+
+    return mapped;
   }
 }
