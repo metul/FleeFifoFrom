@@ -196,12 +196,12 @@ public class FieldManager : MonoBehaviour
                 break;
             case StateManager.State.RiotChoosePath:
                 _storeRiotPath.Add(tile);
-                if (tile.ID == Vector2.zero)
-                {
-                    Riot(_storeRiotPath);
-                    StateManager.GameState = StateManager.State.Default;
-                }
-                else
+                // if (tile.ID == Vector2.zero)
+                // {
+                //     Riot(_storeRiotPath);
+                //     StateManager.GameState = StateManager.State.Default;
+                // }
+                // else
                     StateManager.GameState = StateManager.State.RiotChoosePath;
                 break;
             case StateManager.State.Revive:
@@ -240,6 +240,7 @@ public class FieldManager : MonoBehaviour
                 break;
             case StateManager.State.Swap2:
                 EnableInjuryBased(false);
+                // TODO replace with EnableNeighbours
                 _storeTile.Interactable = false;
                 break;
             case StateManager.State.Riot:
@@ -323,46 +324,46 @@ public class FieldManager : MonoBehaviour
     private void EnableAuthorizable()
     {
         // TODO enable interaction for authorize
-        // TODO: switch this to read game state
         List<int> lastEmpty = new List<int>(); 
         List<int> newEmpty = new List<int>();
-        for (var i = 0; i < _field.Length; i++)
+        bool abort = false;
+        
+        GameState.Instance.TraverseBoard(p =>
         {
-            var fields = _field[i];
-            for (var j = 0; j < fields.Length; j++)
+            if(abort) return;
+            var tile = TileByPosition(p);
+            var meeple = GameState.Instance.AtPosition(p);
+            
+            // check at first pos if previous row is full
+            if (p.Row != 1 && p.Col == 1)
             {
-                var tile = fields[j];
+                // prev row is fully occupied, abort
+                if (newEmpty.Count == 0)
+                    abort = true;
 
-                // not empty
-                if (tile.Meeple != null)
-                {
-                    // injured
-                    // if (tile.Meeple.CurrentState == Meeple.State.Injured)
-                    //     tile.Interactable = false;
-
-                    // top tile
-                    if (i == 0)
-                        tile.Interactable = true;
-                            
-                    // previous tile is empty
-                    else if (lastEmpty.Contains(j) || lastEmpty.Contains(j - 1))
-                        tile.Interactable = true;
-                }
-                // empty
-                else
-                {
-                    tile.Interactable = false;
-                    newEmpty.Add(j);
-                }
+                lastEmpty = new List<int>(newEmpty);
+                newEmpty.Clear();
             }
 
-            // row is fully occupied, abort
-            if(newEmpty.Count == 0)
-                return;
-
-            lastEmpty = new List<int>(newEmpty);
-            newEmpty.Clear();
-        }
+            // not empty
+            if (meeple != null)
+            {
+                // top tile
+                if (meeple.Position.Current.Row == 1) 
+                {
+                    tile.Interactable = true;
+                }
+                else if(lastEmpty.Contains(p.Col) || lastEmpty.Contains(p.Col - 1))
+                {
+                    tile.Interactable = true;
+                }
+            }
+            else
+            {
+                tile.Interactable = false;
+                newEmpty.Add(p.Col);
+            }
+        });
     }
 
     private void EnableRiotPath(List<Tile> path)
