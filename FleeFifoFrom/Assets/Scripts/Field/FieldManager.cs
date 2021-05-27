@@ -123,7 +123,7 @@ public class FieldManager : MonoBehaviour
     
     public void Authorize(Tile tile)
     {
-        CommandProcessor.Instance.ExecuteCommand(new AuthorizeCommand(0, tile));
+        CommandProcessor.Instance.ExecuteCommand(new AuthorizeCommand(0, tile.Meeple.Core));
     }
 
     public void Swap(Tile tile1, Tile tile2)
@@ -323,16 +323,18 @@ public class FieldManager : MonoBehaviour
 
     private void EnableAuthorizable()
     {
-        // TODO enable interaction for authorize
         List<int> lastEmpty = new List<int>(); 
         List<int> newEmpty = new List<int>();
         bool abort = false;
         
         GameState.Instance.TraverseBoard(p =>
         {
-            if(abort) return;
+            // TODO replace with pathfinding / inFrontOf helper function
             var tile = TileByPosition(p);
             var meeple = GameState.Instance.AtPosition(p);
+            
+            if(abort) 
+                tile.Interactable = false;
             
             // check at first pos if previous row is full
             if (p.Row != 1 && p.Col == 1)

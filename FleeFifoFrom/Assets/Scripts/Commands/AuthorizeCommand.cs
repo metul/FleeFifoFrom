@@ -1,25 +1,28 @@
 public class AuthorizeCommand : ActionCommand
 {
-    private Tile _tile;
-    private Meeple _meeple;
+    private DMeeple _meeple;
+    private DPosition _position;
 
-    public AuthorizeCommand(ulong issuerID, Tile tile) : base(issuerID)
+
+    public AuthorizeCommand(ulong issuerID, DMeeple meeple) : base(issuerID)
     {
-        _tile = tile;
+        _meeple = meeple;
+        _position = meeple.Position.Current;
     }
 
     public override void Execute()
     {   
-        base.Execute(); 
-        var meeple = _tile.RemoveMeeple();
+        base.Execute();
 
-        // TODO Authorize: store away piece instead of destroy
+        // TODO Authorize: store away piece
+        _meeple.Position.Current = null;
+
         // S.R. Should we use a GameCommand class that contains helper commands
         // TODO: Notes for StoreAway commmand. Will need to redirect piece to correct owner
         //TempStack.add(meeple);
-        Destroy(meeple.gameObject);
+        // Destroy(meeple.gameObject);
 
-        if(meeple is Child)
+        // if(meeple is Child)
         {
             //TODO: Simplied. If no adult exists in the temp stack
             //if(TempStack.contains(Knight) || TempStack.contains(Commoner) || TempStack.contains(Elder))
@@ -27,14 +30,14 @@ public class AuthorizeCommand : ActionCommand
             //else CurrentPlayer.SelectedWorker.Player.Disgrace();
         }
 
-        if (meeple is Elder)
+        // if (meeple is Elder)
         {   
             //if CurrentPlayer.PlayedWorkers == 2
             //CurrentPlayer.SelectedWorker.Player.Honor();
             //else CurrentPlayer.SelectedWorker.Player.Disgrace();
         }
 
-        if (meeple is Knight)
+        // if (meeple is Knight)
         {   
             //Add the Knight to the player to whom the knight belongs
             //meeple.owner.add(meeple);
@@ -55,7 +58,8 @@ public class AuthorizeCommand : ActionCommand
     public override void Reverse()
     {
         base.Reverse();
-        // TODO
+        // TODO revert points given to player etc.
+        _meeple.Position.Current = _position;
     }
 
     public override bool IsFeasibile()
@@ -86,7 +90,4 @@ public class AuthorizeCommand : ActionCommand
         //TODO: end loop
         */
     }
-
-
-
 }

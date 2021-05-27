@@ -5,6 +5,7 @@ using UnityEngine;
 
 public abstract class Meeple: MonoBehaviour
 {
+    private FieldManager _fieldManager;
     public DMeeple Core { get; protected set; }
 
     protected Action OnDefault;
@@ -12,6 +13,9 @@ public abstract class Meeple: MonoBehaviour
 
     private void Awake()
     {
+        // get references
+        _fieldManager = FindObjectOfType<FieldManager>();
+        
         // Debug
         var rend = GetComponent<Renderer>();
         OnDefault += () => { rend.material.color = Color.white; };
@@ -26,6 +30,21 @@ public abstract class Meeple: MonoBehaviour
                 OnTapped.Invoke();
             else if (Core.IsHealthy())
                 OnDefault.Invoke();
+        };
+        
+        // change tile on position change
+        core.Position.OnChange += p =>
+        {
+            // TODO: remove this (it currently replaces authorize)
+            if (p == null)
+            {
+                // TODO: remove meeple from GameState
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                _fieldManager.TileByPosition(p).SetMeeple(this);
+            }
         };
     }
 }
