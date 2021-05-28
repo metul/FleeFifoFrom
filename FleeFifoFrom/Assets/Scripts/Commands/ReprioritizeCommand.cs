@@ -1,7 +1,7 @@
 public class ReprioritizeCommand : ResetCommand
 {
     private Tile _tile;
-    private Meeple.State _originalState;
+    // private Meeple.State _originalState;
 
     public ReprioritizeCommand(ulong issuerID, Tile tile) : base(issuerID)
     {
@@ -33,4 +33,9 @@ public class ReprioritizeCommand : ResetCommand
 
         //_tile.Meeple.CurrentState = _originalState;
     }
+
+  public override bool IsFeasibile()
+  {
+    return true;
+  }
 }

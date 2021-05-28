@@ -28,4 +28,9 @@ public class DrawVillagerCommand : ResetCommand
         _tile.RemoveMeeple();
         Destroy(_villager.gameObject);
     }
+
+    public override bool IsFeasibile()
+    {
+        return true;
+    }
 }

@@ -5,57 +5,46 @@ using UnityEngine;
 
 public abstract class Meeple: MonoBehaviour
 {
-    public enum State
-    {
-        Default, Tapped, Injured
-    }
-    
-    private State _currentState;
-    public State CurrentState
-    {
-        get => _currentState;
-        set
-        {
-            ChangeState(value);
-            _currentState = value;
-        } 
-    }
-    
-    private State _stateAfterMovement = State.Tapped;
+    private FieldManager _fieldManager;
+    public DMeeple Core { get; protected set; }
 
-    private Action OnDefault;
-    private Action OnTapped;
-    private Action OnInjured;
+    protected Action OnDefault;
+    protected Action OnTapped;
 
     private void Awake()
     {
+        // get references
+        _fieldManager = FindObjectOfType<FieldManager>();
+        
         // Debug
         var rend = GetComponent<Renderer>();
         OnDefault += () => { rend.material.color = Color.white; };
         OnTapped += () => { rend.material.color = Color.yellow; };
-        OnInjured += () => { rend.material.color = Color.red; };
-        
-        CurrentState = State.Default;
     }
 
-    public void OnMove()
+    public virtual void Initialize(DMeeple core)
     {
-        CurrentState = _stateAfterMovement;
-    }
-    
-    private void ChangeState(State state)
-    {
-        switch (state)
+        Core = core;
+        Core.QueueState.OnChange += q => {
+            if (q == DMeeple.MeepleQueueState.Tapped)
+                OnTapped.Invoke();
+            else if (Core.IsHealthy())
+                OnDefault.Invoke();
+        };
+        
+        // change tile on position change
+        core.Position.OnChange += p =>
         {
-            case State.Default:
-                OnDefault?.Invoke();
-                break;
-            case State.Tapped:
-                OnTapped?.Invoke();
-                break;
-            case State.Injured:
-                OnInjured?.Invoke();
-                break;
-        }
+            // TODO: remove this (it currently replaces authorize)
+            if (p == null)
+            {
+                // TODO: remove meeple from GameState
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                _fieldManager.TileByPosition(p).SetMeeple(this);
+            }
+        };
     }
 }

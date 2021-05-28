@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ResetCommand : Command
+public abstract class ResetCommand : Command
 {
     public ResetCommand(ulong issuerID) : base(issuerID) { }
 
@@ -23,10 +23,5 @@ public class ResetCommand : Command
     {
         // TODO: Undo reset specific stuff?
         // TODO: Increment reset pawn. I think the remaining will be command specific
-    }
-
-    public override void CheckFeasibility()
-    {
-        //TODO: Nothing, passthrough
     }
 }

@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class Player 
 {
-    public Player(PlayerID id)
+    public Player(DPlayer.ID id)
     {
         ID = id;
     }
-    public enum PlayerID
-    {
-        Red, Blue, Yellow, Green
-    }
-    public PlayerID ID { get; private set; }
+
+    public DPlayer.ID ID { get; private set; }
     
     // TODO replace with nicer colors
     public static Color RedColor = Color.red;
@@ -23,17 +20,17 @@ public class Player
     // TODO Add function, unless implemented in instance of PLayer
     public void add() { }
 
-    public static Color GetPlayerColor(PlayerID playerID)
+    public static Color GetPlayerColor(DPlayer.ID playerID)
     {
         switch (playerID)
         {
-            case PlayerID.Red:
+            case DPlayer.ID.Red:
                 return RedColor;
-            case PlayerID.Blue:
+            case DPlayer.ID.Blue:
                 return BlueColor;
-            case PlayerID.Yellow:
+            case DPlayer.ID.Yellow:
                 return YellowColor;
-            case PlayerID.Green:
+            case DPlayer.ID.Green:
                 return GreenColor;
             default:
                 return Color.white;

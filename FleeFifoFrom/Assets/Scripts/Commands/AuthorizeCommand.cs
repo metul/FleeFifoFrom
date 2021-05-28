@@ -1,17 +1,21 @@
 public class AuthorizeCommand : ActionCommand
 {
-    private Tile _tile;
-    private Meeple _meeple;
+    private DMeeple _meeple;
+    private DPosition _position;
 
-    public AuthorizeCommand(ulong issuerID, Tile tile) : base(issuerID)
+
+    public AuthorizeCommand(ulong issuerID, DMeeple meeple) : base(issuerID)
     {
-        _tile = tile;
+        _meeple = meeple;
+        _position = meeple.Position.Current;
     }
 
     public override void Execute()
     {   
-        base.Execute(); 
-        var meeple = _tile.RemoveMeeple();
+        base.Execute();
+
+        // TODO Authorize: store away piece
+        _meeple.Position.Current = null;
 
         // Call function CheckPriority()
         // if return == 1 then proceed
@@ -32,14 +36,14 @@ public class AuthorizeCommand : ActionCommand
             //else CurrentPlayer.SelectedWorker.Player.Disgrace();
         }
 
-        if (meeple is Elder)
+        // if (meeple is Elder)
         {   
             //if CurrentPlayer.PlayedWorkers == 2
             //CurrentPlayer.SelectedWorker.Player.Honor();
             //else CurrentPlayer.SelectedWorker.Player.Disgrace();
         }
 
-        if (meeple is Knight)
+        // if (meeple is Knight)
         {   
             //Add the Knight to the player to whom the knight belongs
             //meeple.owner.add(meeple);
@@ -61,11 +65,13 @@ public class AuthorizeCommand : ActionCommand
     public override void Reverse()
     {
         base.Reverse();
-        // TODO
+        // TODO revert points given to player etc.
+        _meeple.Position.Current = _position;
     }
 
-    public override void CheckFeasibility()
+    public override bool IsFeasibile()
     {
+        return true;
         //TODO Step 1: Start loop from tile 1
         /* Psuedo
         if(piece.exists)
@@ -91,7 +97,4 @@ public class AuthorizeCommand : ActionCommand
         //TODO: end loop
         */
     }
-
-
-
 }

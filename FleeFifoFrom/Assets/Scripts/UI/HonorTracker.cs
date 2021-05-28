@@ -13,10 +13,10 @@ public class HonorTracker : MonoBehaviour
         // create some player and values for debug
         var players = new[]
         {
-            new Player(Player.PlayerID.Red),
-            new Player(Player.PlayerID.Blue),
-            new Player(Player.PlayerID.Yellow),
-            new Player(Player.PlayerID.Green)
+            new Player(DPlayer.ID.Red),
+            new Player(DPlayer.ID.Blue),
+            new Player(DPlayer.ID.Yellow),
+            new Player(DPlayer.ID.Green)
         };
     }
 }

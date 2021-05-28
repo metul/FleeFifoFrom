@@ -4,7 +4,7 @@ using System.Linq;
 public class RiotCommand : ActionCommand
 {
     private List<Tile> _path;
-    private List<Meeple.State> _originalStates;
+    // private List<Meeple.State> _originalStates;
 
     public RiotCommand(ulong issuerID, List<Tile> path) : base(issuerID)
     {
@@ -14,7 +14,7 @@ public class RiotCommand : ActionCommand
     public override void Execute()
     {
         base.Execute();
-        _originalStates = new List<Meeple.State>();
+        // _originalStates = new List<Meeple.State>();
 
         //meeple = selected knight
         //follower = low prio
@@ -24,11 +24,11 @@ public class RiotCommand : ActionCommand
         //LowPrio.add(Meeple)
 
         // Debug
-        foreach (var tile in _path)
-        {
-            _originalStates.Add(tile.Meeple.CurrentState);
-            tile.Meeple.CurrentState = Meeple.State.Injured;
-        }
+        // foreach (var tile in _path)
+        // {
+        //     _originalStates.Add(tile.Meeple.CurrentState);
+        //     tile.Meeple.CurrentState = Meeple.State.Injured;
+        // }
 
         //TempStack.add(meeple);
         //for each follower TempStack.add(follower);
@@ -53,11 +53,11 @@ public class RiotCommand : ActionCommand
     {
         base.Reverse();
         // Set each tile back to original state
-        foreach (var (tile, index) in _path.Select((element, index) => (element, index)))
-            tile.Meeple.CurrentState = _originalStates[index];
+        // foreach (var (tile, index) in _path.Select((element, index) => (element, index)))
+        //     tile.Meeple.CurrentState = _originalStates[index];
     }
 
-    public override void CheckFeasibility()
+    public override bool IsFeasibile()
     {
         //TODO Step 1: Start loop from tile 1
         /* pseudo
@@ -84,6 +84,7 @@ public class RiotCommand : ActionCommand
 
         //TODO: end loop
         */
+        return true;
     }
 
 
