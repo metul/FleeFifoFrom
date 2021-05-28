@@ -162,8 +162,8 @@ MonoBehaviour:
   ServerWebsocketListenPort: 8887
   SupportWebsocket: 0
   Channels: []
-  UseMLAPIRelay: 0
-  MLAPIRelayAddress: 184.72.104.138
+  UseMLAPIRelay: 1
+  MLAPIRelayAddress: 3.140.255.24
   MLAPIRelayPort: 8888
   MessageSendMode: 0
 --- !u!114 &15384311
@@ -206,7 +206,7 @@ MonoBehaviour:
     TimeResyncInterval: 30
     EnableNetworkVariable: 1
     EnsureNetworkVariableLengthSafety: 0
-    EnableSceneManagement: 1
+    EnableSceneManagement: 0
     ForceSamePrefabs: 1
     UsePrefabSync: 0
     RecycleNetworkIds: 1
