@@ -123,7 +123,10 @@ public class FieldManager : MonoBehaviour
     
     public void Authorize(Tile tile)
     {
-        CommandProcessor.Instance.ExecuteCommand(new AuthorizeCommand(0, tile.Meeple.Core));
+        var dummyWorker = new DWorker(GameState.Instance.TurnPlayer().Id);
+        CommandProcessor.Instance.ExecuteCommand(
+                new AuthorizeCommand(0, tile.Meeple.Core, GameState.Instance.TurnPlayer(), dummyWorker)
+            );
     }
 
     public void Swap(Tile tile1, Tile tile2)

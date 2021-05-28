@@ -26,9 +26,9 @@ public class DVillager : DMeeple
     Rescuer = rescuer;
   }
 
-  public void Deauthorize()
+  public void Deauthorize(DPosition previousPosition)
   {
-    _deauthorize();
+    _deauthorize(previousPosition);
     Rescuer = null;
   }
 

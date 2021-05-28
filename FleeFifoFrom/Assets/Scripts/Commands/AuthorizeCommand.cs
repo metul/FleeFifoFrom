@@ -2,20 +2,33 @@ public class AuthorizeCommand : ActionCommand
 {
     private DMeeple _meeple;
     private DPosition _position;
+    private DPlayer _player;
+    private DWorker _worker;
 
-
-    public AuthorizeCommand(ulong issuerID, DMeeple meeple) : base(issuerID)
+    public AuthorizeCommand(ulong issuerID, DMeeple meeple, DPlayer player, DWorker worker) : base(issuerID)
     {
         _meeple = meeple;
         _position = meeple.Position.Current;
+        _player = player;
+        _worker = worker;
     }
 
     public override void Execute()
     {   
         base.Execute();
 
-        // TODO Authorize: store away piece
-        _meeple.Position.Current = null;
+        if (_meeple.GetType() == typeof(DVillager))
+        {
+            ((DVillager) _meeple).Authorize(_player.Id);
+        }
+        else if (_meeple.GetType() == typeof(DKnight))
+        {
+            var honor = ((DKnight) _meeple).Authorize(_player.Id);
+            GameState.Instance.PlayerById(_worker.Owner)?.Honor.Earn(honor);
+        }
+        
+        _player.SaveMeeple(_meeple);
+
 
         // Call function CheckPriority()
         // if return == 1 then proceed
@@ -23,7 +36,7 @@ public class AuthorizeCommand : ActionCommand
         // TODO Authorize: store away piece instead of destroy
         // S.R. Should we use a GameCommand class that contains helper commands
         // TODO: Notes for StoreAway commmand. Will need to redirect piece to correct owner       
-        Destroy(meeple.gameObject);
+        // Destroy(meeple.gameObject);
 
 
         // S.R. Old logic, unnecessary as of new FIFO model
@@ -65,8 +78,16 @@ public class AuthorizeCommand : ActionCommand
     public override void Reverse()
     {
         base.Reverse();
-        // TODO revert points given to player etc.
-        _meeple.Position.Current = _position;
+
+        if (_meeple.GetType() == typeof(DVillager))
+        {
+            ((DVillager) _meeple).Deauthorize(_position);
+        }
+        else if (_meeple.GetType() == typeof(DKnight))
+        {
+            var honor = ((DKnight) _meeple).Deauthorize(_position, _player.Id);
+            GameState.Instance.PlayerById(_worker.Owner)?.Honor.Lose(honor);
+        }
     }
 
     public override bool IsFeasibile()

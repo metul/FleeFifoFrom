@@ -36,9 +36,10 @@ public class DMeeple : DObject
     Position.Current = null;
   }
 
-  protected void _deauthorize()
+  protected void _deauthorize(DPosition previousPosition)
   {
     State = MeepleState.InQueue;
+    Position.Current = previousPosition;
   }
 
   public void Tap()

@@ -19,13 +19,25 @@ public class DKnight : DMeeple
     }
   }
 
-  public void Authorize()
+  /// <summary>
+  /// <returns>
+  ///   honor gained (if rescuing opponents knight)
+  /// </returns>
+  /// </summary>
+  public ushort Authorize(DPlayer.ID player)
   {
     _authorize();
+    return (ushort) (player == Owner ? 0 : 1);
   }
 
-  public void Deauthorize()
+  /// <summary>
+  /// <returns>
+  ///   honor returned (if rescuing opponents knight)
+  /// </returns>
+  /// </summary>
+  public ushort Deauthorize(DPosition previousPosition, DPlayer.ID player)
   {
-    _deauthorize();
+    _deauthorize(previousPosition);
+    return (ushort) (player == Owner ? 0 : 1);
   }
 }

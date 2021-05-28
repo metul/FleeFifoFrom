@@ -8,7 +8,20 @@ public class DPlayer
     {
         Red, Blue, Yellow, Green,
     }
+    
+    public DPlayer(ID id, string name) {
+        Id = id;
+        Name = name;
+        Honor = new DHonor();
+    }
+    public ID Id { get; protected set; }
+    public string Name { get; protected set; }
 
+    public DHonor Honor { get; protected set; }
+    
+    // TODO make this an observable
+    public List<DMeeple> StoredMeeple { get; protected set; }
+    
     public static DPlayer[] CreateAnonymousPlayers(ID[] ids)
     {
         List<DPlayer> result = new List<DPlayer>();
@@ -33,14 +46,13 @@ public class DPlayer
         return CreateAnonymousPlayers(ids);
     }
 
-    public ID Id { get; protected set; }
-    public string Name { get; protected set; }
+    public void SaveMeeple(DMeeple meeple)
+    {
+        StoredMeeple.Add(meeple);
+    }
 
-    public DHonor Honor { get; protected set; }
-
-    public DPlayer(ID id, string name) {
-        Id = id;
-        Name = name;
-        Honor = new DHonor();
+    public void UnsaveMeeple(DMeeple meeple)
+    {
+        StoredMeeple.Remove(meeple);
     }
 }
