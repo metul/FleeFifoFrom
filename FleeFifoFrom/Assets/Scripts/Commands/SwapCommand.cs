@@ -12,6 +12,13 @@ public class SwapCommand : ActionCommand
     {
         base.Execute();
         SwapTileMeeples(_tile1, _tile2);
+
+        //OR
+        //SwapPriority(TypeA, TypeB)
+        //which calls 
+        //TempPriority = Type.getPriority();
+        //ChangePriority(TypeA,TypeB);
+        //ChangePriority(TypeB,TempPriority);
     }
 
     public override void Reverse()

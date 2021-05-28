@@ -17,7 +17,11 @@ public class RiotCommand : ActionCommand
         _originalStates = new List<Meeple.State>();
 
         //meeple = selected knight
-        //follower = commoners
+        //follower = low prio
+        //LowPrio = List<Meeple>
+        //for(set of all meeples)
+        //if Meeple.Prio == Low
+        //LowPrio.add(Meeple)
 
         // Debug
         foreach (var tile in _path)

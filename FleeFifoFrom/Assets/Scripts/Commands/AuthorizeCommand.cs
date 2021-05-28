@@ -13,13 +13,18 @@ public class AuthorizeCommand : ActionCommand
         base.Execute(); 
         var meeple = _tile.RemoveMeeple();
 
+        // Call function CheckPriority()
+        // if return == 1 then proceed
+        // else Player.GetDisgrace, then proceed
         // TODO Authorize: store away piece instead of destroy
         // S.R. Should we use a GameCommand class that contains helper commands
-        // TODO: Notes for StoreAway commmand. Will need to redirect piece to correct owner
-        //TempStack.add(meeple);
+        // TODO: Notes for StoreAway commmand. Will need to redirect piece to correct owner       
         Destroy(meeple.gameObject);
 
-        if(meeple is Child)
+
+        // S.R. Old logic, unnecessary as of new FIFO model
+        //TempStack.add(meeple);
+        /*if(meeple is Child)
         {
             //TODO: Simplied. If no adult exists in the temp stack
             //if(TempStack.contains(Knight) || TempStack.contains(Commoner) || TempStack.contains(Elder))
@@ -44,12 +49,13 @@ public class AuthorizeCommand : ActionCommand
             /*if (meeple.owner!=CurrentPlayer)
             {
                 CurrentPlayer.SelectedWorker.Player.Disgrace();
-            }*/
+            }
         }
 
         //TODO: Add all the remaining meeples in the stack to the current player pool
         //Since foreign knights already removed, only current player pieces are left
         //CurrentPlayer.Meeples.add(TempStack);
+        */
     }
 
     public override void Reverse()
