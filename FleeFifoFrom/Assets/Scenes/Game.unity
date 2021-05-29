@@ -6031,14 +6031,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: NetworkManager
       objectReference: {fileID: 0}
-    - target: {fileID: 124145741205411995, guid: 090f9fc144eaa5c49b506070a307a1cc, type: 3}
-      propertyPath: ConnectPort
-      value: 55529
-      objectReference: {fileID: 0}
-    - target: {fileID: 124145741205411995, guid: 090f9fc144eaa5c49b506070a307a1cc, type: 3}
-      propertyPath: ConnectAddress
-      value: 88.230.12.74
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 090f9fc144eaa5c49b506070a307a1cc, type: 3}
 --- !u!1001 &6367087403814318265
