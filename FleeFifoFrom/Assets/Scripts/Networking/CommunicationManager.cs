@@ -11,20 +11,30 @@ using UnityEngine;
 /// </summary>
 public class CommunicationManager : NetworkBehaviour
 {
+    private static CommunicationManager _instance;
+    private static object _lock = new object();
+
     /// <summary>
     /// Singleton instance of the CommunicationManager.
     /// </summary>
-    public static CommunicationManager Instance { get; private set; }
-
-    private void Awake()
+    public static CommunicationManager Instance
     {
-        if (Instance != null && Instance != this)
+        get
         {
-            Destroy(gameObject);
-        }
-        else
-        {
-            Instance = this;
+            lock (_lock)
+            {
+                if (!_instance)
+                {
+                    _instance = (CommunicationManager)FindObjectOfType(typeof(CommunicationManager));
+                    if (!_instance)
+                    {
+                        var singleton = new GameObject { name = "CommunicationManager" };
+                        _instance = singleton.AddComponent<CommunicationManager>();
+                        DontDestroyOnLoad(singleton);
+                    }
+                }
+                return _instance;
+            }
         }
     }
 
