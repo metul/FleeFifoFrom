@@ -2096,7 +2096,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 124034061}
         m_TargetAssemblyTypeName: ConnectionManager, Assembly-CSharp
-        m_MethodName: UpdateIP
+        m_MethodName: UpdateConnectionAddress
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5348,7 +5348,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: IP Address
+  m_Text: IP_Address:Port
 --- !u!222 &1903410379
 CanvasRenderer:
   m_ObjectHideFlags: 0

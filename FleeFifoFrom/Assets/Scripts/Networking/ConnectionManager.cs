@@ -50,9 +50,22 @@ public class ConnectionManager : MonoBehaviour
         _connectionPanel.SetActive(false);
     }
 
-    public void UpdateIP(string value)
+    public void UpdateConnectionAddress(string value)
     {
-        if (!string.IsNullOrEmpty(value) && IsValidIPv4(value))
-            _transport.ConnectAddress = value;
+        if (string.IsNullOrEmpty(value))
+            return;
+        string[] splitAddress = value.Split(new char[] { ':' }, 2, System.StringSplitOptions.RemoveEmptyEntries);
+        if (splitAddress.Length > 1)
+        {
+            string ip = splitAddress[0];
+            if (IsValidIPv4(ip))
+                _transport.ConnectAddress = ip;
+            else
+                throw new System.Exception($"Given IP address ({ip}) is invalid!");
+            if (int.TryParse(splitAddress[1], out int port))
+                _transport.ConnectPort = port;
+            else
+                throw new System.Exception($"Given port ({splitAddress[1]}) is invalid!");
+        }
     }
 }
