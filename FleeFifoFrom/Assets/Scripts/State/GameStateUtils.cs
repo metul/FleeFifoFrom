@@ -81,10 +81,17 @@ public static class GameStateUtils
   /// </summary>
   public static DMeeple? AtPosition(this GameState state, DPosition position)
   {
-    return state.Meeple.First(m => (
-      m.State == DMeeple.MeepleState.InQueue
-      && m.Position.Current != null && m.Position.Current.Equals(position)
-    ));
+    try
+    {
+      return state.Meeple.First(m => (
+        m.State == DMeeple.MeepleState.InQueue
+        && m.Position.Current != null && m.Position.Current.Equals(position)
+      ));
+    }
+    catch (InvalidOperationException e)
+    {
+      return null;
+    }
   }
 
   // TODO: add TraversePath()?

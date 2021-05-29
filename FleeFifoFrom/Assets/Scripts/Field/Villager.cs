@@ -15,9 +15,9 @@ public class Villager : Meeple
         OnInjured += () => { rend.material.color = Color.red; };
     }
 
-    public override void Initialize(DMeeple core)
+    public override void Initialize(DMeeple core, FieldManager fieldManager)
     {
-        base.Initialize(core);
+        base.Initialize(core, fieldManager);
 
         if (core.GetType() == typeof(DVillager))
         {

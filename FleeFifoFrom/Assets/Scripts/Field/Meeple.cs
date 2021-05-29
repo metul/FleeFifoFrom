@@ -10,21 +10,17 @@ public abstract class Meeple: MonoBehaviour
 
     protected Action OnDefault;
     protected Action OnTapped;
-
-    private void Awake()
+    
+    // TODO decouple field manager from meeple -> set tile from meeple?
+    public virtual void Initialize(DMeeple core, FieldManager fieldManager)
     {
-        // get references
-        _fieldManager = FindObjectOfType<FieldManager>();
-        
-        // Debug
+        Core = core;
+        _fieldManager = fieldManager;
+
         var rend = GetComponent<Renderer>();
         OnDefault += () => { rend.material.color = Color.white; };
         OnTapped += () => { rend.material.color = Color.yellow; };
-    }
-
-    public virtual void Initialize(DMeeple core)
-    {
-        Core = core;
+        
         Core.QueueState.OnChange += q => {
             if (q == DMeeple.MeepleQueueState.Tapped)
                 OnTapped.Invoke();
@@ -32,19 +28,10 @@ public abstract class Meeple: MonoBehaviour
                 OnDefault.Invoke();
         };
         
-        // change tile on position change
         core.Position.OnChange += p =>
         {
-            // TODO: remove this (it currently replaces authorize)
-            if (p == null)
-            {
-                // TODO: remove meeple from GameState
-                Destroy(this.gameObject);
-            }
-            else
-            {
-                _fieldManager.TileByPosition(p).SetMeeple(this);
-            }
+            Debug.Log($"This is {this}");
+            _fieldManager.TileByPosition(p).SetMeeple(this);
         };
     }
 }

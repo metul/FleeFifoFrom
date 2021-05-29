@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class DPlayer
 {
@@ -13,6 +14,13 @@ public class DPlayer
         Id = id;
         Name = name;
         Honor = new DHonor();
+        StoredMeeple = new List<DMeeple>();
+        
+        //TODO remove debug
+        Honor.Score.OnChange += s =>
+        {
+            Debug.Log($"Player {id}, {name} has now {s} honor");
+        };
     }
     public ID Id { get; protected set; }
     public string Name { get; protected set; }

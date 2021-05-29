@@ -9,12 +9,14 @@ public class FieldManager : MonoBehaviour
 {
     [SerializeField] private Meeple[] _villagerPrefabs;
     [SerializeField] private Knight _knightPrefab;
-    
+
     [SerializeField] private Transform[] _rows;
     [SerializeField] private Transform[] _squads;
-    
+    [SerializeField] private Transform _tempStorage;
+
     private Tile[][] _field;
     private Tile[][] _battleField;
+    private Tile _tempStorageTile;
 
     #region Placeholder
 
@@ -25,11 +27,12 @@ public class FieldManager : MonoBehaviour
     #endregion
 
     #region Setup
-    
+
     private void Awake()
     {
         _field = GetField(_rows);
         _battleField = GetField(_squads);
+        _tempStorageTile = _tempStorage.GetComponent<Tile>();
     }
 
     private void Start()
@@ -54,12 +57,13 @@ public class FieldManager : MonoBehaviour
                 tiles[j].ID = new Vector2(i, j);
             }
         }
+
         return field;
     }
 
-    public Tile? TileByPosition(DPosition position)
+    public Tile TileByPosition(DPosition position)
     {
-        return _field[position.Row - 1][position.Col - 1];
+        return (position == null) ? _tempStorageTile : _field[position.Row - 1][position.Col - 1];
     }
 
     private void PopulateFieldRandomly()
@@ -91,13 +95,8 @@ public class FieldManager : MonoBehaviour
                 if (prefab != null)
                 {
                     Meeple newguy = Instantiate(prefab);
-                    newguy.Initialize(meep);
+                    newguy.Initialize(meep, this);
                     tile.SetMeeple(newguy);
-                    meep.Position.OnChange += p => {
-                        var tile = TileByPosition(p);
-                        tile.RemoveMeeple();
-                        tile.SetMeeple(newguy);
-                    };
                 }
             }
         }
@@ -114,26 +113,26 @@ public class FieldManager : MonoBehaviour
             }
         }
     }
-    
+
     #endregion
 
     #region Field Actions
 
     // TODO: All issuer IDs are 0 by default, use actual client ID after network integration
-    
+
     public void Authorize(Tile tile)
     {
         var dummyWorker = new DWorker(GameState.Instance.TurnPlayer().Id);
         CommandProcessor.Instance.ExecuteCommand(
-                new AuthorizeCommand(0, tile.Meeple.Core, GameState.Instance.TurnPlayer(), dummyWorker)
-            );
+            new AuthorizeCommand(0, tile.Meeples[0].Core, GameState.Instance.TurnPlayer(), dummyWorker)
+        );
     }
 
     public void Swap(Tile tile1, Tile tile2)
     {
         CommandProcessor.Instance.ExecuteCommand(
             new SwapCommand(
-                0,    // --> TODO: should this be zero?
+                0, // --> TODO: should this be zero?
                 GameState.Instance.AtPosition(tile1.Position),
                 GameState.Instance.AtPosition(tile2.Position)
             )
@@ -164,7 +163,7 @@ public class FieldManager : MonoBehaviour
     {
         CommandProcessor.Instance.ExecuteCommand(new DrawVillagerCommand(0, villager, tile));
     }
-    
+
     #endregion
 
     #region Interaction (state-depending)
@@ -205,7 +204,7 @@ public class FieldManager : MonoBehaviour
                 //     StateManager.GameState = StateManager.State.Default;
                 // }
                 // else
-                    StateManager.GameState = StateManager.State.RiotChoosePath;
+                StateManager.GameState = StateManager.State.RiotChoosePath;
                 break;
             case StateManager.State.Revive:
                 Revive(tile);
@@ -294,14 +293,15 @@ public class FieldManager : MonoBehaviour
         {
             foreach (var tile in tiles)
             {
-                tile.Interactable = (tile.Meeple == null);
+                tile.Interactable = (tile.Meeples.Count == 0);
             }
         }
     }
 
     private void EnableInjuryBased(bool enableInjured)
     {
-        GameState.Instance.TraverseBoard(p => {
+        GameState.Instance.TraverseBoard(p =>
+        {
             var tile = TileByPosition(p);
             if (enableInjured)
             {
@@ -316,7 +316,8 @@ public class FieldManager : MonoBehaviour
 
     private void EnableKnights()
     {
-        GameState.Instance.TraverseBoard(p => {
+        GameState.Instance.TraverseBoard(p =>
+        {
             var tile = TileByPosition(p);
             var meeple = GameState.Instance.AtPosition(p);
 
@@ -326,47 +327,43 @@ public class FieldManager : MonoBehaviour
 
     private void EnableAuthorizable()
     {
-        List<int> lastEmpty = new List<int>(); 
-        List<int> newEmpty = new List<int>();
-        bool abort = false;
-        
+        bool nonInjuredInPreviousRow = false;
+        bool nonInjuredInCurrentRow = false;
+
         GameState.Instance.TraverseBoard(p =>
         {
             // TODO replace with pathfinding / inFrontOf helper function
             var tile = TileByPosition(p);
-            var meeple = GameState.Instance.AtPosition(p);
-            
-            if(abort) 
+
+            if (nonInjuredInPreviousRow)
                 tile.Interactable = false;
-            
-            // check at first pos if previous row is full
-            if (p.Row != 1 && p.Col == 1)
-            {
-                // prev row is fully occupied, abort
-                if (newEmpty.Count == 0)
-                    abort = true;
-
-                lastEmpty = new List<int>(newEmpty);
-                newEmpty.Clear();
-            }
-
-            // not empty
-            if (meeple != null)
-            {
-                // top tile
-                if (meeple.Position.Current.Row == 1) 
-                {
-                    tile.Interactable = true;
-                }
-                else if(lastEmpty.Contains(p.Col) || lastEmpty.Contains(p.Col - 1))
-                {
-                    tile.Interactable = true;
-                }
-            }
             else
             {
-                tile.Interactable = false;
-                newEmpty.Add(p.Col);
+                // check at first pos if there is something in the previous row
+                if (p.Col == 1 && p.Row != 1)
+                {
+                    nonInjuredInPreviousRow = nonInjuredInCurrentRow;
+                    nonInjuredInCurrentRow = false;
+                    
+                    if (nonInjuredInPreviousRow)
+                    {
+                        tile.Interactable = false;
+                        return;
+                    }
+                }
+                
+                // check meeple
+                DMeeple meeple = GameState.Instance.AtPosition(p);
+                if (meeple != null)
+                {
+                    var healthy = GameState.Instance.HealthyMeepleAtPosition(p);
+                    tile.Interactable = healthy;
+                    nonInjuredInCurrentRow |= healthy;
+                }
+                else
+                {
+                    tile.Interactable = false;
+                }
             }
         });
     }
@@ -375,7 +372,8 @@ public class FieldManager : MonoBehaviour
     {
         var last = path[path.Count - 1].Position;
 
-        GameState.Instance.TraverseBoard(p => {
+        GameState.Instance.TraverseBoard(p =>
+        {
             var tile = TileByPosition(p);
             var meeple = GameState.Instance.AtPosition(p);
             tile.Interactable = (
@@ -398,7 +396,7 @@ public class FieldManager : MonoBehaviour
         {
             foreach (var tile in tiles)
             {
-                tile.Interactable = (tile.Meeple != null);
+                tile.Interactable = (tile.Meeples.Count != 0);
             }
         }
     }
@@ -413,9 +411,9 @@ public class FieldManager : MonoBehaviour
             }
         }
     }
-    
+
     #endregion
-    
+
     // TODO move villager generation to game manager?
     // TODO will eventually need to seed villagers with a specific probability
     // TODO can use random values for now
