@@ -137,5 +137,28 @@ public static class GameStateUtils
   public static bool IsEmpty(this GameState state, DPosition position)
   {
     return state.AtPosition(position) == null;
-  }
+    }
+   /// <summary>
+   /// Returns whether or not a particular piece is the highest priority
+   /// </summary>
+   public static int CheckRow()
+    {
+        return null;
+    }
+
+    /// <summary>
+    /// Returns whether or not a particular piece is the highest priority
+    /// </summary>
+    public static int CheckPriority()
+    {
+        return null;
+    }
+
+    /// <summary>
+    /// Returns whether or not a particular piece can reach the front
+    /// </summary>
+    public static int AccessToFront()
+    {
+        return null;
+    }
 }
