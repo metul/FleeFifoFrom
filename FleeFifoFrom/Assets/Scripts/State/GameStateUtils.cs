@@ -60,6 +60,8 @@ public static class GameStateUtils
     return state.MatchingPositions(p => state.IsEmpty(p));
   }
 
+  // TODO: maybe move this function so that its less confusing?
+  // TODO: maybe rename this to RescuedVillagers()?
   /// <summary>
   /// Will return all the villagers who were authorized by given player.
   /// </summary>
