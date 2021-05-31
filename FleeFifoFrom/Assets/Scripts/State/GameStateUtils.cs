@@ -160,7 +160,7 @@ public static class GameStateUtils
    /// </summary>
    public static int CheckRow()
     {
-        return null;
+        return 0;
     }
 
     /// <summary>
@@ -168,7 +168,7 @@ public static class GameStateUtils
     /// </summary>
     public static int CheckPriority()
     {
-        return null;
+        return 0;
     }
 
     /// <summary>
@@ -176,6 +176,6 @@ public static class GameStateUtils
     /// </summary>
     public static int AccessToFront()
     {
-        return null;
+        return 0;
     }
 }
