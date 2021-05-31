@@ -61,6 +61,8 @@ public static class GameStateUtils
     return state.MatchingPositions(p => state.IsEmpty(p));
   }
 
+  // TODO: maybe move this function so that its less confusing?
+  // TODO: maybe rename this to RescuedVillagers()?
   /// <summary>
   /// Will return all the villagers who were authorized by given player.
   /// </summary>
@@ -152,5 +154,28 @@ public static class GameStateUtils
   public static bool IsEmpty(this GameState state, DPosition position)
   {
     return state.AtPosition(position) == null;
-  }
+    }
+   /// <summary>
+   /// Returns whether or not a particular piece is the highest priority
+   /// </summary>
+   public static int CheckRow()
+    {
+        return null;
+    }
+
+    /// <summary>
+    /// Returns whether or not a particular piece is the highest priority
+    /// </summary>
+    public static int CheckPriority()
+    {
+        return null;
+    }
+
+    /// <summary>
+    /// Returns whether or not a particular piece can reach the front
+    /// </summary>
+    public static int AccessToFront()
+    {
+        return null;
+    }
 }
