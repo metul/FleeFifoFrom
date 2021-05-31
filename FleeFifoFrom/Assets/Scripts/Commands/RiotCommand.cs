@@ -6,7 +6,7 @@ public class RiotCommand : ActionCommand
     private List<Tile> _path;
     // private List<Meeple.State> _originalStates;
 
-    public RiotCommand(ulong issuerID, List<Tile> path) : base(issuerID)
+    public RiotCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker, List<Tile> path) : base(issuerID, playerId, worker)
     {
         _path = path;
     }

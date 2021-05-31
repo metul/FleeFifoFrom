@@ -15,15 +15,15 @@ public class ObjectiveCommand : ActionCommand
     public override bool IsFeasibile()
     {
         // TODO: this is dummy?
-        if (GameStateDummy.Instance.CurrentPlayer.CardCount >= 5)
-        {
-            return true;
-        }
+        // if (CurrentPlayer.CardCount >= 5)
+        // {
+        //     return true;
+        // }
 
-        return false;
+        return true;
     }
 
-    public ObjectiveCommand(ulong issuerID) : base(issuerID)
+    public ObjectiveCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker) : base(issuerID, playerId, worker)
     {
     }
 }

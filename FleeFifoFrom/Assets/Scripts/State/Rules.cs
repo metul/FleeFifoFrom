@@ -8,7 +8,7 @@ public class Rules
   };
 
   public static readonly short[] HONOR_VALUES = { -15, -12, -9, -6, -3, -1, 0, 1, 3, 6, 9, 12, 15 };
-
+  
   public const ushort WORKER_COUNT = 4;
 
   public const ushort KNIGHT_COUNT = 4;

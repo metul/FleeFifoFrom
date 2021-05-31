@@ -3,28 +3,49 @@ using UnityEngine.UI;
 
 public class Worker : MonoBehaviour
 {
-    public DPlayer.ID PlayerId;
-    public ActionTile Tile { get; set; }
+    public DWorker Core { get; private set; }
     public bool Interactable
     {
         get => _button.interactable;
-        set => _button.interactable = value;
+        set
+        {
+            if(_button != null)
+                _button.interactable = value;   
+        }
     }
-
+    private UiTile _tile;
     private Button _button;
     private ButtonManager _buttonManager;
+    private Transform _transform;
 
-    private void Awake()
+    public void Initialize(DWorker core, ButtonManager buttonManager)
     {
+        Core = core;
+        _buttonManager = buttonManager;
         _button = GetComponent<Button>();
-        _buttonManager = FindObjectOfType<ButtonManager>();
+        _transform = transform;
+        
+        Interactable = false;
+        SetColor(Core.Owner);
+        SetTo(Core.Position.Current);
+
+        Core.Position.OnChange += position => { SetTo(position); };
+        _button.onClick.AddListener(() => _buttonManager.OnWorkerClick(this));
+
     }
 
-    private void Start()
+    private void SetTo(UiTile tile)
     {
-        SetColor(PlayerId);
-        Interactable = false;
-        _button.onClick.AddListener(() => _buttonManager.OnWorkerClick(this));
+        if(_tile != null)
+            _tile.Workers.Remove(this);
+        _tile = tile;
+        _tile.Workers.Add(this);
+        _transform.SetParent(_tile.Transform);
+    }
+
+    private void SetTo(DActionPosition position)
+    {
+        SetTo(_buttonManager.ActionTileByPosition(position));
     }
 
     private void SetColor(DPlayer.ID playerID)

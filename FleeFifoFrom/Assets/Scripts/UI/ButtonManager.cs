@@ -1,23 +1,16 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ButtonManager : MonoBehaviour
 {
-    // TODO replace with state manager
+    [SerializeField] private Worker _workerPrefab;
+    [SerializeField] private PlayerTile _playerTilePrefab;
+    
+    [SerializeField] private ActionTile[] _actionTiles;
+    [SerializeField] private Transform _playerTileAnchor;
+    private PlayerTile[] _playerTiles;
+
     private FieldManager _fieldManager;
-
-    [SerializeField] private ActionTile _authorizeWorkerDisplay;
-    [SerializeField] private ActionTile _swapWorkerDisplay;
-    [SerializeField] private ActionTile _riotWorkerDisplay;
-    [SerializeField] private ActionTile _reviveWokerDisplay;
-    [SerializeField] private ActionTile _objectiveWorkerDisplay;
-
-    [SerializeField] private ActionTile _playerWorkerDisplay;
-
-    private ActionTile[] _actionTiles;
 
     // card & action tile states:
     // objective:   - draw card
@@ -29,22 +22,28 @@ public class ButtonManager : MonoBehaviour
     // cooperate:   - select one opponent worker
     
 
-    private void Awake()
-    {
-        _fieldManager = FindObjectOfType<FieldManager>();
-    }
-
     private void Start()
     {
-        _actionTiles = new[]
+        _fieldManager = FindObjectOfType<FieldManager>();
+        
+        // init player tiles
+        _playerTiles = new PlayerTile[GameState.Instance.Players.Length];
+        
+        for (var i = 0; i < GameState.Instance.Players.Length; i++)
         {
-            _authorizeWorkerDisplay,
-            _swapWorkerDisplay,
-            _riotWorkerDisplay,
-            _reviveWokerDisplay,
-            _objectiveWorkerDisplay
-        };
+            var playerTile = Instantiate(_playerTilePrefab, _playerTileAnchor);
+            playerTile.Initialize(GameState.Instance.Players[i].Id);
+            _playerTiles[i] = playerTile;
 
+        }
+        
+        // init worker
+        foreach (var dWorker in GameState.Instance.Workers)
+        {
+            var worker = Instantiate(_workerPrefab);
+            worker.Initialize(dWorker, this);
+        }
+        
         StateManager.OnStateUpdate += UpdateInteractability;
     }
 
@@ -86,24 +85,34 @@ public class ButtonManager : MonoBehaviour
             actionTile.Interactable = tiles;
             actionTile.SetWorkerInteractable(worker);
         }
-        _playerWorkerDisplay.SetWorkerInteractable(playerWorker);
-        
-        // TODO enable card selection
+
+        foreach (var playerTile in _playerTiles)
+        {
+            var currentPlayer = GameState.Instance.TurnPlayer().Id == playerTile.Id;
+            playerTile.SetWorkerInteractable(playerWorker && currentPlayer);
+        }
     }
 
-
+    public UiTile ActionTileByPosition(DActionPosition position)
+    {
+        if (position.IsActionTile)
+        {
+            return _actionTiles.First(a => a.Id == position.Tile);
+        }
+        if(position.IsPlayerTile)
+        {
+            return _playerTiles.First(p => p.Id == position.Player);
+        }
+        return null;
+    }
+    
     public void OnActionTileClick(ActionTile actionTile)
     {
         Debug.Log("Action Tile has been clicked");
         switch (StateManager.GameState)
         {
             case StateManager.State.Recall:
-                var workers = actionTile.RemoveAllWorker();
-                foreach (var worker in workers)
-                {
-                    Debug.Log($"TODO: return worker {worker} to player {worker.PlayerId}");
-                }
-
+                CommandProcessor.Instance.ExecuteCommand(new RecallCommand(0, actionTile.Id));
                 StateManager.GameState = StateManager.State.Default;
                 break;
             default:
@@ -116,20 +125,16 @@ public class ButtonManager : MonoBehaviour
     {
         switch (StateManager.GameState)
         {
-            case StateManager.State.Cooperate: 
-                worker.Tile.RemoveWorker(worker);
-                Debug.Log($"TODO: return worker {worker} to player {worker.PlayerId}");
+            case StateManager.State.Cooperate:
+                Debug.Log($"TODO: return worker {worker} to player {worker.Core.Owner}");
                 StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.PoachSelectWorker:
-                worker.Tile.RemoveWorker(worker);
-                Debug.Log($"TODO: poach worker {worker} from player {worker.PlayerId}");
+                Debug.Log($"TODO: poach worker {worker} from player {worker.Core.Owner}");
                 StateManager.GameState = StateManager.State.PoachSelectCard;
                 break;
             case StateManager.State.PayForAction:
-                worker.Tile.RemoveWorker(worker);
-                Debug.Log($"TODO: pay worker {worker} for a previous/next (?) action");
-                StateManager.GameState = StateManager.State.PoachSelectCard;
+                _fieldManager.InvokeAction(StateManager.CurrentlyPayingFor, worker.Core);
                 break;
             default:
                 Debug.LogWarning("This is not a state in which worker interaction is allowed!");
@@ -166,7 +171,6 @@ public class ButtonManager : MonoBehaviour
     public void Objective()
     {
         Debug.Log("Player chose the objective action");
-        // TODO
     }
 
     public void Countermand()
@@ -213,8 +217,14 @@ public class ButtonManager : MonoBehaviour
 
     public void Undo()
     {
-        Debug.Log("Player chose the undo action");
-        CommandProcessor.Instance.Undo();
+        if(StateManager.GameState == StateManager.State.Default)
+            CommandProcessor.Instance.Undo();
+        
+        // TODO add multi step command undo handling
+        // return to default state and lose all accumulated progress
+        // (-> if tile was selected but not payed yet)
+        else
+            StateManager.GameState = StateManager.State.Default;
     }
 
     public void EndTurn()

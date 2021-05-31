@@ -22,6 +22,7 @@ public class FieldManager : MonoBehaviour
 
     // store tile references for multi step actions
     private Tile _storeTile;
+    private Tile _storeSecondTile;
     private List<Tile> _storeRiotPath;
 
     #endregion
@@ -96,7 +97,6 @@ public class FieldManager : MonoBehaviour
                 {
                     Meeple newguy = Instantiate(prefab);
                     newguy.Initialize(meep, this);
-                    tile.SetMeeple(newguy);
                 }
             }
         }
@@ -109,7 +109,13 @@ public class FieldManager : MonoBehaviour
         {
             foreach (var tile in tiles)
             {
-                tile.SetMeeple(Instantiate(_knightPrefab));
+                var knight = Instantiate(_knightPrefab);
+                // TODO replace with actual knight from GameState
+                var dummyKnight = GameState.Instance.Knights[0];
+                knight.Initialize(dummyKnight, this);
+                
+                // set knights to current tile because they only a dummy core/pos right now
+                knight.SetTo(tile);
             }
         }
     }
@@ -120,19 +126,23 @@ public class FieldManager : MonoBehaviour
 
     // TODO: All issuer IDs are 0 by default, use actual client ID after network integration
 
-    public void Authorize(Tile tile)
+    public void Authorize(Tile tile, DWorker worker)
     {
-        var dummyWorker = new DWorker(GameState.Instance.TurnPlayer().Id);
+        // TODO replace dummy worker with real worker
+        // var dummyWorker = new DWorker(GameState.Instance.TurnPlayer().Id);
         CommandProcessor.Instance.ExecuteCommand(
-            new AuthorizeCommand(0, tile.Meeples[0].Core, GameState.Instance.TurnPlayer(), dummyWorker)
+            new AuthorizeCommand(0, GameState.Instance.TurnPlayer().Id, worker, tile.Meeples[0].Core)
         );
     }
 
     public void Swap(Tile tile1, Tile tile2)
     {
+        var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
         CommandProcessor.Instance.ExecuteCommand(
             new SwapCommand(
                 0, // --> TODO: should this be zero?
+                GameState.Instance.TurnPlayer().Id, 
+                worker,
                 GameState.Instance.AtPosition(tile1.Position),
                 GameState.Instance.AtPosition(tile2.Position)
             )
@@ -141,12 +151,14 @@ public class FieldManager : MonoBehaviour
 
     public void Riot(List<Tile> path)
     {
-        CommandProcessor.Instance.ExecuteCommand(new RiotCommand(0, path));
+        var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
+        CommandProcessor.Instance.ExecuteCommand(new RiotCommand(0,GameState.Instance.TurnPlayer().Id, worker, path));
     }
 
     public void Revive(Tile tile)
     {
-        CommandProcessor.Instance.ExecuteCommand(new ReviveCommand(0, tile));
+        var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
+        CommandProcessor.Instance.ExecuteCommand(new ReviveCommand(0,GameState.Instance.TurnPlayer().Id, worker, tile));
     }
 
     public void Reprioritize(Tile tile)
@@ -173,54 +185,53 @@ public class FieldManager : MonoBehaviour
         switch (StateManager.GameState)
         {
             case StateManager.State.Authorize:
-                Authorize(tile);
-                StateManager.GameState = StateManager.State.Default;
+                _storeTile = tile;
+                StateManager.GameState = StateManager.State.PayForAction;
                 break;
             case StateManager.State.Swap1:
-                _storeTile = tile;
+                _storeSecondTile = tile;
                 StateManager.GameState = StateManager.State.Swap2;
                 break;
             case StateManager.State.Swap2:
-                Swap(tile, _storeTile);
-                _storeTile = null;
-                StateManager.GameState = StateManager.State.Default;
+                _storeTile = tile;
+                StateManager.GameState = StateManager.State.PayForAction;
                 break;
             case StateManager.State.Riot:
-                _storeRiotPath = new List<Tile>();
-                _storeRiotPath.Add(tile);
-                Riot(_storeRiotPath);
-                StateManager.GameState = StateManager.State.Default;
+                // _storeRiotPath = new List<Tile>();
+                // _storeRiotPath.Add(tile);
+                // Riot(_storeRiotPath);
+                // StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.RiotChooseKnight:
-                _storeRiotPath = new List<Tile>();
-                _storeRiotPath.Add(tile);
-                StateManager.GameState = StateManager.State.RiotChoosePath;
+                // _storeRiotPath = new List<Tile>();
+                // _storeRiotPath.Add(tile);
+                // StateManager.GameState = StateManager.State.RiotChoosePath;
                 break;
             case StateManager.State.RiotChoosePath:
-                _storeRiotPath.Add(tile);
+                // _storeRiotPath.Add(tile);
                 // if (tile.ID == Vector2.zero)
                 // {
                 //     Riot(_storeRiotPath);
                 //     StateManager.GameState = StateManager.State.Default;
                 // }
                 // else
-                StateManager.GameState = StateManager.State.RiotChoosePath;
+                // StateManager.GameState = StateManager.State.RiotChoosePath;
                 break;
             case StateManager.State.Revive:
-                Revive(tile);
-                StateManager.GameState = StateManager.State.Default;
+                _storeTile = tile;
+                StateManager.GameState = StateManager.State.PayForAction;
                 break;
             case StateManager.State.Reprioritize:
                 Reprioritize(tile);
                 StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.RetreatChooseTile:
-                _storeTile = tile;
+                _storeSecondTile = tile;
                 StateManager.GameState = StateManager.State.RetreatChooseKnight;
                 break;
             case StateManager.State.RetreatChooseKnight:
-                Retreat(tile, _storeTile);
-                _storeTile = null;
+                Retreat(tile, _storeSecondTile);
+                _storeSecondTile = null;
                 StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.Villager:
@@ -229,6 +240,29 @@ public class FieldManager : MonoBehaviour
                 break;
         }
     }
+
+    public void InvokeAction(StateManager.State action, DWorker worker)
+    {
+        switch (action)
+        {
+            case StateManager.State.Authorize:
+                Authorize(_storeTile, worker);
+                _storeTile = null;
+                StateManager.GameState = StateManager.State.Default;
+                break;
+            case StateManager.State.Swap2:
+                Swap(_storeTile, _storeSecondTile);
+                _storeTile = _storeSecondTile = null;
+                StateManager.GameState = StateManager.State.Default;
+                break;
+            case StateManager.State.Revive:
+                Revive(_storeTile);
+                _storeTile = null;
+                StateManager.GameState = StateManager.State.Default;
+                break;
+        }
+    }
+    
 
     public void UpdateInteractability()
     {
@@ -243,7 +277,7 @@ public class FieldManager : MonoBehaviour
             case StateManager.State.Swap2:
                 EnableInjuryBased(false);
                 // TODO replace with EnableNeighbours
-                _storeTile.Interactable = false;
+                _storeSecondTile.Interactable = false;
                 break;
             case StateManager.State.Riot:
                 EnableInjuryBased(false);
@@ -268,6 +302,13 @@ public class FieldManager : MonoBehaviour
                 break;
             case StateManager.State.Villager:
                 EnableEmptyTiles();
+                break;
+            case StateManager.State.Default:
+                _storeTile = null;
+                _storeSecondTile = null;
+                _storeRiotPath = null;
+                DisableAllTiles();
+                DisableBattlefield();
                 break;
             default:
                 DisableAllTiles();

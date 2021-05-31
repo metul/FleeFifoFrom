@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class ResetCommand : Command
 {
+    // TODO include reset turn pawn system for reset commands
     public ResetCommand(ulong issuerID) : base(issuerID) { }
 
     public void CheckPawn()

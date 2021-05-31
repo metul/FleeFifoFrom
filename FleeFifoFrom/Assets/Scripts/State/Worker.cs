@@ -5,41 +5,55 @@ public class DWorker : DObject
     InPool, // --> worker is in some player's worker pool
     OnMat,  // --> worker is on some action mat
   }
-
   public DPlayer.ID Owner { get; private set; }
   public DPlayer.ID ControlledBy { get; private set; }
-  public WorkerState State { get; private set; } = WorkerState.InPool;
+  public WorkerState State { get => Position.Current.Player != null ? WorkerState.InPool : WorkerState.OnMat; }
+
+  public Observable<DActionPosition> Position;
+  
   public bool Available { get { return State == WorkerState.InPool; } }
 
   public DWorker(DPlayer.ID owner): base()
   {
     Owner = owner;
     ControlledBy = owner;
+    
+    // init in player pool
+    Position = new Observable<DActionPosition>(new DActionPosition(owner));
   }
-
-  public void Poach(DPlayer.ID poacher)
+  
+  public void Consume(DActionPosition.TileId tileId)
   {
-    ControlledBy = poacher;
+    Position.Current = new DActionPosition(tileId);
   }
 
-  public void UnPoach()
+  public void UnConsume(DPlayer.ID playerId)
   {
-    ControlledBy = Owner;
+    ControlledBy = playerId;
+    Position.Current = new DActionPosition(ControlledBy);
   }
-
-  public void Consume()
-  {
-    State = WorkerState.OnMat;
-  }
-
-  public void UnConsume()
-  {
-    State = WorkerState.InPool;
-  }
-
+  
   public void Release()
   {
-    State = WorkerState.OnMat;
-    ControlledBy = Owner;
+    UnConsume(Owner);
   }
+
+  public void UnRelease(DPlayer.ID previousOwner, DActionPosition.TileId tileId)
+  {
+    ControlledBy = previousOwner;
+    Consume(tileId);
+  }
+  
+  public void Poach(DPlayer.ID poacher)
+  {
+    UnConsume(poacher);
+  }
+
+  public void UnPoach(DActionPosition.TileId tileId)
+  {
+    // TODO: previous owner not necessary the original owner? is this an edge case?
+    UnRelease(Owner, tileId);
+  }
+
+  
 }

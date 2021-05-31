@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 /// <summary>
 /// A bunch of utility functions for GameState
@@ -93,6 +94,20 @@ public static class GameStateUtils
       return null;
     }
   }
+  
+  public static List<DWorker> AtTilePosition(this GameState state, DActionPosition position)
+  {
+    var result = new List<DWorker>();
+    foreach (var worker in state.Workers)
+    {
+      if (worker.Position.Current.Equals(position))
+      {
+        result.Add(worker);
+      }
+    }
+
+    return result;
+  } 
 
   // TODO: add TraversePath()?
   // TODO: add PathExists()?

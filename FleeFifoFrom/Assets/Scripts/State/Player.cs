@@ -13,9 +13,7 @@ public class DPlayer
     public DPlayer(ID id, string name) {
         Id = id;
         Name = name;
-        Honor = new DHonor();
-        StoredMeeple = new List<DMeeple>();
-        
+
         //TODO remove debug
         Honor.Score.OnChange += s =>
         {
@@ -24,12 +22,8 @@ public class DPlayer
     }
     public ID Id { get; protected set; }
     public string Name { get; protected set; }
+    public DHonor Honor { get; protected set; } = new DHonor();
 
-    public DHonor Honor { get; protected set; }
-    
-    // TODO make this an observable
-    public List<DMeeple> StoredMeeple { get; protected set; }
-    
     public static DPlayer[] CreateAnonymousPlayers(ID[] ids)
     {
         List<DPlayer> result = new List<DPlayer>();
@@ -37,7 +31,7 @@ public class DPlayer
 
         foreach(ID id in ids)
         {
-            result.Add(new DPlayer(id, $"Player {i}"));
+            result.Add(new DPlayer(id, $"Player {i++}"));
         }
 
         return result.ToArray();
@@ -52,15 +46,5 @@ public class DPlayer
         }
 
         return CreateAnonymousPlayers(ids);
-    }
-
-    public void SaveMeeple(DMeeple meeple)
-    {
-        StoredMeeple.Add(meeple);
-    }
-
-    public void UnsaveMeeple(DMeeple meeple)
-    {
-        StoredMeeple.Remove(meeple);
     }
 }

@@ -1,16 +1,13 @@
 public class AuthorizeCommand : ActionCommand
 {
-    private DMeeple _meeple;
-    private DPosition _position;
-    private DPlayer _player;
-    private DWorker _worker;
+    private readonly DMeeple _meeple;
+    private readonly DPosition _position;
 
-    public AuthorizeCommand(ulong issuerID, DMeeple meeple, DPlayer player, DWorker worker) : base(issuerID)
+    public AuthorizeCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker, DMeeple meeple) : base(issuerID, playerId, worker)
     {
+        _actionId = DActionPosition.TileId.Authorize;
         _meeple = meeple;
         _position = meeple.Position.Current;
-        _player = player;
-        _worker = worker;
     }
 
     public override void Execute()
@@ -19,15 +16,18 @@ public class AuthorizeCommand : ActionCommand
 
         if (_meeple.GetType().IsSubclassOf(typeof(DVillager)))
         {
-            ((DVillager) _meeple).Authorize(_player.Id);
+            ((DVillager) _meeple).Authorize(_playerId);
         }
         else if (_meeple.GetType() == typeof(DKnight))
         {
-            var honor = ((DKnight) _meeple).Authorize(_player.Id);
-            GameState.Instance.PlayerById(_worker.Owner)?.Honor.Earn(honor);
+            var honor = ((DKnight) _meeple).Authorize(_playerId);
+            
+            // TODO: who gets honor with player != token owner
+            GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Earn(honor);
         }
         
-        _player.SaveMeeple(_meeple);
+        // TODO save remove this
+        // _player.SaveMeeple(_meeple);
 
         // Call function CheckPriority()
         // if return == 1 then proceed
@@ -64,8 +64,8 @@ public class AuthorizeCommand : ActionCommand
         }
         else if (_meeple.GetType() == typeof(DKnight))
         {
-            var honor = ((DKnight) _meeple).Deauthorize(_position, _player.Id);
-            GameState.Instance.PlayerById(_worker.Owner)?.Honor.Lose(honor);
+            var honor = ((DKnight) _meeple).Deauthorize(_position, _playerId);
+            GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Lose(honor);
         }
     }
 

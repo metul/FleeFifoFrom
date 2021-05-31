@@ -5,18 +5,36 @@ using UnityEngine;
 
 public abstract class Meeple: MonoBehaviour
 {
-    private FieldManager _fieldManager;
-    public DMeeple Core { get; protected set; }
+    public DMeeple Core { get; private set; }
+
+    // public bool Interactable
+    // {
+    //     set
+    //     {
+    //         if(_tile != null)
+    //             _tile.Interactable = value;
+    //     }
+    // }
 
     protected Action OnDefault;
     protected Action OnTapped;
+
+    private Tile _tile;
+    private FieldManager _fieldManager;
+    private Transform _transform;
+    private Renderer _renderer;
     
-    // TODO decouple field manager from meeple -> set tile from meeple?
     public virtual void Initialize(DMeeple core, FieldManager fieldManager)
     {
         Core = core;
         _fieldManager = fieldManager;
-
+        _transform = transform;
+        
+        SetTo(Core.Position.Current);
+        core.Position.OnChange += position => { Debug.Log(position); SetTo(position); };
+        
+        
+        // TODO replace tapped / default states with new mechanic (visually)
         var rend = GetComponent<Renderer>();
         OnDefault += () => { rend.material.color = Color.white; };
         OnTapped += () => { rend.material.color = Color.yellow; };
@@ -27,11 +45,25 @@ public abstract class Meeple: MonoBehaviour
             else if (Core.IsHealthy())
                 OnDefault.Invoke();
         };
-        
-        core.Position.OnChange += p =>
-        {
-            Debug.Log($"This is {this}");
-            _fieldManager.TileByPosition(p).SetMeeple(this);
-        };
+    }
+
+    public void Initialize(DMeeple core)
+    {
+        Initialize(core, FindObjectOfType<FieldManager>());
+    }
+
+    public void SetTo(Tile tile)
+    {
+        if (_tile != null)
+            _tile.Meeples.Remove(this);
+        _tile = tile;
+        _tile.Meeples.Add(this);
+        _transform.SetParent(_tile.Transform);
+        _transform.localPosition = Vector3.zero;
+    }
+
+    protected void SetTo(DPosition position)
+    {
+        SetTo(_fieldManager.TileByPosition(position));
     }
 }

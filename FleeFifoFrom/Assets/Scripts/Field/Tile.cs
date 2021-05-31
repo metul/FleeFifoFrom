@@ -5,34 +5,28 @@ using UnityEngine.EventSystems;
 
 public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    // TODO: deprecate this with Position.
+    // TODO: deprecate this with Position (keep in mind Pos starts with 1 not 0)
     public Vector2 ID { get; set; }
-    public bool Interactable { get; set; }
     public DPosition Position
     {
         get => new DPosition((ushort) (ID.x + 1), (ushort) (ID.y + 1));
     }
-
-    private FieldManager _fieldManager;
+    public bool Interactable { get; set; }
+    public List<Meeple> Meeples { get; private set; } = new List<Meeple>();
+    public Transform Transform { get; private set; }
 
     [SerializeField] private Color _heightlightColor;
-    private Color _defaultColor;
     
+    private FieldManager _fieldManager;
     private Action _onHighlight;
     private Action _onDefault;
     private Material _material;
-
-    public List<Meeple> Meeples { get; private set; }
-
-    private Transform _transform;
+    private Color _defaultColor;
 
     private void Awake()
     {
-        Meeples = new List<Meeple>();
-        
+        Transform = transform;
         _fieldManager = FindObjectOfType<FieldManager>();
-        _transform = transform;
-        
         _material = transform.GetChild(0).GetComponent<Renderer>().material;
         _defaultColor = _material.color;
 
@@ -42,10 +36,8 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if(!Interactable)
-            return;
-        
-        _fieldManager.ProcessClickedTile(this);
+        if(Interactable)
+            _fieldManager.ProcessClickedTile(this);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -64,25 +56,5 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
     private void ChangeColor(Color color)
     {
         _material.color = color;
-    }
-
-    public void SetMeeple(Meeple meeple)
-    {
-        Meeples.Add(meeple);
-        var meepleTransform = meeple.transform;
-        meepleTransform.parent = _transform;
-        meepleTransform.localPosition = Vector3.zero;
-    }
-
-    // removes the first meeple in the list
-    public Meeple RemoveMeeple()
-    {
-        // empty check
-        if (Meeples.Count == 0) return null;
-        
-        var meeple = Meeples[0];
-        meeple.transform.parent = null;
-        Meeples.RemoveAt(0);
-        return meeple;
     }
 }

@@ -262,7 +262,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68b46240ecc1a3d4a8d9941c3008d186, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Worker: []
+  _workerAnchor: {fileID: 8971783448276737519}
+  Id: 0
   _tileButton: {fileID: 8971783448276737518}
 --- !u!1001 &3757839693618538890
 PrefabInstance:

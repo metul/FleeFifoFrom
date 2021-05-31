@@ -32,11 +32,17 @@ public class StateManager : MonoBehaviour
 
     private static State _gameState;
     public static Action OnStateUpdate;
+    public static State CurrentlyPayingFor;
+    
     public static State GameState
     {
         get => _gameState;
         set
         {
+            if (value == State.PayForAction)
+            {
+                CurrentlyPayingFor = _gameState;
+            }
             _gameState = value;
             OnStateUpdate?.Invoke();
         } 

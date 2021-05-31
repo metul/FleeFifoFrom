@@ -19,14 +19,15 @@ public class DrawVillagerCommand : ResetCommand
         // TODO: Can do the reverse order for now, i.e. tile then vill
         //TODO:
         VillagerBag.DrawVillager();
-        _tile.SetMeeple(_villager);
+        _villager.SetTo(_tile);
     }
 
     public override void Reverse()
     {
         base.Reverse();
-        _tile.RemoveMeeple();
-        Destroy(_villager.gameObject);
+        // _tile.RemoveMeeple();
+        // TODO don't call destroy from command, this should be not a mono behaviour
+        // Destroy(_villager.gameObject);
     }
 
     public override bool IsFeasibile()

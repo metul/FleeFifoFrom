@@ -3,7 +3,7 @@ public class ReviveCommand : ActionCommand
     private Tile _tile;
     // private Meeple.State _originalState; // MARK: Redundant, could be replaced with Meeple.State.Injured
 
-    public ReviveCommand(ulong issuerID, Tile tile) : base(issuerID)
+    public ReviveCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker, Tile tile) : base(issuerID, playerId, worker)
     {
         _tile = tile;
     }

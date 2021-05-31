@@ -3,7 +3,7 @@ public class SwapCommand : ActionCommand
     private DMeeple? _first;
     private DMeeple? _second;
 
-    public SwapCommand(ulong issuerID, DMeeple? first, DMeeple? second) : base(issuerID)
+    public SwapCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker, DMeeple? first, DMeeple? second) : base(issuerID, playerId, worker)
     {
         _first = first;
         _second = second;

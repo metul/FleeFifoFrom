@@ -1,6 +1,7 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
-using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class GameState
 {
@@ -37,7 +38,7 @@ public class GameState
   public DKnight[] Knights { get; private set; }
   public DMeeple[] Meeple { get; private set; }
   public DVillager[] Villagers { get; private set; }
-  readonly DPlayer[] Players;
+  public readonly DPlayer[] Players;
   public ushort TurnPlayerIndex;
   public TurnTypes TurnType;
 
@@ -164,6 +165,11 @@ public class GameState
   {
     return Players.First(p => p.Id == id);
   }
+
+  // public DActionTile ActionTileById(DActionTile.TileId? id)
+  // {
+  //   return id != null ? ActionTiles.First(a => a.Id == id) : null;
+  // }
 
   public int PlayerScore(DPlayer.ID player)
   {
