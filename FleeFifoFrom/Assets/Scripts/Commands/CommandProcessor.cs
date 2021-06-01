@@ -38,4 +38,12 @@ public sealed class CommandProcessor
     {
         _commands.Pop()?.Reverse();
     }
+
+    /// <summary>
+    /// Clear command stack on turn rotation so the commands of the previous user are not undoable
+    /// </summary>
+    public void ClearStack()
+    {
+        _commands.Clear();    
+    }
 }

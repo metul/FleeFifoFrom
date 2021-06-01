@@ -227,6 +227,7 @@ public class ButtonManager : MonoBehaviour
     public void EndTurn()
     {
         GameState.Instance.RotateTurn();
+        CommandProcessor.Instance.ClearStack();
         Debug.Log($"New turn started: {GameState.Instance.TurnPlayer().Name}'s {GameState.Instance.TurnType}");
     }
     
