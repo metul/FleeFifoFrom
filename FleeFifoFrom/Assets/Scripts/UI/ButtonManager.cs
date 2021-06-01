@@ -135,8 +135,9 @@ public class ButtonManager : MonoBehaviour
                 StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.PoachSelectWorker:
-                Debug.Log($"TODO: poach worker {worker} from player {worker.Core.Owner}");
-                StateManager.GameState = StateManager.State.PoachSelectCard;
+                CommandProcessor.Instance.ExecuteCommand(new PoachCommand(
+                    0, GameState.Instance.TurnPlayer().Id, worker.Core));
+                StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.PayForAction:
                 _fieldManager.InvokeAction(StateManager.CurrentlyPayingFor, worker.Core);
@@ -151,72 +152,63 @@ public class ButtonManager : MonoBehaviour
 
     public void Authorize()
     {
-        Debug.Log("Player chose the authorize action");
         StateManager.GameState = StateManager.State.Authorize;
     }
 
     public void Swap()
     {
-        Debug.Log("Player chose the swap action");
         StateManager.GameState = StateManager.State.Swap1;
     }
 
     public void Riot()
     {
-        Debug.Log("Player chose the riot action");
         StateManager.GameState = StateManager.State.Riot;
     }
 
     public void Revive()
     {
-        Debug.Log("Player chose the revive action");
         StateManager.GameState = StateManager.State.Revive;
     }
 
     public void Objective()
     {
-        Debug.Log("Player chose the objective action");
+        Debug.Log("TODO: Player chose the objective action");
     }
 
     public void Countermand()
     {
-        Debug.Log("Player chose the countermand action");
         StateManager.GameState = StateManager.State.CountermandDrawCard;
     }
 
     public void Reprioritize()
     {
-        Debug.Log("Player chose the reprioritize action");
         StateManager.GameState = StateManager.State.Reprioritize;
     }
 
     public void Retreat()
     {
-        Debug.Log("Player chose the retreat action");
         StateManager.GameState = StateManager.State.RetreatChooseTile;
     }
 
     public void Recall()
     {
-        Debug.Log("Player chose the recall action");
         StateManager.GameState = StateManager.State.Recall;
     }
 
     public void Cooperate()
     {
-        Debug.Log("Player chose the cooperate action");
         StateManager.GameState = StateManager.State.Cooperate;
     }
 
     public void Poach()
     {
-        Debug.Log("Player chose the poach action");
-        StateManager.GameState = StateManager.State.PoachSelectCard;
+        // TODO: pay (card) for poaching
+        // StateManager.GameState = StateManager.State.PoachSelectCard;
+        StateManager.GameState = StateManager.State.PoachSelectWorker;
     }
 
     public void Villager()
     {
-        Debug.Log("Player chose the draw villager action");
         StateManager.GameState = StateManager.State.Villager;
     }
 

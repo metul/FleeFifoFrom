@@ -37,23 +37,16 @@ public class DWorker : DObject
   {
     UnConsume(Owner);
   }
-
-  public void UnRelease(DPlayer.ID previousOwner, DActionPosition.TileId tileId)
-  {
-    ControlledBy = previousOwner;
-    Consume(tileId);
-  }
   
   public void Poach(DPlayer.ID poacher)
   {
     UnConsume(poacher);
   }
-
-  public void UnPoach(DActionPosition.TileId tileId)
-  {
-    // TODO: previous owner not necessary the original owner? is this an edge case?
-    UnRelease(Owner, tileId);
-  }
-
   
+  // Return == UnPoach == UnRelease 
+  public void Return(DPlayer.ID previousOwner, DActionPosition.TileId tileId)
+  {
+    ControlledBy = previousOwner;
+    Consume(tileId);
+  }
 }

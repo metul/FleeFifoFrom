@@ -31,7 +31,7 @@ public class RecallCommand: ResetCommand
         base.Reverse();    
         
         for (var i = _workers.Count - 1; i >= 0; i--)
-            _workers[i].UnRelease(_controlling[i], _tileId);
+            _workers[i].Return(_controlling[i], _tileId);
     }
 
     public override bool IsFeasibile()
