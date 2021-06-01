@@ -11,6 +11,5 @@ public class PlayerTile : UiTile
     {
         Id = playerId;
         _nameDisplay.text = GameState.Instance.PlayerById(Id)?.Name;
-        Debug.Log(GameState.Instance.PlayerById(Id)?.Name);
     }
 }

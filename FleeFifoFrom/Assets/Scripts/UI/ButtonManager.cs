@@ -52,38 +52,42 @@ public class ButtonManager : MonoBehaviour
         switch (StateManager.GameState)
         {
             case StateManager.State.CountermandDrawCard:
-                EnableElements(false, false, false, false);
+                EnableElements(false, false, false);
                 break;
             case StateManager.State.CountermandSelectCard:
-                EnableElements(false, false, false, true);
+                EnableElements(false, false, false);
                 break;
             case StateManager.State.PoachSelectWorker:
-                EnableElements(false, true, false, false);
+                EnableElements(false, true, false, true);
                 break;
             case StateManager.State.PoachSelectCard:
-                EnableElements(false, false, false, true);
+                EnableElements(false, false, false);
                 break;
             case StateManager.State.Recall:
-                EnableElements(true, false, false, false);
+                EnableElements(true, false, false);
                 break;
             case StateManager.State.Cooperate:
-                EnableElements(false, true, false, false);
+                EnableElements(false, true, false, true);
                 break;
             case StateManager.State.PayForAction:
-                EnableElements(false, false, true, false);
+                EnableElements(false, false, true);
                 break;
             default:
-                EnableElements(false, false, false, false);
+                EnableElements(false, false, false);
                 break;
         }
     }
 
-    private void EnableElements(bool tiles, bool worker, bool playerWorker, bool cards)
+    private void EnableElements(bool tiles, bool worker, bool playerWorker, bool opponentTileWorkers = false)
     {
         foreach (var actionTile in _actionTiles)
         {
             actionTile.Interactable = tiles;
-            actionTile.SetWorkerInteractable(worker);
+            if(opponentTileWorkers)
+                actionTile.SetOpponentWorkerInteractable(worker, GameState.Instance.TurnPlayer());
+            else
+                actionTile.SetWorkerInteractable(worker);
+            
         }
 
         foreach (var playerTile in _playerTiles)
@@ -126,7 +130,8 @@ public class ButtonManager : MonoBehaviour
         switch (StateManager.GameState)
         {
             case StateManager.State.Cooperate:
-                Debug.Log($"TODO: return worker {worker} to player {worker.Core.Owner}");
+                CommandProcessor.Instance.ExecuteCommand(new CooperateCommand(
+                    0, GameState.Instance.TurnPlayer().Id, worker.Core));
                 StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.PoachSelectWorker:
@@ -229,9 +234,8 @@ public class ButtonManager : MonoBehaviour
 
     public void EndTurn()
     {
-        Debug.Log("End Player Turn");
-        // TODO remove debug
-        StateManager.GameState = StateManager.State.PayForAction;
+        GameState.Instance.RotateTurn();
+        Debug.Log($"New turn started: {GameState.Instance.TurnPlayer().Name}'s {GameState.Instance.TurnType}");
     }
     
     #endregion

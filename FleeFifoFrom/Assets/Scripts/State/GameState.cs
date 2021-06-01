@@ -166,11 +166,6 @@ public class GameState
     return Players.First(p => p.Id == id);
   }
 
-  // public DActionTile ActionTileById(DActionTile.TileId? id)
-  // {
-  //   return id != null ? ActionTiles.First(a => a.Id == id) : null;
-  // }
-
   public int PlayerScore(DPlayer.ID player)
   {
     // TODO: later objectives and castle rewards should also be added here.

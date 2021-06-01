@@ -20,4 +20,12 @@ public abstract class UiTile : MonoBehaviour
         foreach (var worker in Workers)
             worker.Interactable = interactable;
     }
+
+    public void SetOpponentWorkerInteractable(bool interactable, DPlayer player)
+    {
+        foreach (var worker in Workers)
+        {
+            worker.Interactable = interactable && (worker.Core.Owner != player.Id);
+        }
+    }
 }
