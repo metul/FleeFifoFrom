@@ -16,11 +16,7 @@ public class ReviveCommand : ActionCommand
     public override void Execute()
     {
         base.Execute();
-        // _originalState = _tile.Meeple.CurrentState;
-        // _tile.Meeple.CurrentState = Meeple.State.Default;
-
-        if (_meeple.IsInjured())
-        {   
+ 
             //Heal the meeple
             ((DVillager) _meeple).Heal();
 
@@ -29,7 +25,7 @@ public class ReviveCommand : ActionCommand
             // TODO: who gets honor with player != token owner
             //Remove hard coded 1
             GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Earn();
-        }
+        
     }
 
     public override void Reverse()
@@ -40,22 +36,6 @@ public class ReviveCommand : ActionCommand
 
     public override bool IsFeasibile()
     {
-        //TODO Step 1: Start loop from tile 1
-        return false;
-        /*psuedo
-        if (piece.exists)
-        {
-            if (piece.injured)
-            {   
-                //Atleast one injured piece found
-                this.ActionPossible = true;
-                break;
-            }
-
-        }
-        else (move to next tile)
-
-        //TODO: end loop. If no injuries found, stay as false
-        */
+        return (_meeple.IsInjured());
     }
 }
