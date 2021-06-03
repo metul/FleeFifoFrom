@@ -69,7 +69,7 @@ public class FieldManager : MonoBehaviour
 
     private void PopulateFieldRandomly()
     {
-        var meeple = GameState.Instance.MatchingMeepleOnBoard(m => true);
+        var meeple = GameState.Instance.Meeple; //MatchingMeepleOnBoard(m => true);
         foreach (var meep in meeple)
         {
             var tile = TileByPosition(meep.Position.Current);

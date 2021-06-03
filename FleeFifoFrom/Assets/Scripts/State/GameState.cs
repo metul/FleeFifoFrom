@@ -125,20 +125,12 @@ public class GameState
   private void _drawMeeple()
   {
     // TODO: maybe this shouldn't be here? this should be synced across the network.
-    // TODO: what are the rules for placing knights?
-
-    ushort cursor = 2;
 
     foreach (var player in Players) {
-      if (cursor > Rules.ROWS)
-        break;
-
       Knights
         .First(knight => knight.Owner == player.Id)
-        .Retreat(new DPosition(cursor, (ushort) Random.Range(1, cursor)))
+        .Retreat(Rules.KNIGHT_POSITIONS[player.Id])
       ;
-
-      cursor++;
     }
 
     TraverseBoard(p => {
