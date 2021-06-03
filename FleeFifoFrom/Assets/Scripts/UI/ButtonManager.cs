@@ -99,8 +99,10 @@ public class ButtonManager : MonoBehaviour
 
     public UiTile ActionTileByPosition(DActionPosition position)
     {
+        Debug.Log("AAAAA");
         if (position.IsActionTile)
         {
+            Debug.Log(position);
             return _actionTiles.First(a => a.Id == position.Tile);
         }
         if(position.IsPlayerTile)
@@ -162,7 +164,7 @@ public class ButtonManager : MonoBehaviour
 
     public void Riot()
     {
-        StateManager.GameState = StateManager.State.Riot;
+        StateManager.GameState = StateManager.State.RiotChooseKnight;
     }
 
     public void Revive()

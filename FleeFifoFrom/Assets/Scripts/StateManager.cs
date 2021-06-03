@@ -31,6 +31,7 @@ public class StateManager : MonoBehaviour
     }
 
     private static State _gameState;
+    // TODO: change this to an Observable<GameState> instead.
     public static Action OnStateUpdate;
     public static State CurrentlyPayingFor;
     

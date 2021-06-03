@@ -36,6 +36,8 @@ public class Worker : MonoBehaviour
 
     private void SetTo(UiTile tile)
     {
+        Debug.Log("WORKER POS::");
+        Debug.Log(tile);
         if(_tile != null)
             _tile.Workers.Remove(this);
         _tile = tile;
@@ -45,6 +47,7 @@ public class Worker : MonoBehaviour
 
     private void SetTo(DActionPosition position)
     {
+        Debug.Log("SETTING WORKER POS");
         SetTo(_buttonManager.ActionTileByPosition(position));
     }
 

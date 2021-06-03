@@ -1,7 +1,7 @@
 public abstract class ActionCommand : Command
 {
     protected DActionPosition.TileId _actionId;
-    protected DWorker _worker;
+    protected DWorker? _worker;
     protected DPlayer.ID _playerId;
 
     public ActionCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker) : base(issuerID)
@@ -19,11 +19,17 @@ public abstract class ActionCommand : Command
     
     public override void Execute()
     {
-        _worker.Consume(_actionId);
+        if (_worker != null)
+        {
+            _worker.Consume(_actionId);
+        }
     }
 
     public override void Reverse()
     {
-        _worker.UnConsume(_playerId);
+        if (_worker != null)
+        {
+            _worker.UnConsume(_playerId);
+        }
     }
 }

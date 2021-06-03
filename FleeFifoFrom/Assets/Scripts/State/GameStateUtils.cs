@@ -29,6 +29,27 @@ public static class GameStateUtils
   }
 
   /// <summary>
+  /// Will returns all meeple at position matching given criteria
+  /// </summary>
+  public static DMeeple[] AllAtPosition(
+    this GameState state,
+    DPosition position,
+    System.Func<DMeeple, bool> check
+  )
+  {
+    return state.Meeple.Where(m => (
+        m.State == DMeeple.MeepleState.InQueue
+        && m.Position.Current != null && m.Position.Current.Equals(position)
+        && check(m)
+    )).ToArray();
+  }
+
+  public static DMeeple[] AllAtPosition(this GameState state, DPosition position)
+  {
+    return state.AllAtPosition(position, m => true);
+  }
+
+  /// <summary>
   /// Will return all the injured meeple on the board.
   /// </summary>
   public static DMeeple[] InjuredMeeple(this GameState state)
@@ -78,24 +99,6 @@ public static class GameStateUtils
   {
     return state.Workers.Where(w => w.State == DWorker.WorkerState.InPool && w.ControlledBy == player).ToArray();
   }
-
-  /// <summary>
-  /// Returns the meeple (nullable) at given position on the board.
-  /// </summary>
-  public static DMeeple? AtPosition(this GameState state, DPosition position)
-  {
-    try
-    {
-      return state.Meeple.First(m => (
-        m.State == DMeeple.MeepleState.InQueue
-        && m.Position.Current != null && m.Position.Current.Equals(position)
-      ));
-    }
-    catch (InvalidOperationException e)
-    {
-      return null;
-    }
-  }
   
   public static List<DWorker> AtTilePosition(this GameState state, DActionPosition position)
   {
@@ -117,7 +120,7 @@ public static class GameStateUtils
   public static bool IsInjured(this DMeeple meeple)
   {
     return (
-      meeple.GetType() == typeof(DVillager)
+      meeple.GetType().IsSubclassOf(typeof(DVillager))
       && ((DVillager) meeple).Health.Current == DVillager.HealthStates.Injrued
     );
   }
@@ -125,7 +128,7 @@ public static class GameStateUtils
   public static bool IsHealthy(this DMeeple meeple)
   {
     return (
-      meeple.GetType() != typeof(DVillager)
+      !meeple.GetType().IsSubclassOf(typeof(DVillager))
       || ((DVillager) meeple).Health.Current == DVillager.HealthStates.Healthy
     );
   }
@@ -135,8 +138,7 @@ public static class GameStateUtils
   /// </summary>
   public static bool InjuredVillagerAtPosition(this GameState state, DPosition position)
   {
-    var meeple = state.AtPosition(position);
-    return meeple != null && meeple.IsInjured();
+    return state.AllAtPosition(position, m => m.IsInjured()).Length > 0;
   }
 
   /// <summary>
@@ -144,17 +146,15 @@ public static class GameStateUtils
   /// </summary>
   public static bool HealthyMeepleAtPosition(this GameState state, DPosition position)
   {
-    var meeple = state.AtPosition(position);
-    return meeple != null && meeple.IsHealthy();
+    return state.AllAtPosition(position, m => m.IsHealthy()).Length > 0;
   }
 
-  /// <summary>
-  /// Returns whether or not the given position on the board is empty.
-  /// </summary>
-  public static bool IsEmpty(this GameState state, DPosition position)
+  public static DKnight[] Vanguard(this GameState state)
   {
-    return state.AtPosition(position) == null;
-    }
+    return state.Knights.Where(knight => knight.State == DMeeple.MeepleState.OutOfBoard).ToArray();
+  }
+
+  // TODO: complete these
    /// <summary>
    /// Returns whether or not a particular piece is the highest priority
    /// </summary>

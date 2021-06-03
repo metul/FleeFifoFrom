@@ -11,7 +11,7 @@ public class Rules
   
   public const ushort WORKER_COUNT = 4;
 
-  public const ushort KNIGHT_COUNT = 4;
+  public const ushort KNIGHT_COUNT = 5;
 
   public const ushort ROWS = 5;
 

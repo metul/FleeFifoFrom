@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
+using UnityEngine;
 
 public class GameState
 {
@@ -54,12 +55,12 @@ public class GameState
 
     _initializeKnights();
     _initializeVillagers();
-    _drawMeeple();
 
     Meeple = new DMeeple[Villagers.Length + Knights.Length];
     Villagers.CopyTo(Meeple, 0);
     Knights.CopyTo(Meeple, Villagers.Length);
 
+    _drawMeeple();
     _initializeTurn();
   }
 
@@ -123,13 +124,29 @@ public class GameState
 
   private void _drawMeeple()
   {
-
-    // TODO: perhaps some knights also should be placed on the board?
     // TODO: maybe this shouldn't be here? this should be synced across the network.
+    // TODO: what are the rules for placing knights?
 
-    // place the knights
+    ushort cursor = 2;
 
-    TraverseBoard(p => DrawVillager().Draw(p));
+    foreach (var player in Players) {
+      if (cursor > Rules.ROWS)
+        break;
+
+      Knights
+        .First(knight => knight.Owner == player.Id)
+        .Retreat(new DPosition(cursor, (ushort) Random.Range(1, cursor)))
+      ;
+
+      cursor++;
+    }
+
+    TraverseBoard(p => {
+      if (IsEmpty(p))
+      {
+        DrawVillager().Draw(p);
+      }
+    });
   }
 
   private void _initializeTurn()
@@ -192,6 +209,32 @@ public class GameState
   {
     DVillager[] bag = VillagerBag();
     return bag[Random.Range(0, bag.Length)];
+  }
+
+  /// <summary>
+  /// Returns the meeple (nullable) at given position on the board.
+  /// </summary>
+  public DMeeple? AtPosition(DPosition position)
+  {
+    try
+    {
+      return Meeple.First(m => (
+        m.State == DMeeple.MeepleState.InQueue
+        && m.Position.Current != null && m.Position.Current.Equals(position)
+      ));
+    }
+    catch (InvalidOperationException e)
+    {
+      return null;
+    }
+  }
+
+  /// <summary>
+  /// Returns whether or not the given position on the board is empty.
+  /// </summary>
+  public bool IsEmpty(DPosition position)
+  {
+    return AtPosition(position) == null;
   }
   #endregion
 }

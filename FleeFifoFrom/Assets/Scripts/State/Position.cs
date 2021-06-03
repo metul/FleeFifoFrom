@@ -15,6 +15,11 @@ public class DPosition
     }
   }
 
+  public bool IsFinal
+  {
+    get => Row == 1 && Col == 1;
+  }
+
   public DPosition(ushort row, ushort col)
   {
     Row = row;
