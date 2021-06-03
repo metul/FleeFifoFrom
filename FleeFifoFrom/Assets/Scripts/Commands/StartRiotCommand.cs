@@ -18,13 +18,13 @@ public class StartRiotCommand : ActionCommand
   public override void Execute()
   {
     base.Execute();
-    GameState.Instance.PlayerById(_worker.Owner)?.Honor.Lose(1);
+    GameState.Instance.PlayerById(_worker.Owner)?.Honor.Lose();
   }
 
   public override void Reverse()
   {
     base.Reverse();
-    GameState.Instance.PlayerById(_worker.Owner)?.Honor.Earn(1);
+    GameState.Instance.PlayerById(_worker.Owner)?.Honor.Earn();
   }
 
   public override bool IsFeasibile()

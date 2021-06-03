@@ -30,7 +30,7 @@ public class RiotStepCommand : ActionCommand
             if (meeple.GetType().IsSubclassOf(typeof(DVillager)))
             {
                 ((DVillager) meeple).Injure();
-                GameState.Instance.PlayerById(_playerId)?.Honor.Lose(1);
+                GameState.Instance.PlayerById(_playerId)?.Honor.Lose();
             }
         }
 
@@ -51,7 +51,7 @@ public class RiotStepCommand : ActionCommand
             if (meeple.GetType().IsSubclassOf(typeof(DVillager)))
             {
                 ((DVillager) meeple).Heal();
-                GameState.Instance.PlayerById(_playerId)?.Honor.Earn(1);
+                GameState.Instance.PlayerById(_playerId)?.Honor.Earn();
             }
         }
 
