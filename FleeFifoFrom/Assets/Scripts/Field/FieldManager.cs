@@ -69,7 +69,7 @@ public class FieldManager : MonoBehaviour
 
     private void PopulateFieldRandomly()
     {
-        var meeple = GameState.Instance.MatchingMeepleOnBoard(m => true);
+        var meeple = GameState.Instance.Meeple; //MatchingMeepleOnBoard(m => true);
         foreach (var meep in meeple)
         {
             var tile = TileByPosition(meep.Position.Current);
@@ -104,18 +104,21 @@ public class FieldManager : MonoBehaviour
 
     private void PopulateBattlefield()
     {
-        // TODO: map to game state knights actually.
+        var vanguard = GameState.Instance.Vanguard();
+        ushort cursor = 0;
+
         foreach (var tiles in _battleField)
         {
             foreach (var tile in tiles)
             {
+                if (cursor >= vanguard.Length) {
+                    return;
+                }
+
                 var knight = Instantiate(_knightPrefab);
-                // TODO replace with actual knight from GameState
-                var dummyKnight = GameState.Instance.Knights[0];
-                knight.Initialize(dummyKnight, this);
-                
-                // set knights to current tile because they only a dummy core/pos right now
+                knight.Initialize(vanguard[cursor], this);
                 knight.SetTo(tile);
+                cursor++;
             }
         }
     }
@@ -128,8 +131,6 @@ public class FieldManager : MonoBehaviour
 
     public void Authorize(Tile tile, DWorker worker)
     {
-        // TODO replace dummy worker with real worker
-        // var dummyWorker = new DWorker(GameState.Instance.TurnPlayer().Id);
         CommandProcessor.Instance.ExecuteCommand(
             new AuthorizeCommand(0, GameState.Instance.TurnPlayer().Id, worker, tile.Meeples[0].Core)
         );
@@ -149,10 +150,28 @@ public class FieldManager : MonoBehaviour
         );
     }
 
-    public void Riot(List<Tile> path)
+    public void RiotStep(Tile from, Tile to)
     {
-        var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
-        CommandProcessor.Instance.ExecuteCommand(new RiotCommand(0,GameState.Instance.TurnPlayer().Id, worker, path));
+        var knight = (DKnight) GameState.Instance.AllAtPosition(from.Position, m => m.GetType() == typeof(DKnight))[0];
+        CommandProcessor.Instance.ExecuteCommand(
+            new RiotStepCommand(
+                0,
+                GameState.Instance.TurnPlayer().Id,
+                knight,
+                to.Position
+            )
+        );
+    }
+
+    public void StartRiot(Tile tile, DWorker worker)
+    {
+        var meeple = GameState.Instance.AtPosition(tile.Position);
+        CommandProcessor.Instance.ExecuteCommand(new StartRiotCommand(
+            0,
+            GameState.Instance.TurnPlayer().Id,
+            worker,
+            meeple
+        ));
     }
 
     public void Revive(Tile tile, DWorker worker)
@@ -203,19 +222,20 @@ public class FieldManager : MonoBehaviour
                 // StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.RiotChooseKnight:
-                // _storeRiotPath = new List<Tile>();
-                // _storeRiotPath.Add(tile);
-                // StateManager.GameState = StateManager.State.RiotChoosePath;
+                _storeTile = tile;
+                StateManager.GameState = StateManager.State.PayForAction;
                 break;
             case StateManager.State.RiotChoosePath:
-                // _storeRiotPath.Add(tile);
-                // if (tile.ID == Vector2.zero)
-                // {
-                //     Riot(_storeRiotPath);
-                //     StateManager.GameState = StateManager.State.Default;
-                // }
-                // else
-                // StateManager.GameState = StateManager.State.RiotChoosePath;
+                _storeSecondTile = _storeTile;
+                _storeTile = tile;
+                RiotStep(_storeSecondTile, _storeTile);
+
+                if (tile.Position.IsFinal)
+                {
+                    StateManager.GameState = StateManager.State.Default;
+                } else {
+                    StateManager.GameState = StateManager.State.RiotChoosePath;
+                }
                 break;
             case StateManager.State.Revive:
                 _storeTile = tile;
@@ -260,6 +280,10 @@ public class FieldManager : MonoBehaviour
                 _storeTile = null;
                 StateManager.GameState = StateManager.State.Default;
                 break;
+            case StateManager.State.RiotChooseKnight:
+                StartRiot(_storeTile, worker);
+                StateManager.GameState = StateManager.State.RiotChoosePath;
+                break;
         }
     }
     
@@ -286,7 +310,7 @@ public class FieldManager : MonoBehaviour
                 EnableKnights();
                 break;
             case StateManager.State.RiotChoosePath:
-                EnableRiotPath(_storeRiotPath);
+                EnableRiotPath();
                 break;
             case StateManager.State.Revive:
                 EnableInjuryBased(true);
@@ -409,9 +433,9 @@ public class FieldManager : MonoBehaviour
         });
     }
 
-    private void EnableRiotPath(List<Tile> path)
+    private void EnableRiotPath()
     {
-        var last = path[path.Count - 1].Position;
+        var last = _storeTile.Position;
 
         GameState.Instance.TraverseBoard(p =>
         {

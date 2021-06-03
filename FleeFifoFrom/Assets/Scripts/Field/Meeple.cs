@@ -32,19 +32,13 @@ public abstract class Meeple: MonoBehaviour
         
         SetTo(Core.Position.Current);
         core.Position.OnChange += position => { Debug.Log(position); SetTo(position); };
-        
-        
-        // TODO replace tapped / default states with new mechanic (visually)
+        OnDefault += () => { SetColor(Color.gray); };
+    }
+
+    protected void SetColor(Color color)
+    {
         var rend = GetComponent<Renderer>();
-        OnDefault += () => { rend.material.color = Color.white; };
-        OnTapped += () => { rend.material.color = Color.yellow; };
-        
-        Core.QueueState.OnChange += q => {
-            if (q == DMeeple.MeepleQueueState.Tapped)
-                OnTapped.Invoke();
-            else if (Core.IsHealthy())
-                OnDefault.Invoke();
-        };
+        rend.material.color = color;
     }
 
     public void Initialize(DMeeple core)

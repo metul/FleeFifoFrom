@@ -11,15 +11,14 @@ public class Villager : Meeple
 
     private void Awake()
     {
-        var rend = GetComponent<Renderer>();
-        OnInjured += () => { rend.material.color = Color.red; };
+        OnInjured += () => { SetColor(Color.red); };
     }
 
     public override void Initialize(DMeeple core, FieldManager fieldManager)
     {
         base.Initialize(core, fieldManager);
 
-        if (core.GetType() == typeof(DVillager))
+        if (core.GetType().IsSubclassOf(typeof(DVillager)))
         {
             ((DVillager) core).Health.OnChange += h => {
                 if (h == DVillager.HealthStates.Injured)
