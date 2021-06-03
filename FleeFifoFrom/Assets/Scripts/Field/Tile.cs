@@ -13,6 +13,7 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
     }
     public bool Interactable { get; set; }
     public List<Meeple> Meeples { get; private set; } = new List<Meeple>();
+    //public List<Villager> Villagers { get; private set; } = new List<Villager>();
     public Transform Transform { get; private set; }
 
     [SerializeField] private Color _heightlightColor;

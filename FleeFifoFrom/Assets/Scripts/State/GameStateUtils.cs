@@ -118,7 +118,7 @@ public static class GameStateUtils
   {
     return (
       meeple.GetType() == typeof(DVillager)
-      && ((DVillager) meeple).Health.Current == DVillager.HealthStates.Injrued
+      && ((DVillager) meeple).Health.Current == DVillager.HealthStates.Injured
     );
   }
 

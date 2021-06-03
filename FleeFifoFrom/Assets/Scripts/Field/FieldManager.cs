@@ -155,10 +155,10 @@ public class FieldManager : MonoBehaviour
         CommandProcessor.Instance.ExecuteCommand(new RiotCommand(0,GameState.Instance.TurnPlayer().Id, worker, path));
     }
 
-    public void Revive(Tile tile)
+    public void Revive(Tile tile, DWorker worker)
     {
-        var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
-        CommandProcessor.Instance.ExecuteCommand(new ReviveCommand(0,GameState.Instance.TurnPlayer().Id, worker, tile));
+        //var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
+        CommandProcessor.Instance.ExecuteCommand(new ReviveCommand(0,GameState.Instance.TurnPlayer().Id, worker, tile.Meeples[0].Core));
     }
 
     public void Reprioritize(Tile tile)
@@ -256,7 +256,7 @@ public class FieldManager : MonoBehaviour
                 StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.Revive:
-                Revive(_storeTile);
+                Revive(_storeTile, worker);
                 _storeTile = null;
                 StateManager.GameState = StateManager.State.Default;
                 break;

@@ -22,7 +22,7 @@ public class Villager : Meeple
         if (core.GetType() == typeof(DVillager))
         {
             ((DVillager) core).Health.OnChange += h => {
-                if (h == DVillager.HealthStates.Injrued)
+                if (h == DVillager.HealthStates.Injured)
                     OnInjured?.Invoke();
                 else
                     OnDefault?.Invoke();

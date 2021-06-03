@@ -4,7 +4,7 @@ public class DVillager : DMeeple
 {
   public enum HealthStates
   {
-    Injrued,   // --> the villager is injured
+    Injured,   // --> the villager is injured
     Healthy,   // --> the villager is not injured
   }
 
@@ -13,7 +13,7 @@ public class DVillager : DMeeple
 
   public void Injure()
   {
-    Health.Current = HealthStates.Injrued;
+    Health.Current = HealthStates.Injured;
     QueueState.Current = DMeeple.MeepleQueueState.UnTapped;
   }
 
