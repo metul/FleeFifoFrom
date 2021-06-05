@@ -33,10 +33,7 @@ public class SwapCommand : ActionCommand
         return (
             _first != null && _second != null &&
             _first.IsHealthy() && _second.IsHealthy() &&
-            (
-                _first.Position.Current.CanMoveTo(_second.Position.Current)
-                || _second.Position.Current.CanMoveTo(_first.Position.Current)
-            )
+            _first.Position.Current.Neighbors(_second.Position.Current)
         );
     }
 }

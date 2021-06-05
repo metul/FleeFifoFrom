@@ -319,9 +319,7 @@ public class FieldManager : MonoBehaviour
                 EnableInjuryBased(false);
                 break;
             case StateManager.State.Swap2:
-                EnableInjuryBased(false);
-                // TODO replace with EnableNeighbours
-                _storeSecondTile.Interactable = false;
+                EnableNeighbours();
                 break;
             case StateManager.State.Riot:
                 EnableInjuryBased(false);
@@ -396,6 +394,17 @@ public class FieldManager : MonoBehaviour
             {
                 tile.Interactable = GameState.Instance.HealthyMeepleAtPosition(p);
             }
+        });
+    }
+
+    private void EnableNeighbours(bool overwriteInjured = false)
+    {
+        GameState.Instance.TraverseBoard(p =>
+        {
+            var tile = TileByPosition(p);
+            tile.Interactable = _storeSecondTile.Position.Neighbors(tile.Position) && 
+            (!overwriteInjured || GameState.Instance.HealthyMeepleAtPosition(p));
+            Debug.Log($"Tile {tile.Position}: {tile.Interactable}");
         });
     }
 
