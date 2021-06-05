@@ -5,8 +5,7 @@ public class DMeeple : DObject
   {
     OutOfBoard, // --> the meeple is for some reason not on the board yet
     InQueue,    // --> the meeple is in the queue
-    // TODO: maybe rename this to rescued.
-    Authorized, // --> the meeple is authorized to enter the castle
+    Rescued // --> the meeple is authorized to enter the castle
   }
 
   public enum MeepleQueueState
@@ -33,7 +32,7 @@ public class DMeeple : DObject
   // --> based on the meeple being authorized.
   protected void _authorize()
   {
-    State = MeepleState.Authorized;
+    State = MeepleState.Rescued;
     Position.Current = null;
   }
 

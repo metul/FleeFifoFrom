@@ -7,15 +7,6 @@ public abstract class Meeple: MonoBehaviour
 {
     public DMeeple Core { get; private set; }
 
-    // public bool Interactable
-    // {
-    //     set
-    //     {
-    //         if(_tile != null)
-    //             _tile.Interactable = value;
-    //     }
-    // }
-
     protected Action OnDefault;
     protected Action OnTapped;
 

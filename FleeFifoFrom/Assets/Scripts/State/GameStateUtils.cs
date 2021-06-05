@@ -89,7 +89,7 @@ public static class GameStateUtils
   /// </summary>
   public static DVillager[] AuthorizedVillagers(this GameState state, DPlayer.ID player)
   {
-    return state.Villagers.Where(v => v.State == DMeeple.MeepleState.Authorized && v.Rescuer == player).ToArray();
+    return state.Villagers.Where(v => v.State == DMeeple.MeepleState.Rescued && v.Rescuer == player).ToArray();
   }
 
   /// <summary>
