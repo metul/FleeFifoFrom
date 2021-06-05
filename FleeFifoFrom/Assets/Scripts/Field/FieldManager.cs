@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
 using Random = UnityEngine.Random;
@@ -23,7 +24,8 @@ public class FieldManager : MonoBehaviour
     // store tile references for multi step actions
     private Tile _storeTile;
     private Tile _storeSecondTile;
-    private List<Tile> _storeRiotPath;
+    private List<Tile> _storeRiotPath = new List<Tile>();
+    private List<DVillager> _drawnVillagersThisTurn = new List<DVillager>();
 
     #endregion
 
@@ -111,7 +113,8 @@ public class FieldManager : MonoBehaviour
         {
             foreach (var tile in tiles)
             {
-                if (cursor >= vanguard.Length) {
+                if (cursor >= vanguard.Length)
+                {
                     return;
                 }
 
@@ -142,7 +145,7 @@ public class FieldManager : MonoBehaviour
         CommandProcessor.Instance.ExecuteCommand(
             new SwapCommand(
                 0, // --> TODO: should this be zero?
-                GameState.Instance.TurnPlayer().Id, 
+                GameState.Instance.TurnPlayer().Id,
                 worker,
                 GameState.Instance.AtPosition(tile1.Position),
                 GameState.Instance.AtPosition(tile2.Position)
@@ -177,7 +180,8 @@ public class FieldManager : MonoBehaviour
     public void Revive(Tile tile, DWorker worker)
     {
         //var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
-        CommandProcessor.Instance.ExecuteCommand(new ReviveCommand(0,GameState.Instance.TurnPlayer().Id, worker, tile.Meeples[0].Core));
+        CommandProcessor.Instance.ExecuteCommand(new ReviveCommand(0, GameState.Instance.TurnPlayer().Id, worker,
+            tile.Meeples[0].Core));
     }
 
     public void Reprioritize(Tile tile)
@@ -190,9 +194,29 @@ public class FieldManager : MonoBehaviour
         CommandProcessor.Instance.ExecuteCommand(new RetreatCommand(0, battlefrontTile, tile));
     }
 
-    public void Villager(Meeple villager, Tile tile)
+    public void Villager(Tile tile)
     {
-        CommandProcessor.Instance.ExecuteCommand(new DrawVillagerCommand(0, villager, tile));
+        DVillager villager = null;
+        foreach (var dVillager in _drawnVillagersThisTurn)
+        {
+            // if there is an villager in this list, that is not on the board
+            // it must be due to an undo of the draw villager command
+            // draw this villager again, to have consistent undo/redo
+            if (dVillager.State == DMeeple.MeepleState.OutOfBoard)
+            {
+                villager = dVillager;
+                break;
+            }
+        }
+        
+        // no undrawn villager in list, draw new one
+        if (villager == null)
+        {
+            villager = GameState.Instance.DrawVillager();
+            _drawnVillagersThisTurn.Add(villager);
+        }
+
+        CommandProcessor.Instance.ExecuteCommand(new DrawVillagerCommand(0, villager, tile.Position));
     }
 
     #endregion
@@ -233,9 +257,12 @@ public class FieldManager : MonoBehaviour
                 if (tile.Position.IsFinal)
                 {
                     StateManager.GameState = StateManager.State.Default;
-                } else {
+                }
+                else
+                {
                     StateManager.GameState = StateManager.State.RiotChoosePath;
                 }
+
                 break;
             case StateManager.State.Revive:
                 _storeTile = tile;
@@ -255,7 +282,7 @@ public class FieldManager : MonoBehaviour
                 StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.Villager:
-                Villager(Instantiate(GetRandomVillagerPrefab()), tile);
+                Villager(tile);
                 StateManager.GameState = StateManager.State.Default;
                 break;
         }
@@ -287,7 +314,7 @@ public class FieldManager : MonoBehaviour
                 break;
         }
     }
-    
+
 
     public void UpdateInteractability()
     {
@@ -331,7 +358,7 @@ public class FieldManager : MonoBehaviour
             case StateManager.State.Default:
                 _storeTile = null;
                 _storeSecondTile = null;
-                _storeRiotPath = null;
+                _storeRiotPath.Clear();
                 DisableAllTiles();
                 DisableBattlefield();
                 break;
@@ -410,14 +437,14 @@ public class FieldManager : MonoBehaviour
                 {
                     nonInjuredInPreviousRow = nonInjuredInCurrentRow;
                     nonInjuredInCurrentRow = false;
-                    
+
                     if (nonInjuredInPreviousRow)
                     {
                         tile.Interactable = false;
                         return;
                     }
                 }
-                
+
                 // check meeple
                 DMeeple meeple = GameState.Instance.AtPosition(p);
                 if (meeple != null)
@@ -478,13 +505,13 @@ public class FieldManager : MonoBehaviour
         }
     }
 
-    #endregion
-
-    // TODO move villager generation to game manager?
-    // TODO will eventually need to seed villagers with a specific probability
-    // TODO can use random values for now
-    private Meeple GetRandomVillagerPrefab()
+    public void EndTurnReset()
     {
-        return _villagerPrefabs[Random.Range(0, _villagerPrefabs.Length)];
+        _storeTile = null;
+        _storeSecondTile = null;
+        _storeRiotPath.Clear();
+        _drawnVillagersThisTurn.Clear();
     }
+    
+    #endregion
 }
