@@ -48,12 +48,27 @@ public abstract class Meeple: MonoBehaviour
 
     public void SetTo(Tile tile)
     {
+        if (_tile == tile)
+            return;
+
         if (_tile != null)
             _tile.Meeples.Remove(this);
         _tile = tile;
         _tile.Meeples.Add(this);
         _transform.SetParent(_tile.Transform);
-        _transform.localPosition = Vector3.zero;
+        if (_tile.Meeples.Count > 1)
+        {
+            float angle = (float) _tile.Meeples.Count;
+            _transform.localPosition = new Vector3
+                (((float) Math.Cos(angle)) * .6f,
+                0,
+                -((float) Math.Sin(angle)) * .6f
+            );
+        }
+        else
+        {
+            _transform.localPosition = Vector3.zero;
+        }
     }
 
     protected void SetTo(DPosition position)

@@ -134,7 +134,6 @@ public class ButtonManager : MonoBehaviour
     {
         if (position.IsActionTile)
         {
-            Debug.Log(position);
             return _actionTiles.First(a => a.Id == position.Tile);
         }
         if(position.IsPlayerTile)

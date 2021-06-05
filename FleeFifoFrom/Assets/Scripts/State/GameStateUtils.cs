@@ -31,17 +31,26 @@ public static class GameStateUtils
   /// <summary>
   /// Will returns all meeple at position matching given criteria
   /// </summary>
+  public static DMeeple[] AllAtPositions(
+    this GameState state,
+    DPosition[] positions,
+    System.Func<DMeeple, bool> check
+  )
+  {
+    return state.Meeple.Where(m => (
+        m.State == DMeeple.MeepleState.InQueue
+        && m.Position.Current != null && Array.Exists(positions, p => p.Equals(m.Position.Current))
+        && check(m)
+    )).ToArray();
+  }
+
   public static DMeeple[] AllAtPosition(
     this GameState state,
     DPosition position,
     System.Func<DMeeple, bool> check
   )
   {
-    return state.Meeple.Where(m => (
-        m.State == DMeeple.MeepleState.InQueue
-        && m.Position.Current != null && m.Position.Current.Equals(position)
-        && check(m)
-    )).ToArray();
+    return state.AllAtPositions(new DPosition[]{ position }, check);
   }
 
   public static DMeeple[] AllAtPosition(this GameState state, DPosition position)

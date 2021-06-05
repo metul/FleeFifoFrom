@@ -36,7 +36,6 @@ public class Worker : MonoBehaviour
 
     private void SetTo(UiTile tile)
     {
-        Debug.Log(tile);
         if(_tile != null)
             _tile.Workers.Remove(this);
         _tile = tile;
