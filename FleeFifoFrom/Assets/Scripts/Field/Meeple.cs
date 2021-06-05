@@ -31,7 +31,7 @@ public abstract class Meeple: MonoBehaviour
         _transform = transform;
         
         SetTo(Core.Position.Current);
-        core.Position.OnChange += position => { Debug.Log(position); SetTo(position); };
+        core.Position.OnChange += SetTo;
         OnDefault += () => { SetColor(Color.gray); Debug.Log("Change Color debug!"); };
     }
 

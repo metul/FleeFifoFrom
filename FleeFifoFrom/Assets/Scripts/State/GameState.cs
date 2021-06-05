@@ -40,8 +40,16 @@ public class GameState
   public DMeeple[] Meeple { get; private set; }
   public DVillager[] Villagers { get; private set; }
   public readonly DPlayer[] Players;
+  
   public ushort TurnPlayerIndex;
   public TurnTypes TurnType;
+
+  // notification for the visual managers that some changes happened
+  public Action<TurnTypes> OnTurnChange;
+  public Action OnUndo;
+  
+  public Observable<int> TurnActionCount;
+  public bool TurnActionPossible => TurnActionCount.Current < Rules.TURN_ACTION_LIMIT;
 
   #endregion
 
@@ -60,8 +68,12 @@ public class GameState
     Villagers.CopyTo(Meeple, 0);
     Knights.CopyTo(Meeple, Villagers.Length);
 
+    TurnActionCount = new Observable<int>(0);
+
     _drawMeeple();
     _initializeTurn();
+    
+    // OnTurnChange.Invoke(TurnType);
   }
 
   private void _initializeBoard()
@@ -163,6 +175,9 @@ public class GameState
       TurnType = TurnTypes.ActionTurn;
       TurnPlayerIndex = (ushort) ((TurnPlayerIndex - 1) % Players.Length);
     }
+
+    TurnActionCount.Current = 0;
+    OnTurnChange?.Invoke(TurnType);
   }
 
   public DPlayer TurnPlayer()
@@ -208,17 +223,10 @@ public class GameState
   /// </summary>
   public DMeeple? AtPosition(DPosition position)
   {
-    try
-    {
-      return Meeple.First(m => (
+    return Meeple.FirstOrDefault(m => (
         m.State == DMeeple.MeepleState.InQueue
         && m.Position.Current != null && m.Position.Current.Equals(position)
       ));
-    }
-    catch (InvalidOperationException e)
-    {
-      return null;
-    }
   }
 
   /// <summary>

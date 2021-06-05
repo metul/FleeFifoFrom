@@ -1,4 +1,4 @@
-public class DrawVillagerCommand : ResetCommand
+public class DrawVillagerCommand : Command
 {
     private DPosition _position;
     private DVillager _villager;
@@ -11,14 +11,12 @@ public class DrawVillagerCommand : ResetCommand
 
     public override void Execute()
     {
-        base.Execute();
         _villager.Draw(_position);
     }
 
     public override void Reverse()
     {
-        base.Reverse();
-       _villager.UnDraw();
+        _villager.UnDraw();
     }
 
     public override bool IsFeasibile()

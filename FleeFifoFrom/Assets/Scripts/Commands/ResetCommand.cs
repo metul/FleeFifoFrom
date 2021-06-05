@@ -18,11 +18,13 @@ public abstract class ResetCommand : Command
     {
         // TODO: Do reset specific stuff?
         // TODO: Decrement reset pawn. I think the remaining will be command specific
+        GameState.Instance.TurnActionCount.Current++;
     }
 
     public override void Reverse()
     {
         // TODO: Undo reset specific stuff?
         // TODO: Increment reset pawn. I think the remaining will be command specific
+        GameState.Instance.TurnActionCount.Current--;
     }
 }

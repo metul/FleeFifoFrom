@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
@@ -196,18 +197,10 @@ public class FieldManager : MonoBehaviour
 
     public void Villager(Tile tile)
     {
-        DVillager villager = null;
-        foreach (var dVillager in _drawnVillagersThisTurn)
-        {
-            // if there is an villager in this list, that is not on the board
-            // it must be due to an undo of the draw villager command
-            // draw this villager again, to have consistent undo/redo
-            if (dVillager.State == DMeeple.MeepleState.OutOfBoard)
-            {
-                villager = dVillager;
-                break;
-            }
-        }
+        // if there is an villager in this list, that is not on the board
+        // it must be due to an undo of the draw villager command
+        // draw this villager again, to have consistent undo/redo
+        DVillager villager = _drawnVillagersThisTurn.FirstOrDefault(v => v.State == DMeeple.MeepleState.OutOfBoard);
         
         // no undrawn villager in list, draw new one
         if (villager == null)

@@ -26,7 +26,6 @@ public class DWorker : DObject
   
   public void Consume(DActionPosition.TileId tileId)
   {
-    Debug.Log("CONSUMED!");
     Position.Current = new DActionPosition(tileId);
   }
 

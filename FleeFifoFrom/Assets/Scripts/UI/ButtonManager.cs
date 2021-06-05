@@ -1,11 +1,15 @@
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ButtonManager : MonoBehaviour
 {
     [SerializeField] private Worker _workerPrefab;
     [SerializeField] private PlayerTile _playerTilePrefab;
-    
+
+    [SerializeField] private Button[] _actionButtons;
+    [SerializeField] private Button[] _resetButtons;
+    [SerializeField] private Button _villagerButton;
     [SerializeField] private ActionTile[] _actionTiles;
     [SerializeField] private Transform _playerTileAnchor;
     private PlayerTile[] _playerTiles;
@@ -45,6 +49,16 @@ public class ButtonManager : MonoBehaviour
         }
         
         StateManager.OnStateUpdate += UpdateInteractability;
+        GameState.Instance.OnTurnChange += turn =>
+        {
+            UpdateInteractability();
+            CommandProcessor.Instance.ClearStack();
+            _fieldManager.EndTurnReset();
+            // TODO highlight current player
+            Debug.Log($"New turn started: {GameState.Instance.TurnPlayer().Name}'s {turn}");
+        };
+
+        GameState.Instance.OnUndo += () => UpdateInteractability();
     }
 
     private void UpdateInteractability()
@@ -72,13 +86,16 @@ public class ButtonManager : MonoBehaviour
             case StateManager.State.PayForAction:
                 EnableElements(false, false, true);
                 break;
+            case StateManager.State.Default:
+                EnableElements(false, false, false, buttons: true);
+                break;
             default:
                 EnableElements(false, false, false);
                 break;
         }
     }
 
-    private void EnableElements(bool tiles, bool worker, bool playerWorker, bool opponentTileWorkers = false)
+    private void EnableElements(bool tiles, bool worker, bool playerWorker, bool opponentTileWorkers = false, bool buttons = false)
     {
         foreach (var actionTile in _actionTiles)
         {
@@ -95,11 +112,26 @@ public class ButtonManager : MonoBehaviour
             var currentPlayer = GameState.Instance.TurnPlayer().Id == playerTile.Id;
             playerTile.SetWorkerInteractable(playerWorker && currentPlayer);
         }
+        
+        var actionButtons = buttons 
+                     && GameState.Instance.TurnActionPossible 
+                     && GameState.Instance.TurnType == GameState.TurnTypes.ActionTurn;
+
+        foreach (var actionButton in _actionButtons)
+            actionButton.interactable = actionButtons;
+
+        var resetButtons = buttons 
+                           && GameState.Instance.TurnActionPossible 
+                           && GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn;
+        
+        foreach (var resetButton in _resetButtons)
+            resetButton.interactable = resetButtons;
+
+        _villagerButton.interactable = buttons && GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn;
     }
 
     public UiTile ActionTileByPosition(DActionPosition position)
     {
-        Debug.Log("AAAAA");
         if (position.IsActionTile)
         {
             Debug.Log(position);
@@ -114,7 +146,6 @@ public class ButtonManager : MonoBehaviour
     
     public void OnActionTileClick(ActionTile actionTile)
     {
-        Debug.Log("Action Tile has been clicked");
         switch (StateManager.GameState)
         {
             case StateManager.State.Recall:
@@ -229,9 +260,6 @@ public class ButtonManager : MonoBehaviour
     public void EndTurn()
     {
         GameState.Instance.RotateTurn();
-        CommandProcessor.Instance.ClearStack();
-        _fieldManager.EndTurnReset();
-        Debug.Log($"New turn started: {GameState.Instance.TurnPlayer().Name}'s {GameState.Instance.TurnType}");
     }
     
     #endregion

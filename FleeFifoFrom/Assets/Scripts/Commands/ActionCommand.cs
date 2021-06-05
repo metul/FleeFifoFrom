@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public abstract class ActionCommand : Command
 {
     protected DActionPosition.TileId _actionId;
@@ -22,6 +24,7 @@ public abstract class ActionCommand : Command
         if (_worker != null)
         {
             _worker.Consume(_actionId);
+            GameState.Instance.TurnActionCount.Current++;
         }
     }
 
@@ -30,6 +33,7 @@ public abstract class ActionCommand : Command
         if (_worker != null)
         {
             _worker.UnConsume(_playerId);
+            GameState.Instance.TurnActionCount.Current--;
         }
     }
 }

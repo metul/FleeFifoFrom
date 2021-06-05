@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -37,6 +38,7 @@ public sealed class CommandProcessor
     public void Undo()
     {
         _commands.Pop()?.Reverse();
+        GameState.Instance.OnUndo?.Invoke();
     }
 
     /// <summary>

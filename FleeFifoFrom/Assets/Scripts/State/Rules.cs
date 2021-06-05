@@ -29,4 +29,6 @@ public class Rules
   public const ushort ELDERS_COUNT = 12;
 
   public const ushort CHILDREN_COUNT = 12;
+
+  public const ushort TURN_ACTION_LIMIT = 2;
 }
