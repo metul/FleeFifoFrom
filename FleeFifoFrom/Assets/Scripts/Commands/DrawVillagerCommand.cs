@@ -1,32 +1,37 @@
 public class DrawVillagerCommand : ResetCommand
 {
-    private DPlayer.ID _playerId;
-    private DVillager _villager;
-    private DPosition _position;
+    private Tile _tile;
+    private Meeple _villager;
+    //TODO: Switch to villager class
 
-    // Step 1: Pick random villager from remaining pool
-    // VillagerBag.DrawVillager() outside this command
-    // TODO: Draw Villager: show villager preview before init
-    public DrawVillagerCommand(ulong issuerID, DVillager villager, DPosition position) : base(issuerID)
+
+    public DrawVillagerCommand(ulong issuerID, Meeple villager, Tile tile) : base(issuerID)
     {
+        _tile = tile;
         _villager = villager;
-        _position = position;
     }
 
     public override void Execute()
     {
         base.Execute();
-        _villager.Draw(_position);
+        // Step 1: Pick random villager from remaining pool
+        // TODO: Ideally need to view villager and then choose tile. 
+        // TODO: Can do the reverse order for now, i.e. tile then vill
+        //TODO:
+        VillagerBag.DrawVillager();
+        _villager.SetTo(_tile);
     }
 
     public override void Reverse()
     {
         base.Reverse();
-        _villager.UnDraw();
+        // _tile.RemoveMeeple();
+        // TODO don't call destroy from command, this should be not a mono behaviour
+        // Destroy(_villager.gameObject);
     }
 
     public override bool IsFeasibile()
     {
-        return GameState.Instance.InBag(_villager);
+        return true;
     }
 }

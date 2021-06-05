@@ -191,7 +191,7 @@ public class GameState
       }
     }
   }
-  
+
   public DVillager[] VillagerBag()
   {
     return Villagers.Where(v => v.State == DMeeple.MeepleState.OutOfBoard).ToArray();
@@ -228,11 +228,5 @@ public class GameState
   {
     return AtPosition(position) == null;
   }
-
-  public bool InBag(DVillager villager)
-  {
-    return Array.Find(VillagerBag(), v => v.Equals(villager)) != null;
-  }
-
   #endregion
 }

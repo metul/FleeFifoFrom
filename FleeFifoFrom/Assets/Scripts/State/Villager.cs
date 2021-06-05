@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class DVillager : DMeeple
@@ -11,9 +10,6 @@ public class DVillager : DMeeple
 
   public Observable<HealthStates> Health = new Observable<HealthStates>(HealthStates.Healthy);
   public DPlayer.ID? Rescuer { get; protected set; }
-
-  public Action<DVillager> OnInitVisual;
-  public Action<DVillager> OnDestroyVisual;
 
   public void Injure()
   {
@@ -44,7 +40,6 @@ public class DVillager : DMeeple
     {
       State = MeepleState.InQueue;
       Position.Current = position;
-      OnInitVisual.Invoke(this);
     }
   }
 
@@ -54,7 +49,6 @@ public class DVillager : DMeeple
     {
       State = MeepleState.OutOfBoard;
       Position.Current = null;
-      OnDestroyVisual.Invoke(this);
     }
   }
 }
