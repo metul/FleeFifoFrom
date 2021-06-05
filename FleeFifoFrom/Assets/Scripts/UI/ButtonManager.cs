@@ -99,10 +99,8 @@ public class ButtonManager : MonoBehaviour
 
     public UiTile ActionTileByPosition(DActionPosition position)
     {
-        Debug.Log("AAAAA");
         if (position.IsActionTile)
         {
-            Debug.Log(position);
             return _actionTiles.First(a => a.Id == position.Tile);
         }
         if(position.IsPlayerTile)

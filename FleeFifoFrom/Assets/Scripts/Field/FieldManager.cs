@@ -290,7 +290,6 @@ public class FieldManager : MonoBehaviour
 
     public void InvokeAction(StateManager.State action, DWorker worker)
     {
-        //Debug.Log(action);
         switch (action)
         {
             case StateManager.State.Authorize:

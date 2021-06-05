@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 [Serializable]
 public class DPosition
@@ -52,6 +53,14 @@ public class DPosition
       ) &&
       !Equals(other)
     );
+  }
+
+  public DPosition[] Predecessors()
+  {
+    return (new DPosition[]{
+      new DPosition((ushort) (Row + 1), (ushort) (Col + 1)),
+      new DPosition((ushort) (Row + 1), Col),
+    }).Where(p => p.IsValid).ToArray();
   }
 
   // TODO: also perhaps we need a CanJumpTo() for kids?
