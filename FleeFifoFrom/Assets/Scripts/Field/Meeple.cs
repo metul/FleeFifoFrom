@@ -48,6 +48,9 @@ public abstract class Meeple: MonoBehaviour
 
     public void SetTo(Tile tile)
     {
+        if (_tile == tile)
+            return;
+
         if (_tile != null)
             _tile.Meeples.Remove(this);
         _tile = tile;

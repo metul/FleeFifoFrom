@@ -72,7 +72,7 @@ public class RiotStepCommand : ActionCommand
         base.Reverse();
         if (_to.IsFinal)
         {
-            foreach (var coriotor in _coriotors.Reverse())
+            foreach (var coriotor in _coriotors)
             {
                 ((DVillager) coriotor).Deauthorize(_coriotorPositions[coriotor.ID]);
             }
@@ -82,7 +82,7 @@ public class RiotStepCommand : ActionCommand
         }
         else
         {
-            foreach (var coriotor in _coriotors.Reverse())
+            foreach (var coriotor in _coriotors)
             {
                 coriotor.Position.Current = _coriotorPositions[coriotor.ID];
             }
