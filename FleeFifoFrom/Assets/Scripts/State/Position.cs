@@ -25,11 +25,6 @@ public class DPosition
   {
     Row = row;
     Col = col;
-
-    if (!IsValid)
-    {
-      throw new System.Exception($"Invalid Position: {Row}, {Col}");
-    }
   }
 
   public bool CanMoveTo(DPosition other)

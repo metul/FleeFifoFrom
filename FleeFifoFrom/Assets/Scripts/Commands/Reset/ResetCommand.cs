@@ -27,4 +27,9 @@ public abstract class ResetCommand : Command
         // TODO: Increment reset pawn. I think the remaining will be command specific
         GameState.Instance.TurnActionCount.Current--;
     }
+
+    public override bool IsFeasible()
+    {
+        return GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn;
+    }
 }

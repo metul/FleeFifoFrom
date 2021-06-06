@@ -22,8 +22,8 @@ public class RetreatCommand : ResetCommand
         // _battleFrontTile.SetMeeple(knight);
     }
 
-  public override bool IsFeasibile()
+  public override bool IsFeasible()
   {
-    return true;
+    return base.IsFeasible();
   }
 }

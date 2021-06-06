@@ -34,8 +34,8 @@ public class RecallCommand: ResetCommand
             _workers[i].Return(_controlling[i], _tileId);
     }
 
-    public override bool IsFeasibile()
+    public override bool IsFeasible()
     {
-        return true;
+        return base.IsFeasible();
     }
 }

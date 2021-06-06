@@ -25,5 +25,5 @@ public abstract class Command
     /// </summary>
     public abstract void Reverse();
 
-    public abstract bool IsFeasibile();
+    public abstract bool IsFeasible();
 }

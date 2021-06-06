@@ -12,15 +12,9 @@ public class ObjectiveCommand : ActionCommand
         //CurrentPlayer.remove(Card)
     }
 
-    public override bool IsFeasibile()
+    public override bool IsFeasible()
     {
-        // TODO: this is dummy?
-        // if (CurrentPlayer.CardCount >= 5)
-        // {
-        //     return true;
-        // }
-
-        return true;
+        return base.IsFeasible();
     }
 
     public ObjectiveCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker) : base(issuerID, playerId, worker)

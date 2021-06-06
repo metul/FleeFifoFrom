@@ -140,9 +140,8 @@ public class FieldManager : MonoBehaviour
         );
     }
 
-    public void Swap(Tile tile1, Tile tile2)
+    public void Swap(Tile tile1, Tile tile2, DWorker worker)
     {
-        var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
         CommandProcessor.Instance.ExecuteCommand(
             new SwapCommand(
                 0, // --> TODO: should this be zero?
@@ -232,12 +231,6 @@ public class FieldManager : MonoBehaviour
                 _storeTile = tile;
                 StateManager.GameState = StateManager.State.PayForAction;
                 break;
-            case StateManager.State.Riot:
-                // _storeRiotPath = new List<Tile>();
-                // _storeRiotPath.Add(tile);
-                // Riot(_storeRiotPath);
-                // StateManager.GameState = StateManager.State.Default;
-                break;
             case StateManager.State.RiotChooseKnight:
                 _storeTile = tile;
                 StateManager.GameState = StateManager.State.PayForAction;
@@ -248,13 +241,9 @@ public class FieldManager : MonoBehaviour
                 RiotStep(_storeSecondTile, _storeTile);
 
                 if (tile.Position.IsFinal)
-                {
                     StateManager.GameState = StateManager.State.Default;
-                }
                 else
-                {
                     StateManager.GameState = StateManager.State.RiotChoosePath;
-                }
 
                 break;
             case StateManager.State.Revive:
@@ -291,7 +280,7 @@ public class FieldManager : MonoBehaviour
                 StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.Swap2:
-                Swap(_storeTile, _storeSecondTile);
+                Swap(_storeTile, _storeSecondTile, worker);
                 _storeTile = _storeSecondTile = null;
                 StateManager.GameState = StateManager.State.Default;
                 break;

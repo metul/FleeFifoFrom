@@ -27,8 +27,8 @@ public class StartRiotCommand : ActionCommand
     GameState.Instance.PlayerById(_worker.Owner)?.Honor.Earn();
   }
 
-  public override bool IsFeasibile()
+  public override bool IsFeasible()
   {
-    return _meeple.GetType() == typeof(DKnight);
+    return base.IsFeasible() && _meeple.GetType() == typeof(DKnight);
   }
 }

@@ -34,8 +34,8 @@ public class ReprioritizeCommand : ResetCommand
         //_tile.Meeple.CurrentState = _originalState;
     }
 
-  public override bool IsFeasibile()
+  public override bool IsFeasible()
   {
-    return true;
+    return base.IsFeasible();
   }
 }

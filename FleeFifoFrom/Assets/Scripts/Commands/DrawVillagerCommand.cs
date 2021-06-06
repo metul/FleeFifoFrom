@@ -19,8 +19,9 @@ public class DrawVillagerCommand : Command
         _villager.UnDraw();
     }
 
-    public override bool IsFeasibile()
+    public override bool IsFeasible()
     {
-        return _villager.State == DMeeple.MeepleState.OutOfBoard;
+        return GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn
+            && _villager.State == DMeeple.MeepleState.OutOfBoard;
     }
 }

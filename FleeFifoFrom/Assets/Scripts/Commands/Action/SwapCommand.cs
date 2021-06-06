@@ -5,6 +5,8 @@ public class SwapCommand : ActionCommand
 
     public SwapCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker, DMeeple? first, DMeeple? second) : base(issuerID, playerId, worker)
     {
+        _actionId = DActionPosition.TileId.Swap;
+        _worker = worker;
         _first = first;
         _second = second;
     }
@@ -23,17 +25,20 @@ public class SwapCommand : ActionCommand
 
     private void SwapTileMeeples(DMeeple first, DMeeple second)
     {
-        DPosition tmp = first.Position.Current;
-        first.Position.Current = second.Position.Current;
-        second.Position.Current = tmp;
+        DPosition firstPos = first.Position.Current;
+        DPosition secondPos = second.Position.Current;
+        first.Position.Current = second.Position.Current = null;
+        first.Position.Current = secondPos;
+        second.Position.Current = firstPos;
     }
 
-    public override bool IsFeasibile()
+    public override bool IsFeasible()
     {
-        return (
-            _first != null && _second != null &&
-            _first.IsHealthy() && _second.IsHealthy() &&
-            _first.Position.Current.Neighbors(_second.Position.Current)
-        );
+        return base.IsFeasible() &&
+            (
+                _first != null && _second != null &&
+                _first.IsHealthy() && _second.IsHealthy() &&
+                _first.Position.Current.Neighbors(_second.Position.Current)
+            );
     }
 }

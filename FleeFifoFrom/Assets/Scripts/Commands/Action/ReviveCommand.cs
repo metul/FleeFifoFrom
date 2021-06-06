@@ -35,8 +35,8 @@ public class ReviveCommand : ActionCommand
         GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Lose();
     }
 
-    public override bool IsFeasibile()
+    public override bool IsFeasible()
     {
-        return (_meeple.IsInjured());
+        return base.IsFeasible() && (_meeple.IsInjured());
     }
 }

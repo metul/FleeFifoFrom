@@ -12,13 +12,6 @@ public abstract class ActionCommand : Command
         _worker = worker;
     }
 
-    public void CheckWorker()
-    {
-        // TODO Step 1: Check that there are enough workers to use an action
-        // TODO: Should this be a subsection of execute instead?
-        // -> if(_worker.Available)
-    }
-    
     public override void Execute()
     {
         if (_worker != null)
@@ -35,5 +28,10 @@ public abstract class ActionCommand : Command
             _worker.UnConsume(_playerId);
             GameState.Instance.TurnActionCount.Current--;
         }
+    }
+
+    public override bool IsFeasible()
+    {
+        return GameState.Instance.TurnType == GameState.TurnTypes.ActionTurn;
     }
 }
