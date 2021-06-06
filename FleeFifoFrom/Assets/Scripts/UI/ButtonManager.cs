@@ -219,7 +219,7 @@ public class ButtonManager : MonoBehaviour
 
     public void Retreat()
     {
-        StateManager.GameState = StateManager.State.RetreatChooseTile;
+        StateManager.GameState = StateManager.State.RetreatChooseKnight;
     }
 
     public void Recall()

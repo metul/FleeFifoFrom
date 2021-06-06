@@ -41,8 +41,7 @@ public class FieldManager : MonoBehaviour
 
     private void Start()
     {
-        PopulateFieldRandomly();
-        PopulateBattlefield();
+        PopulateField();
         StateManager.OnStateUpdate += UpdateInteractability;
     }
 
@@ -70,7 +69,23 @@ public class FieldManager : MonoBehaviour
         return (position == null) ? _tempStorageTile : _field[position.Row - 1][position.Col - 1];
     }
 
-    private void PopulateFieldRandomly()
+    public Tile VacantBattlefieldTile(DPlayer.ID playerID)
+    {
+        foreach (var row in _battleField)
+        {
+            foreach (var tile in row)
+            {
+                if (tile.Meeples.Count == 0 && tile.NominalOwner == playerID)
+                {
+                    return tile;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private void PopulateField()
     {
         var meeple = GameState.Instance.Meeple; //MatchingMeepleOnBoard(m => true);
         foreach (var meep in meeple)
@@ -101,28 +116,6 @@ public class FieldManager : MonoBehaviour
                     Meeple newguy = Instantiate(prefab);
                     newguy.Initialize(meep, this);
                 }
-            }
-        }
-    }
-
-    private void PopulateBattlefield()
-    {
-        var vanguard = GameState.Instance.Vanguard();
-        ushort cursor = 0;
-
-        foreach (var tiles in _battleField)
-        {
-            foreach (var tile in tiles)
-            {
-                if (cursor >= vanguard.Length)
-                {
-                    return;
-                }
-
-                var knight = Instantiate(_knightPrefab);
-                knight.Initialize(vanguard[cursor], this);
-                knight.SetTo(tile);
-                cursor++;
             }
         }
     }
@@ -259,13 +252,13 @@ public class FieldManager : MonoBehaviour
                 StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.RetreatChooseTile:
-                _storeSecondTile = tile;
-                StateManager.GameState = StateManager.State.RetreatChooseKnight;
-                break;
-            case StateManager.State.RetreatChooseKnight:
-                Retreat(tile, _storeSecondTile);
+                Retreat(_storeTile, tile);
                 _storeSecondTile = null;
                 StateManager.GameState = StateManager.State.Default;
+                break;
+            case StateManager.State.RetreatChooseKnight:
+                _storeTile = tile;
+                StateManager.GameState = StateManager.State.RetreatChooseTile;
                 break;
             case StateManager.State.Villager:
                 Villager(tile);

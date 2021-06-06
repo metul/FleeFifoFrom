@@ -23,8 +23,8 @@ public class DKnight : DMeeple
   {
     if (State == MeepleState.InQueue)
     {
-      Position.Current = null;
       State = MeepleState.OutOfBoard;
+      Position.Current = null;
     }
   }
 
