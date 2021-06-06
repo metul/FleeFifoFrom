@@ -191,7 +191,11 @@ public class FieldManager : MonoBehaviour
 
     public void Retreat(Tile battlefrontTile, Tile tile)
     {
-        CommandProcessor.Instance.ExecuteCommand(new RetreatCommand(0, battlefrontTile, tile));
+        CommandProcessor.Instance.ExecuteCommand(new RetreatCommand(
+            0,
+            battlefrontTile.Meeples[0].Core as DKnight,
+            tile.Position
+        ));
     }
 
     public void Villager(Tile tile)

@@ -22,22 +22,7 @@ public class Knight : Meeple
 
         if (core.GetType() == typeof(DKnight))
         {
-            var _knight = (DKnight) core;
-            switch (_knight.Owner)
-            {
-                case (DPlayer.ID.Red):
-                    SetColor(Color.red);
-                    break;
-                case (DPlayer.ID.Blue):
-                    SetColor(Color.blue);
-                    break;
-                case (DPlayer.ID.Green):
-                    SetColor(Color.green);
-                    break;
-                case (DPlayer.ID.Yellow):
-                    SetColor(Color.yellow);
-                    break;
-            }
+            SetColor(Player.GetPlayerColor(((DKnight) core).Owner));
         }
     }
 }

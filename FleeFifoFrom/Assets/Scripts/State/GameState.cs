@@ -168,12 +168,12 @@ public class GameState
     if (TurnType == TurnTypes.ActionTurn)
     {
       TurnType = TurnTypes.ResetTurn;
-      TurnPlayerIndex = (ushort) ((TurnPlayerIndex + 2) % Players.Length);
+      TurnPlayerIndex = RangeUtils.Normalize(TurnPlayerIndex + 2, Players.Length);
     }
     else
     {
       TurnType = TurnTypes.ActionTurn;
-      TurnPlayerIndex = (ushort) ((TurnPlayerIndex - 1) % Players.Length);
+      TurnPlayerIndex = RangeUtils.Normalize(TurnPlayerIndex - 1, Players.Length);
     }
 
     TurnActionCount.Current = 0;
