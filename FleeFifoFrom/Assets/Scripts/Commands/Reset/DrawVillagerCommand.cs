@@ -26,6 +26,11 @@ public class DrawVillagerCommand : ResetCommand
     {
         return base.IsFeasible()
             && _villager.State == DMeeple.MeepleState.OutOfBoard
-            && GameState.Instance.IsEmpty(_position);
+            && GameState.Instance.IsEmpty(_position)
+            && GameState.Instance.PathExists(
+                DPosition.LastRow(),
+                _position,
+                p => GameState.Instance.IsEmpty(p)
+            );
     }
 }

@@ -25,6 +25,12 @@ public class RetreatCommand : ResetCommand
 
     public override bool IsFeasible()
     {
-        return base.IsFeasible() && GameState.Instance.IsEmpty(_position);
+        return base.IsFeasible()
+            && GameState.Instance.IsEmpty(_position)
+            && GameState.Instance.PathExists(
+                DPosition.LastRow(),
+                _position,
+                p => GameState.Instance.IsEmpty(p)
+            );
     }
 }

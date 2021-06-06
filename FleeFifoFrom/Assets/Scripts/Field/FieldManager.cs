@@ -327,7 +327,7 @@ public class FieldManager : MonoBehaviour
                 EnableInjuryBased(false);
                 break;
             case StateManager.State.RiotChooseKnight:
-                EnableKnights();
+                EnableRiotableKnights();
                 break;
             case StateManager.State.RiotChoosePath:
                 EnableRiotPath();
@@ -339,13 +339,13 @@ public class FieldManager : MonoBehaviour
                 EnableInjuryBased(false);
                 break;
             case StateManager.State.RetreatChooseTile:
-                EnableEmptyTiles();
+                EnableRetreatable();
                 break;
             case StateManager.State.RetreatChooseKnight:
                 EnableBattlefield();
                 break;
             case StateManager.State.Villager:
-                EnableEmptyTiles();
+                EnableRetreatable();
                 break;
             case StateManager.State.MoveMeeple:
                 EnableMovingMeeple();
@@ -417,6 +417,19 @@ public class FieldManager : MonoBehaviour
         });
     }
 
+    private void EnableRetreatable()
+    {
+        GameState.Instance.TraverseBoard(p => 
+        {
+            var tile = TileByPosition(p);
+            tile.Interactable = GameState.Instance.PathExists(
+                DPosition.LastRow(),
+                p,
+                p => GameState.Instance.IsEmpty(p)
+            );
+        });
+    }
+
     private void EnableKnights()
     {
         GameState.Instance.TraverseBoard(p =>
@@ -428,46 +441,60 @@ public class FieldManager : MonoBehaviour
         });
     }
 
-    private void EnableAuthorizable()
+    private void EnableRiotableKnights()
     {
-        bool nonInjuredInPreviousRow = false;
-        bool nonInjuredInCurrentRow = false;
-
+        var endpoint = new DPosition(1, 1);
         GameState.Instance.TraverseBoard(p =>
         {
-            // TODO replace with pathfinding / inFrontOf helper function
             var tile = TileByPosition(p);
+            var meeple = GameState.Instance.AtPosition(p);
+            var endguy = GameState.Instance.AtPosition(endpoint);
 
-            if (nonInjuredInPreviousRow)
-                tile.Interactable = false;
-            else
-            {
-                // check at first pos if there is something in the previous row
-                if (p.Col == 1 && p.Row != 1)
-                {
-                    nonInjuredInPreviousRow = nonInjuredInCurrentRow;
-                    nonInjuredInCurrentRow = false;
+            tile.Interactable =
+                meeple != null && meeple.GetType() == typeof(DKnight)
+                && (
+                    p.Equals(endpoint) ||
+                    (
+                        (endguy == null || (endguy.IsHealthy() && endguy.GetType() != typeof(DKnight))) &&
+                        GameState.Instance.PathExists(
+                            p,
+                            endpoint,
+                            _p => {
+                                if (_p.Equals(p))
+                                    return true;
+                                var onTheWay = GameState.Instance.AtPosition(_p);
+                                return onTheWay == null || (
+                                    onTheWay.IsHealthy() &&
+                                    onTheWay.GetType() != typeof(DKnight)
+                                );
+                            }
+                        )
+                    )
+                );
+        });
+    }
 
-                    if (nonInjuredInPreviousRow)
-                    {
-                        tile.Interactable = false;
-                        return;
-                    }
-                }
-
-                // check meeple
-                DMeeple meeple = GameState.Instance.AtPosition(p);
-                if (meeple != null)
-                {
-                    var healthy = GameState.Instance.HealthyMeepleAtPosition(p);
-                    tile.Interactable = healthy;
-                    nonInjuredInCurrentRow |= healthy;
-                }
-                else
-                {
-                    tile.Interactable = false;
-                }
-            }
+    private void EnableAuthorizable()
+    {
+        var endpoint = new DPosition(1, 1);
+        GameState.Instance.TraverseBoard(p =>
+        {
+            var tile = TileByPosition(p);
+            var meep = GameState.Instance.AtPosition(p);
+            var endguy = GameState.Instance.AtPosition(endpoint);
+            tile.Interactable =
+                meep != null && meep.IsHealthy() &&  // --> there is a healthy meeple at this position
+                (
+                    p.Equals(endpoint) || (          // --> this position is endpoint itself, or ...
+                    endguy == null &&                // --> endpoint is empty
+                    GameState.Instance.PathExists(   // --> and there is a path
+                        p,                           // --> from this point
+                        endpoint,                    // --> to the endpoint
+                        _p => p.Equals(_p)
+                            || GameState.Instance.IsEmpty(_p) // --> where the only non-empty step is the first one
+                    )
+                    )
+                );
         });
     }
 
