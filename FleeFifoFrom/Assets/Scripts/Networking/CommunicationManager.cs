@@ -38,7 +38,7 @@ public class CommunicationManager : NetworkBehaviour
         }
     }
 
-    public void PublishAction(FieldManager.DebugGameState state)
+    public void PublishAction(StateManager.State state)
     {
         if (!IsServer)
         {
@@ -49,7 +49,7 @@ public class CommunicationManager : NetworkBehaviour
     }
 
     [ServerRpc (RequireOwnership = false)]
-    private void PublishActionServerRPC(ulong publisherID, FieldManager.DebugGameState state)
+    private void PublishActionServerRPC(ulong publisherID, StateManager.State state)
     {
         IEnumerable<ulong> targetClientIds = NetworkManager.Singleton.ConnectedClients.Keys.ToArray().Except(new ulong[] { publisherID });
         ClientRpcParams clientRpcParams = new ClientRpcParams
@@ -60,7 +60,7 @@ public class CommunicationManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void ProcessActionClientRPC(ulong publisherID, FieldManager.DebugGameState state, ClientRpcParams clientRpcParams = default)
+    private void ProcessActionClientRPC(ulong publisherID, StateManager.State state, ClientRpcParams clientRpcParams = default)
     {
         // TODO: Process action locally
         Debug.Log($"Locally processing the action {state} issued by client {publisherID}.");
