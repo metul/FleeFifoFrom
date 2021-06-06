@@ -123,6 +123,13 @@ public static class GameStateUtils
     return result;
   } 
 
+  /// <summary>
+  /// Will return true if a path from given initial positions
+  /// to given endpoint exists, where every step also matches given condition.
+  /// <br/>
+  /// 👉 checks the condition on initial positions as well. <br/>
+  /// 👉 DOES NOT check the condition on final position.
+  /// </summary>
   public static bool PathExists(
     this GameState state,
     DPosition[] start,
@@ -156,6 +163,13 @@ public static class GameStateUtils
     return false;
   }
 
+  /// <summary>
+  /// Will return true if a path from given initial position
+  /// to given endpoint exists, where every step also matches given condition.
+  /// <br/>
+  /// 👉 checks the condition on initial position as well. <br/>
+  /// 👉 DOES NOT check the condition on final position.
+  /// </summary>
   public static bool PathExists(
     this GameState state,
     DPosition start,
