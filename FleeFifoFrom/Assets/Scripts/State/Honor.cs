@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public class DHonor
 {
@@ -7,7 +8,7 @@ public class DHonor
 
   public DHonor()
   {
-    Index = new Observable<ushort>((ushort) Rules.HONOR_VALUES[Rules.HONOR_VALUES.Length / 2]);
+    Index = new Observable<ushort>((ushort) (Rules.HONOR_VALUES.Length / 2));
     Score = Index.Map(index => Rules.HONOR_VALUES[index]);
   }
 

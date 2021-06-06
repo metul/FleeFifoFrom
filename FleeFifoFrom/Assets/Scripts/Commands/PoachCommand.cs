@@ -17,14 +17,14 @@ public class PoachCommand: ResetCommand
     {
         base.Execute();
         _worker.Poach(_player);
-
+        GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Lose();
     }
 
     public override void Reverse()
     {
         base.Reverse();
         _worker.Return(_controlledBy, _previousTile);
-
+        GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Earn();
     }
 
     public override bool IsFeasibile()
