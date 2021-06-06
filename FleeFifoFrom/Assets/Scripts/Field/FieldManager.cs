@@ -422,11 +422,13 @@ public class FieldManager : MonoBehaviour
         GameState.Instance.TraverseBoard(p => 
         {
             var tile = TileByPosition(p);
-            tile.Interactable = GameState.Instance.PathExists(
-                DPosition.LastRow(),
-                p,
-                p => GameState.Instance.IsEmpty(p)
-            );
+            tile.Interactable = 
+                GameState.Instance.IsEmpty(p) &&
+                GameState.Instance.PathExists(
+                    DPosition.LastRow(),
+                    p,
+                    p => GameState.Instance.IsEmpty(p)
+                );
         });
     }
 
