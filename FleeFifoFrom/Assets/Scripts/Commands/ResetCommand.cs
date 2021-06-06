@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ResetCommand : Command
+public abstract class ResetCommand : Command
 {
+    // TODO include reset turn pawn system for reset commands
     public ResetCommand(ulong issuerID) : base(issuerID) { }
 
     public void CheckPawn()
@@ -17,11 +18,13 @@ public class ResetCommand : Command
     {
         // TODO: Do reset specific stuff?
         // TODO: Decrement reset pawn. I think the remaining will be command specific
+        GameState.Instance.TurnActionCount.Current++;
     }
 
     public override void Reverse()
     {
         // TODO: Undo reset specific stuff?
         // TODO: Increment reset pawn. I think the remaining will be command specific
+        GameState.Instance.TurnActionCount.Current--;
     }
 }

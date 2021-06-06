@@ -11,14 +11,19 @@ public class RetreatCommand : ResetCommand
     public override void Execute()
     {
         base.Execute();
-        var knight = _battleFrontTile.RemoveMeeple();
-        _tile.SetMeeple(knight);
+        // var knight = _battleFrontTile.RemoveMeeple();
+        // _tile.SetMeeple(knight);
     }
 
     public override void Reverse()
     {
         base.Reverse();
-        var knight = _tile.RemoveMeeple();
-        _battleFrontTile.SetMeeple(knight);
+        // var knight = _tile.RemoveMeeple();
+        // _battleFrontTile.SetMeeple(knight);
     }
+
+  public override bool IsFeasibile()
+  {
+    return true;
+  }
 }

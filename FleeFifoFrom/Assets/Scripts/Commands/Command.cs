@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Base class for commands.
 /// </summary>
-public abstract class Command : MonoBehaviour
+public abstract class Command
 {
     /// <summary>
     /// Client ID of the issuer.
@@ -24,4 +24,6 @@ public abstract class Command : MonoBehaviour
     /// Reverses the issued command.
     /// </summary>
     public abstract void Reverse();
+
+    public abstract bool IsFeasibile();
 }

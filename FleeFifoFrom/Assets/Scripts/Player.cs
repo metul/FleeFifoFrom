@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player 
 {
-    public enum PlayerID
+    public Player(DPlayer.ID id)
     {
-        Red, Blue, Yellow, Green
+        ID = id;
     }
-    public PlayerID ID { get; set; }
+
+    public DPlayer.ID ID { get; private set; }
     
     // TODO replace with nicer colors
     public static Color RedColor = Color.red;
@@ -16,20 +17,26 @@ public class Player : MonoBehaviour
     public static Color YellowColor = Color.yellow;
     public static Color GreenColor = Color.green;
 
-    public static Color GetPlayerColor(PlayerID playerID)
+    // TODO Add function, unless implemented in instance of PLayer
+    public void add() { }
+
+    public static Color GetPlayerColor(DPlayer.ID playerID)
     {
         switch (playerID)
         {
-            case PlayerID.Red:
+            case DPlayer.ID.Red:
                 return RedColor;
-            case PlayerID.Blue:
+            case DPlayer.ID.Blue:
                 return BlueColor;
-            case PlayerID.Yellow:
+            case DPlayer.ID.Yellow:
                 return YellowColor;
-            case PlayerID.Green:
+            case DPlayer.ID.Green:
                 return GreenColor;
             default:
                 return Color.white;
         }
     }
+
+    public List<Card> Cards;
+    public int CardCount { get => Cards.Count; }
 }

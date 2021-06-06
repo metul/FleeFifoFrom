@@ -68,4 +68,9 @@ crashlytics-build.properties
 # Visual studio
 *.vsconfig
 
+#GIT Hub Key
+githubkey
+*.pub
 
+todo.txt
+todo.txt.meta

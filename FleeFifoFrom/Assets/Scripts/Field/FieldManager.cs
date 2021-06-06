@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
 using Random = UnityEngine.Random;
@@ -9,63 +11,39 @@ public class FieldManager : MonoBehaviour
 {
     [SerializeField] private Meeple[] _villagerPrefabs;
     [SerializeField] private Knight _knightPrefab;
-    
+
     [SerializeField] private Transform[] _rows;
     [SerializeField] private Transform[] _squads;
-    
+    [SerializeField] private Transform _tempStorage;
+
     private Tile[][] _field;
     private Tile[][] _battleField;
+    private Tile _tempStorageTile;
 
     #region Placeholder
-    
-    public enum DebugGameState
-    {
-        Default,
-        Authorize,
-        Swap1,
-        Swap2,
-        Riot, // <- current debug state
-        RiotChooseKnight,
-        RiotChoosePath,
-        Revive,
-        Reprioritize,
-        RetreatChooseTile,
-        RetreatChooseKnight,
-        Villager,
-        ResetTurnSelect,
-        ResetTurnMove
-    }
-
-    private DebugGameState _gameState;
-    public DebugGameState CurrentGameState
-    {
-        get => _gameState;
-        set
-        {
-            _gameState = value;
-            UpdateInteractability();
-        }
-    }
 
     // store tile references for multi step actions
-    
     private Tile _storeTile;
-    private List<Tile> _storeRiotPath;
+    private Tile _storeSecondTile;
+    private List<Tile> _storeRiotPath = new List<Tile>();
+    private List<DVillager> _drawnVillagersThisTurn = new List<DVillager>();
 
     #endregion
 
     #region Setup
-    
+
     private void Awake()
     {
         _field = GetField(_rows);
         _battleField = GetField(_squads);
+        _tempStorageTile = _tempStorage.GetComponent<Tile>();
     }
 
     private void Start()
     {
         PopulateFieldRandomly();
         PopulateBattlefield();
+        StateManager.OnStateUpdate += UpdateInteractability;
     }
 
     private Tile[][] GetField(Transform[] sourceArray)
@@ -83,56 +61,128 @@ public class FieldManager : MonoBehaviour
                 tiles[j].ID = new Vector2(i, j);
             }
         }
+
         return field;
     }
-    
+
+    public Tile TileByPosition(DPosition position)
+    {
+        return (position == null) ? _tempStorageTile : _field[position.Row - 1][position.Col - 1];
+    }
+
     private void PopulateFieldRandomly()
     {
-        // TODO consider fixed knight positions
-        foreach (var tiles in _field)
+        var meeple = GameState.Instance.Meeple; //MatchingMeepleOnBoard(m => true);
+        foreach (var meep in meeple)
         {
-            foreach (var tile in tiles)
+            var tile = TileByPosition(meep.Position.Current);
+            if (tile != null)
             {
-                tile.SetMeeple(Instantiate(GetRandomVillagerPrefab()));
+                Meeple? prefab = null;
+                if (meep.GetType() == typeof(DCommoner))
+                {
+                    prefab = _villagerPrefabs[0];
+                }
+                else if (meep.GetType() == typeof(DChild))
+                {
+                    prefab = _villagerPrefabs[1];
+                }
+                else if (meep.GetType() == typeof(DElder))
+                {
+                    prefab = _villagerPrefabs[2];
+                }
+                else if (meep.GetType() == typeof(DKnight))
+                {
+                    prefab = _knightPrefab;
+                }
+
+                if (prefab != null)
+                {
+                    Meeple newguy = Instantiate(prefab);
+                    newguy.Initialize(meep, this);
+                }
             }
         }
     }
 
     private void PopulateBattlefield()
     {
+        var vanguard = GameState.Instance.Vanguard();
+        ushort cursor = 0;
+
         foreach (var tiles in _battleField)
         {
             foreach (var tile in tiles)
             {
-                tile.SetMeeple(Instantiate(_knightPrefab));
+                if (cursor >= vanguard.Length)
+                {
+                    return;
+                }
+
+                var knight = Instantiate(_knightPrefab);
+                knight.Initialize(vanguard[cursor], this);
+                knight.SetTo(tile);
+                cursor++;
             }
         }
     }
-    
+
     #endregion
 
     #region Field Actions
 
     // TODO: All issuer IDs are 0 by default, use actual client ID after network integration
-    
-    public void Authorize(Tile tile)
+
+    public void Authorize(Tile tile, DWorker worker)
     {
-        CommandProcessor.Instance.ExecuteCommand(new AuthorizeCommand(0, tile));
+        CommandProcessor.Instance.ExecuteCommand(
+            new AuthorizeCommand(0, GameState.Instance.TurnPlayer().Id, worker, tile.Meeples[0].Core)
+        );
     }
 
     public void Swap(Tile tile1, Tile tile2)
     {
-        CommandProcessor.Instance.ExecuteCommand(new SwapCommand(0, tile1, tile2));
+        var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
+        CommandProcessor.Instance.ExecuteCommand(
+            new SwapCommand(
+                0, // --> TODO: should this be zero?
+                GameState.Instance.TurnPlayer().Id,
+                worker,
+                GameState.Instance.AtPosition(tile1.Position),
+                GameState.Instance.AtPosition(tile2.Position)
+            )
+        );
     }
 
-    public void Riot(List<Tile> path)
+    public void RiotStep(Tile from, Tile to)
     {
-        CommandProcessor.Instance.ExecuteCommand(new RiotCommand(0, path));
+        var knight = (DKnight) GameState.Instance.AllAtPosition(from.Position, m => m.GetType() == typeof(DKnight))[0];
+        CommandProcessor.Instance.ExecuteCommand(
+            new RiotStepCommand(
+                0,
+                GameState.Instance.TurnPlayer().Id,
+                knight,
+                to.Position
+            )
+        );
     }
 
-    public void Revive(Tile tile)
+    public void StartRiot(Tile tile, DWorker worker)
     {
-        CommandProcessor.Instance.ExecuteCommand(new ReviveCommand(0, tile));
+        var meeple = GameState.Instance.AtPosition(tile.Position);
+        CommandProcessor.Instance.ExecuteCommand(new StartRiotCommand(
+            0,
+            GameState.Instance.TurnPlayer().Id,
+            worker,
+            meeple
+        ));
+    }
+
+    public void Revive(Tile tile, DWorker worker)
+    {
+        //var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
+        CommandProcessor.Instance.ExecuteCommand(new ReviveCommand(0, GameState.Instance.TurnPlayer().Id, worker,
+            tile.Meeples[0].Core));
     }
 
     public void Reprioritize(Tile tile)
@@ -145,121 +195,166 @@ public class FieldManager : MonoBehaviour
         CommandProcessor.Instance.ExecuteCommand(new RetreatCommand(0, battlefrontTile, tile));
     }
 
-    public void Villager(Meeple villager, Tile tile)
+    public void Villager(Tile tile)
     {
-        CommandProcessor.Instance.ExecuteCommand(new DrawVillagerCommand(0, villager, tile));
+        // if there is an villager in this list, that is not on the board
+        // it must be due to an undo of the draw villager command
+        // draw this villager again, to have consistent undo/redo
+        DVillager villager = _drawnVillagersThisTurn.FirstOrDefault(v => v.State == DMeeple.MeepleState.OutOfBoard);
+        
+        // no undrawn villager in list, draw new one
+        if (villager == null)
+        {
+            villager = GameState.Instance.DrawVillager();
+            _drawnVillagersThisTurn.Add(villager);
+        }
+
+        CommandProcessor.Instance.ExecuteCommand(new DrawVillagerCommand(0, villager, tile.Position));
     }
-    
+
     #endregion
 
     #region Interaction (state-depending)
-    
+
     public void ProcessClickedTile(Tile tile)
     {
-        switch (CurrentGameState)
+        switch (StateManager.GameState)
         {
-            case DebugGameState.Default:
-                Debug.Log($"Tile {tile.ID} has been klicked");
-                break;
-            case DebugGameState.Authorize:
-                Authorize(tile);
-                CurrentGameState = DebugGameState.Default;
-                break;
-            case DebugGameState.Swap1:
+            case StateManager.State.Authorize:
                 _storeTile = tile;
-                CurrentGameState = DebugGameState.Swap2;
+                StateManager.GameState = StateManager.State.PayForAction;
                 break;
-            case DebugGameState.Swap2:
-                Swap(tile, _storeTile);
-                _storeTile = null;
-                CurrentGameState = DebugGameState.Default;
+            case StateManager.State.Swap1:
+                _storeSecondTile = tile;
+                StateManager.GameState = StateManager.State.Swap2;
                 break;
-            case DebugGameState.Riot:
-                _storeRiotPath = new List<Tile>();
-                _storeRiotPath.Add(tile);
-                Riot(_storeRiotPath);
-                CurrentGameState = DebugGameState.Default;
+            case StateManager.State.Swap2:
+                _storeTile = tile;
+                StateManager.GameState = StateManager.State.PayForAction;
                 break;
-            case DebugGameState.RiotChooseKnight:
-                _storeRiotPath = new List<Tile>();
-                _storeRiotPath.Add(tile);
-                CurrentGameState = DebugGameState.RiotChoosePath;
+            case StateManager.State.Riot:
+                // _storeRiotPath = new List<Tile>();
+                // _storeRiotPath.Add(tile);
+                // Riot(_storeRiotPath);
+                // StateManager.GameState = StateManager.State.Default;
                 break;
-            case DebugGameState.RiotChoosePath:
-                _storeRiotPath.Add(tile);
-                if (tile.ID == Vector2.zero)
+            case StateManager.State.RiotChooseKnight:
+                _storeTile = tile;
+                StateManager.GameState = StateManager.State.PayForAction;
+                break;
+            case StateManager.State.RiotChoosePath:
+                _storeSecondTile = _storeTile;
+                _storeTile = tile;
+                RiotStep(_storeSecondTile, _storeTile);
+
+                if (tile.Position.IsFinal)
                 {
-                    Riot(_storeRiotPath);
-                    CurrentGameState = DebugGameState.Default;
+                    StateManager.GameState = StateManager.State.Default;
                 }
                 else
-                    CurrentGameState = DebugGameState.RiotChoosePath;
+                {
+                    StateManager.GameState = StateManager.State.RiotChoosePath;
+                }
+
                 break;
-            case DebugGameState.Revive:
-                Revive(tile);
-                CurrentGameState = DebugGameState.Default;
-                break;
-            case DebugGameState.Reprioritize:
-                Reprioritize(tile);
-                CurrentGameState = DebugGameState.Default;
-                break;
-            case DebugGameState.RetreatChooseTile:
+            case StateManager.State.Revive:
                 _storeTile = tile;
-                CurrentGameState = DebugGameState.RetreatChooseKnight;
+                StateManager.GameState = StateManager.State.PayForAction;
                 break;
-            case DebugGameState.RetreatChooseKnight:
-                Retreat(tile, _storeTile);
-                _storeTile = null;
-                CurrentGameState = DebugGameState.Default;
+            case StateManager.State.Reprioritize:
+                Reprioritize(tile);
+                StateManager.GameState = StateManager.State.Default;
                 break;
-            case DebugGameState.Villager:
-                Villager(Instantiate(GetRandomVillagerPrefab()), tile);
-                CurrentGameState = DebugGameState.Default;
+            case StateManager.State.RetreatChooseTile:
+                _storeSecondTile = tile;
+                StateManager.GameState = StateManager.State.RetreatChooseKnight;
+                break;
+            case StateManager.State.RetreatChooseKnight:
+                Retreat(tile, _storeSecondTile);
+                _storeSecondTile = null;
+                StateManager.GameState = StateManager.State.Default;
+                break;
+            case StateManager.State.Villager:
+                Villager(tile);
+                StateManager.GameState = StateManager.State.Default;
                 break;
         }
     }
 
+    public void InvokeAction(StateManager.State action, DWorker worker)
+    {
+        switch (action)
+        {
+            case StateManager.State.Authorize:
+                Authorize(_storeTile, worker);
+                _storeTile = null;
+                StateManager.GameState = StateManager.State.Default;
+                break;
+            case StateManager.State.Swap2:
+                Swap(_storeTile, _storeSecondTile);
+                _storeTile = _storeSecondTile = null;
+                StateManager.GameState = StateManager.State.Default;
+                break;
+            case StateManager.State.Revive:
+                Revive(_storeTile, worker);
+                _storeTile = null;
+                StateManager.GameState = StateManager.State.Default;
+                break;
+            case StateManager.State.RiotChooseKnight:
+                StartRiot(_storeTile, worker);
+                StateManager.GameState = StateManager.State.RiotChoosePath;
+                break;
+        }
+    }
+
+
     public void UpdateInteractability()
     {
-        switch (CurrentGameState)
+        switch (StateManager.GameState)
         {
-            case DebugGameState.Default:
+            case StateManager.State.Authorize:
+                EnableAuthorizable();
+                break;
+            case StateManager.State.Swap1:
+                EnableInjuryBased(false);
+                break;
+            case StateManager.State.Swap2:
+                EnableNeighbours();
+                break;
+            case StateManager.State.Riot:
+                EnableInjuryBased(false);
+                break;
+            case StateManager.State.RiotChooseKnight:
+                EnableKnights();
+                break;
+            case StateManager.State.RiotChoosePath:
+                EnableRiotPath();
+                break;
+            case StateManager.State.Revive:
+                EnableInjuryBased(true);
+                break;
+            case StateManager.State.Reprioritize:
+                EnableInjuryBased(false);
+                break;
+            case StateManager.State.RetreatChooseTile:
+                EnableEmptyTiles();
+                break;
+            case StateManager.State.RetreatChooseKnight:
+                EnableBattlefield();
+                break;
+            case StateManager.State.Villager:
+                EnableEmptyTiles();
+                break;
+            case StateManager.State.Default:
+                _storeTile = null;
+                _storeSecondTile = null;
+                _storeRiotPath.Clear();
                 DisableAllTiles();
                 DisableBattlefield();
                 break;
-            case DebugGameState.Authorize:
-                EnableAuthorizable();
-                break;
-            case DebugGameState.Swap1:
-                EnableInjuryBased(false);
-                break;
-            case DebugGameState.Swap2:
-                EnableInjuryBased(false);
-                _storeTile.Interactable = false;
-                break;
-            case DebugGameState.Riot:
-                EnableInjuryBased(false);
-                break;
-            case DebugGameState.RiotChooseKnight:
-                EnableKnights();
-                break;
-            case DebugGameState.RiotChoosePath:
-                EnableRiotPath(_storeRiotPath);
-                break;
-            case DebugGameState.Revive:
-                EnableInjuryBased(true);
-                break;
-            case DebugGameState.Reprioritize:
-                EnableInjuryBased(false);
-                break;
-            case DebugGameState.RetreatChooseTile:
-                EnableEmptyTiles();
-                break;
-            case DebugGameState.RetreatChooseKnight:
-                EnableBattlefield();
-                break;
-            case DebugGameState.Villager:
-                EnableEmptyTiles();
+            default:
+                DisableAllTiles();
+                DisableBattlefield();
                 break;
         }
     }
@@ -281,96 +376,111 @@ public class FieldManager : MonoBehaviour
         {
             foreach (var tile in tiles)
             {
-                tile.Interactable = (tile.Meeple == null);
+                tile.Interactable = (tile.Meeples.Count == 0);
             }
         }
     }
 
     private void EnableInjuryBased(bool enableInjured)
     {
-        foreach (var tiles in _field)
+        GameState.Instance.TraverseBoard(p =>
         {
-            foreach (var tile in tiles)
+            var tile = TileByPosition(p);
+            if (enableInjured)
             {
-                if (tile.Meeple != null)
-                {
-                    if(enableInjured)
-                        tile.Interactable = tile.Meeple.CurrentState == Meeple.State.Injured;
-                    else
-                        tile.Interactable = tile.Meeple.CurrentState != Meeple.State.Injured;
-                }
-                else
-                    tile.Interactable = false;
+                tile.Interactable = GameState.Instance.InjuredVillagerAtPosition(p);
             }
-        }
+            else
+            {
+                tile.Interactable = GameState.Instance.HealthyMeepleAtPosition(p);
+            }
+        });
+    }
+
+    private void EnableNeighbours(bool overwriteInjured = false)
+    {
+        GameState.Instance.TraverseBoard(p =>
+        {
+            var tile = TileByPosition(p);
+            tile.Interactable = _storeSecondTile.Position.Neighbors(tile.Position) && 
+            (!overwriteInjured || GameState.Instance.HealthyMeepleAtPosition(p));
+            Debug.Log($"Tile {tile.Position}: {tile.Interactable}");
+        });
     }
 
     private void EnableKnights()
     {
-        foreach (var tiles in _field)
+        GameState.Instance.TraverseBoard(p =>
         {
-            foreach (var tile in tiles)
-            {
-                tile.Interactable = (tile.Meeple.GetType() == typeof(Knight));
-            }
-        }
+            var tile = TileByPosition(p);
+            var meeple = GameState.Instance.AtPosition(p);
+
+            tile.Interactable = meeple != null && meeple.GetType() == typeof(DKnight);
+        });
     }
 
     private void EnableAuthorizable()
     {
-        // TODO enable interaction for authorize
-        List<int> lastEmpty = new List<int>(); 
-        List<int> newEmpty = new List<int>();
-        for (var i = 0; i < _field.Length; i++)
+        bool nonInjuredInPreviousRow = false;
+        bool nonInjuredInCurrentRow = false;
+
+        GameState.Instance.TraverseBoard(p =>
         {
-            var fields = _field[i];
-            for (var j = 0; j < fields.Length; j++)
+            // TODO replace with pathfinding / inFrontOf helper function
+            var tile = TileByPosition(p);
+
+            if (nonInjuredInPreviousRow)
+                tile.Interactable = false;
+            else
             {
-                var tile = fields[j];
-                        
-                // not empty
-                if (tile.Meeple != null)
+                // check at first pos if there is something in the previous row
+                if (p.Col == 1 && p.Row != 1)
                 {
-                    // injured
-                    if (tile.Meeple.CurrentState == Meeple.State.Injured)
+                    nonInjuredInPreviousRow = nonInjuredInCurrentRow;
+                    nonInjuredInCurrentRow = false;
+
+                    if (nonInjuredInPreviousRow)
+                    {
                         tile.Interactable = false;
-                            
-                    // top tile
-                    if (i == 0)
-                        tile.Interactable = true;
-                            
-                    // previous tile is empty
-                    else if (lastEmpty.Contains(j) || lastEmpty.Contains(j - 1))
-                        tile.Interactable = true;
+                        return;
+                    }
                 }
-                // empty
+
+                // check meeple
+                DMeeple meeple = GameState.Instance.AtPosition(p);
+                if (meeple != null)
+                {
+                    var healthy = GameState.Instance.HealthyMeepleAtPosition(p);
+                    tile.Interactable = healthy;
+                    nonInjuredInCurrentRow |= healthy;
+                }
                 else
                 {
                     tile.Interactable = false;
-                    newEmpty.Add(j);
                 }
             }
-
-            // row is fully occupied, abort
-            if(newEmpty.Count == 0)
-                return;
-
-            lastEmpty = new List<int>(newEmpty);
-            newEmpty.Clear();
-        }
+        });
     }
 
-    private void EnableRiotPath(List<Tile> path)
+    private void EnableRiotPath()
     {
-        var currentID = path[path.Count - 1].ID;
-        foreach (var tiles in _battleField)
+        var last = _storeTile.Position;
+
+        GameState.Instance.TraverseBoard(p =>
         {
-            foreach (var tile in tiles)
-            {
-                tile.Interactable = tile.ID.x < currentID.x &&
-                                    (tile.ID.y == currentID.y || tile.ID.y == currentID.y - 1);
-            }
-        }
+            var tile = TileByPosition(p);
+            var meeple = GameState.Instance.AtPosition(p);
+            tile.Interactable = (
+                last.CanMoveTo(p) &&
+                (
+                    meeple == null ||
+                    (
+                        meeple.IsHealthy() &&
+                        meeple.GetType() != typeof(DKnight)
+                    )
+                )
+            );
+        });
     }
 
     private void EnableBattlefield()
@@ -380,7 +490,7 @@ public class FieldManager : MonoBehaviour
         {
             foreach (var tile in tiles)
             {
-                tile.Interactable = (tile.Meeple != null);
+                tile.Interactable = (tile.Meeples.Count != 0);
             }
         }
     }
@@ -395,14 +505,14 @@ public class FieldManager : MonoBehaviour
             }
         }
     }
+
+    public void EndTurnReset()
+    {
+        _storeTile = null;
+        _storeSecondTile = null;
+        _storeRiotPath.Clear();
+        _drawnVillagersThisTurn.Clear();
+    }
     
     #endregion
-    
-    // TODO move villager generation to game manager?
-    // TODO will eventually need to seed villagers with a specific probability
-    // TODO can use random values for now
-    private Meeple GetRandomVillagerPrefab()
-    {
-        return _villagerPrefabs[Random.Range(0, _villagerPrefabs.Length)];
-    }
 }

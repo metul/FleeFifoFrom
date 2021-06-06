@@ -1,7 +1,7 @@
 public class ReprioritizeCommand : ResetCommand
 {
     private Tile _tile;
-    private Meeple.State _originalState;
+    // private Meeple.State _originalState;
 
     public ReprioritizeCommand(ulong issuerID, Tile tile) : base(issuerID)
     {
@@ -12,15 +12,30 @@ public class ReprioritizeCommand : ResetCommand
     {   
         //TODO: Actually reprioritize would need  to allow tapping as well
         base.Execute();
+
+        // Meeple.ChangePriority(old,new);
+
+
+
+        // S.R. Old FIFO Logic
+        /* 
         _originalState = _tile.Meeple.CurrentState;
         _tile.Meeple.CurrentState = _tile.Meeple.CurrentState == Meeple.State.Default
             ? Meeple.State.Tapped
             : Meeple.State.Default;
+        */
     }
 
     public override void Reverse()
     {
         base.Reverse();
-        _tile.Meeple.CurrentState = _originalState;
+        //Meeple.ChangePriority(new,old);
+
+        //_tile.Meeple.CurrentState = _originalState;
     }
+
+  public override bool IsFeasibile()
+  {
+    return true;
+  }
 }

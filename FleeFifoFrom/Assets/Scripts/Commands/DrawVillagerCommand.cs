@@ -1,29 +1,26 @@
-public class DrawVillagerCommand : ResetCommand
+public class DrawVillagerCommand : Command
 {
-    private Tile _tile;
-    private Meeple _villager;
-    //TODO: Switch to villager class
-
-
-    public DrawVillagerCommand(ulong issuerID, Meeple villager, Tile tile) : base(issuerID)
+    private DPosition _position;
+    private DVillager _villager;
+    
+    public DrawVillagerCommand(ulong issuerID, DVillager villager, DPosition position) : base(issuerID)
     {
-        _tile = tile;
         _villager = villager;
+        _position = position;
     }
 
     public override void Execute()
     {
-        base.Execute();
-        // TODO: Move random villager generation into the command?
-        // TODO: Ideally need to view villager and then choose tile. 
-        // TODO: Can do the reverse order for now, i.e. tile then vill
-        _tile.SetMeeple(_villager);
+        _villager.Draw(_position);
     }
 
     public override void Reverse()
     {
-        base.Reverse();
-        _tile.RemoveMeeple();
-        Destroy(_villager.gameObject);
+        _villager.UnDraw();
+    }
+
+    public override bool IsFeasibile()
+    {
+        return _villager.State == DMeeple.MeepleState.OutOfBoard;
     }
 }

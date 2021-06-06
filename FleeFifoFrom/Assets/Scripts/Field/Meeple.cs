@@ -5,57 +5,74 @@ using UnityEngine;
 
 public abstract class Meeple: MonoBehaviour
 {
-    public enum State
-    {
-        Default, Tapped, Injured
-    }
-    
-    private State _currentState;
-    public State CurrentState
-    {
-        get => _currentState;
-        set
-        {
-            ChangeState(value);
-            _currentState = value;
-        } 
-    }
-    
-    private State _stateAfterMovement = State.Tapped;
+    public DMeeple Core { get; private set; }
 
-    private Action OnDefault;
-    private Action OnTapped;
-    private Action OnInjured;
+    // public bool Interactable
+    // {
+    //     set
+    //     {
+    //         if(_tile != null)
+    //             _tile.Interactable = value;
+    //     }
+    // }
 
-    private void Awake()
+    protected Action OnDefault;
+    protected Action OnTapped;
+
+    private Tile _tile;
+    private FieldManager _fieldManager;
+    private Transform _transform;
+    private Renderer _renderer;
+    
+    public virtual void Initialize(DMeeple core, FieldManager fieldManager)
     {
-        // Debug
-        var rend = GetComponent<Renderer>();
-        OnDefault += () => { rend.material.color = Color.white; };
-        OnTapped += () => { rend.material.color = Color.yellow; };
-        OnInjured += () => { rend.material.color = Color.red; };
+        Core = core;
+        _fieldManager = fieldManager;
+        _transform = transform;
         
-        CurrentState = State.Default;
+        SetTo(Core.Position.Current);
+        core.Position.OnChange += SetTo;
+        OnDefault += () => { SetColor(Color.gray); Debug.Log("Change Color debug!"); };
     }
 
-    public void OnMove()
+    protected void SetColor(Color color)
     {
-        CurrentState = _stateAfterMovement;
+        var rend = GetComponent<Renderer>();
+        rend.material.color = color;
     }
-    
-    private void ChangeState(State state)
+
+    public void Initialize(DMeeple core)
     {
-        switch (state)
+        Initialize(core, FindObjectOfType<FieldManager>());
+    }
+
+    public void SetTo(Tile tile)
+    {
+        if (_tile == tile)
+            return;
+
+        if (_tile != null)
+            _tile.Meeples.Remove(this);
+        _tile = tile;
+        _tile.Meeples.Add(this);
+        _transform.SetParent(_tile.Transform);
+        if (_tile.Meeples.Count > 1)
         {
-            case State.Default:
-                OnDefault?.Invoke();
-                break;
-            case State.Tapped:
-                OnTapped?.Invoke();
-                break;
-            case State.Injured:
-                OnInjured?.Invoke();
-                break;
+            float angle = (float) _tile.Meeples.Count;
+            _transform.localPosition = new Vector3
+                (((float) Math.Cos(angle)) * .6f,
+                0,
+                -((float) Math.Sin(angle)) * .6f
+            );
         }
+        else
+        {
+            _transform.localPosition = Vector3.zero;
+        }
+    }
+
+    protected void SetTo(DPosition position)
+    {
+        SetTo(_fieldManager.TileByPosition(position));
     }
 }

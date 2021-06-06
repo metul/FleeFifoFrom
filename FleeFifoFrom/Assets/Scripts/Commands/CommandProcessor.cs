@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -24,8 +25,11 @@ public sealed class CommandProcessor
     /// <param name="command"> Command to be executed. </param>
     public void ExecuteCommand(Command command)
     {
-        _commands.Push(command);
-        command.Execute();
+        if (command.IsFeasibile())
+        {
+            _commands.Push(command);
+            command.Execute();
+        }
     }
 
     /// <summary>
@@ -34,5 +38,14 @@ public sealed class CommandProcessor
     public void Undo()
     {
         _commands.Pop()?.Reverse();
+        GameState.Instance.OnUndo?.Invoke();
+    }
+
+    /// <summary>
+    /// Clear command stack on turn rotation so the commands of the previous user are not undoable
+    /// </summary>
+    public void ClearStack()
+    {
+        _commands.Clear();    
     }
 }

@@ -1,30 +1,39 @@
 public class SwapCommand : ActionCommand
 {
-    private Tile _tile1, _tile2;
+    private DMeeple? _first;
+    private DMeeple? _second;
 
-    public SwapCommand(ulong issuerID, Tile tile1, Tile tile2) : base(issuerID)
+    public SwapCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker, DMeeple? first, DMeeple? second) : base(issuerID, playerId, worker)
     {
-        _tile1 = tile1;
-        _tile2 = tile2;
+        _first = first;
+        _second = second;
     }
 
     public override void Execute()
     {
         base.Execute();
-        SwapTileMeeples(_tile1, _tile2);
+        SwapTileMeeples(_first, _second);
     }
 
     public override void Reverse()
     {
         base.Reverse();
-        SwapTileMeeples(_tile2, _tile1);
+        SwapTileMeeples(_second, _first);
     }
 
-    private void SwapTileMeeples(Tile tile1, Tile tile2)
+    private void SwapTileMeeples(DMeeple first, DMeeple second)
     {
-        var meeple1 = tile1.RemoveMeeple();
-        var meeple2 = tile2.RemoveMeeple();
-        tile1.SetMeeple(meeple2);
-        tile2.SetMeeple(meeple1);
+        DPosition tmp = first.Position.Current;
+        first.Position.Current = second.Position.Current;
+        second.Position.Current = tmp;
+    }
+
+    public override bool IsFeasibile()
+    {
+        return (
+            _first != null && _second != null &&
+            _first.IsHealthy() && _second.IsHealthy() &&
+            _first.Position.Current.Neighbors(_second.Position.Current)
+        );
     }
 }
