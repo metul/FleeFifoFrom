@@ -19,6 +19,7 @@ public class StateManager : MonoBehaviour
         RetreatChooseTile,
         RetreatChooseKnight,
         Villager,
+        MoveMeeple,
         ResetTurnSelect,
         ResetTurnMove,
         CountermandDrawCard,

@@ -25,7 +25,6 @@ public class FieldManager : MonoBehaviour
     // store tile references for multi step actions
     private Tile _storeTile;
     private Tile _storeSecondTile;
-    private List<Tile> _storeRiotPath = new List<Tile>();
     private List<DVillager> _drawnVillagersThisTurn = new List<DVillager>();
 
     #endregion
@@ -208,6 +207,11 @@ public class FieldManager : MonoBehaviour
         CommandProcessor.Instance.ExecuteCommand(new DrawVillagerCommand(0, villager, tile.Position));
     }
 
+    public void MoveMeeple(Tile from, Tile to)
+    {
+        CommandProcessor.Instance.ExecuteCommand(new MoveVillagerCommand(0, from.Meeples[0].Core, to.Position));
+    }
+
     #endregion
 
     #region Interaction (state-depending)
@@ -263,6 +267,18 @@ public class FieldManager : MonoBehaviour
             case StateManager.State.Villager:
                 Villager(tile);
                 StateManager.GameState = StateManager.State.Default;
+                break;
+            case StateManager.State.MoveMeeple:
+                MoveMeeple(_storeTile, tile);
+                StateManager.GameState = StateManager.State.Default;
+                _storeTile = null;
+                break;
+            case StateManager.State.Default:
+                if (GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn)
+                {
+                    _storeTile = tile;
+                    StateManager.GameState = StateManager.State.MoveMeeple;
+                }
                 break;
         }
     }
@@ -331,12 +347,19 @@ public class FieldManager : MonoBehaviour
             case StateManager.State.Villager:
                 EnableEmptyTiles();
                 break;
+            case StateManager.State.MoveMeeple:
+                EnableMovingMeeple();
+                break;
             case StateManager.State.Default:
                 _storeTile = null;
                 _storeSecondTile = null;
-                _storeRiotPath.Clear();
                 DisableAllTiles();
                 DisableBattlefield();
+
+                if (GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn)
+                {
+                    EnableInjuryBased(false);
+                }
                 break;
             default:
                 DisableAllTiles();
@@ -469,6 +492,17 @@ public class FieldManager : MonoBehaviour
         });
     }
 
+    private void EnableMovingMeeple()
+    {
+        var start = _storeTile.Position;
+
+        GameState.Instance.TraverseBoard(p => 
+        {
+            var tile = TileByPosition(p);
+            tile.Interactable = start.CanMoveTo(p) && GameState.Instance.IsEmpty(p);
+        });
+    }
+
     private void EnableBattlefield()
     {
         DisableAllTiles();
@@ -496,8 +530,9 @@ public class FieldManager : MonoBehaviour
     {
         _storeTile = null;
         _storeSecondTile = null;
-        _storeRiotPath.Clear();
         _drawnVillagersThisTurn.Clear();
+
+        UpdateInteractability();
     }
     
     #endregion
