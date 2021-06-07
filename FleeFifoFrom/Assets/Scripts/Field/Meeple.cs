@@ -37,7 +37,7 @@ public abstract class Meeple: MonoBehaviour
 
     protected void SetColor(Color color)
     {
-        var rend = GetComponent<Renderer>();
+        var rend = GetComponentInChildren<Renderer>();
         rend.material.color = color;
     }
 
