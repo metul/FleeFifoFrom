@@ -123,8 +123,62 @@ public static class GameStateUtils
     return result;
   } 
 
-  // TODO: add TraversePath()?
-  // TODO: add PathExists()?
+  /// <summary>
+  /// Will return true if a path from given initial positions
+  /// to given endpoint exists, where every step also matches given condition.
+  /// <br/>
+  /// 👉 checks the condition on initial positions as well. <br/>
+  /// 👉 DOES NOT check the condition on final position.
+  /// </summary>
+  public static bool PathExists(
+    this GameState state,
+    DPosition[] start,
+    DPosition target,
+    System.Func<DPosition, bool> check)
+  {
+    IEnumerable<DPosition> current = start.Where(check);
+    while (current.Count() > 0)
+    {
+      List<DPosition> next = new List<DPosition>();
+      foreach (var pos in current)
+      {
+        if (pos.Equals(target))
+          return true;
+
+        foreach (var succ in pos.Successors())
+        {
+          if (succ.Equals(target))
+            return true;
+
+          if (check(succ))
+          {
+            next.Add(succ);
+          }
+        }
+      }
+
+      current = next;
+    }
+
+    return false;
+  }
+
+  /// <summary>
+  /// Will return true if a path from given initial position
+  /// to given endpoint exists, where every step also matches given condition.
+  /// <br/>
+  /// 👉 checks the condition on initial position as well. <br/>
+  /// 👉 DOES NOT check the condition on final position.
+  /// </summary>
+  public static bool PathExists(
+    this GameState state,
+    DPosition start,
+    DPosition target,
+    System.Func<DPosition, bool> check
+  )
+  {
+    return state.PathExists(new DPosition[]{ start }, target, check);
+  }
 
   public static bool IsInjured(this DMeeple meeple)
   {

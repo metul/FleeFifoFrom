@@ -17,6 +17,9 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
     public Transform Transform { get; private set; }
 
     [SerializeField] private Color _heightlightColor;
+    [SerializeField] private DPlayer.ID _nominalOwner;
+
+    public DPlayer.ID NominalOwner { get => _nominalOwner; }
     
     private FieldManager _fieldManager;
     private Action _onHighlight;

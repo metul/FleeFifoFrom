@@ -100,11 +100,12 @@ public class RiotStepCommand : ActionCommand
         }
     }
 
-    public override bool IsFeasibile()
+    public override bool IsFeasible()
     {
-        return GameState.Instance.AllAtPosition(
-            _to,
-            m => m.IsInjured() || m.GetType() == typeof(DKnight)
-        ).Length == 0;
+        return base.IsFeasible()
+            && GameState.Instance.AllAtPosition(
+                _to,
+                m => m.IsInjured() || m.GetType() == typeof(DKnight)
+            ).Length == 0;
     }
 }

@@ -25,8 +25,8 @@ public class CooperateCommand: ResetCommand
         _worker.Return(_controlledBy, _previousTile);
     }
 
-    public override bool IsFeasibile()
+    public override bool IsFeasible()
     {
-        return _worker.Position.Current.IsActionTile && _worker.Owner != _player;
+        return base.IsFeasible() && _worker.Position.Current.IsActionTile && _worker.Owner != _player;
     }
 }

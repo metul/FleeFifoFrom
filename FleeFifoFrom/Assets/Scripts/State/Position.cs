@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 [Serializable]
 public class DPosition
@@ -25,11 +26,6 @@ public class DPosition
   {
     Row = row;
     Col = col;
-
-    if (!IsValid)
-    {
-      throw new System.Exception($"Invalid Position: {Row}, {Col}");
-    }
   }
 
   public bool CanMoveTo(DPosition other)
@@ -63,8 +59,13 @@ public class DPosition
     }).Where(p => p.IsValid).ToArray();
   }
 
-  // TODO: also perhaps we need a CanJumpTo() for kids?
-  // TODO: also perhaps NeighboringPositions()?
+  public DPosition[] Successors()
+  {
+    return (new DPosition[]{
+      new DPosition((ushort) (Row - 1), (ushort) (Col - 1)),
+      new DPosition((ushort) (Row - 1), Col),
+    }).Where(p => p.IsValid).ToArray();
+  }
 
   public bool Equals(DPosition other)
   {
@@ -76,5 +77,21 @@ public class DPosition
   public override string ToString()
   {
     return $"[{Row}, {Col}]";
+  }
+
+  public static DPosition[] GetRow(ushort row)
+  {
+    List<DPosition> res = new List<DPosition>();
+    for (ushort col = 1; col <= row; col++)
+    {
+      res.Add(new DPosition(row, col));
+    }
+
+    return res.ToArray();
+  }
+
+  public static DPosition[] LastRow()
+  {
+    return GetRow(Rules.ROWS);
   }
 }

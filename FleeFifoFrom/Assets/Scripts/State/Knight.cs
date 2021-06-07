@@ -19,6 +19,15 @@ public class DKnight : DMeeple
     }
   }
 
+  public void UnRetreat()
+  {
+    if (State == MeepleState.InQueue)
+    {
+      State = MeepleState.OutOfBoard;
+      Position.Current = null;
+    }
+  }
+
   /// <summary>
   /// <returns>
   ///   honor gained (if rescuing opponents knight)

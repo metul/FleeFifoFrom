@@ -27,8 +27,8 @@ public class PoachCommand: ResetCommand
         GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Earn();
     }
 
-    public override bool IsFeasibile()
+    public override bool IsFeasible()
     {
-        return _worker.Position.Current.IsActionTile && _worker.Owner != _player;
+        return base.IsFeasible() && _worker.Position.Current.IsActionTile && _worker.Owner != _player;
     }
 }

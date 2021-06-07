@@ -25,7 +25,6 @@ public class FieldManager : MonoBehaviour
     // store tile references for multi step actions
     private Tile _storeTile;
     private Tile _storeSecondTile;
-    private List<Tile> _storeRiotPath = new List<Tile>();
     private List<DVillager> _drawnVillagersThisTurn = new List<DVillager>();
 
     #endregion
@@ -41,8 +40,7 @@ public class FieldManager : MonoBehaviour
 
     private void Start()
     {
-        PopulateFieldRandomly();
-        PopulateBattlefield();
+        PopulateField();
         StateManager.OnStateUpdate += UpdateInteractability;
     }
 
@@ -70,7 +68,23 @@ public class FieldManager : MonoBehaviour
         return (position == null) ? _tempStorageTile : _field[position.Row - 1][position.Col - 1];
     }
 
-    private void PopulateFieldRandomly()
+    public Tile VacantBattlefieldTile(DPlayer.ID playerID)
+    {
+        foreach (var row in _battleField)
+        {
+            foreach (var tile in row)
+            {
+                if (tile.Meeples.Count == 0 && tile.NominalOwner == playerID)
+                {
+                    return tile;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private void PopulateField()
     {
         var meeple = GameState.Instance.Meeple; //MatchingMeepleOnBoard(m => true);
         foreach (var meep in meeple)
@@ -105,28 +119,6 @@ public class FieldManager : MonoBehaviour
         }
     }
 
-    private void PopulateBattlefield()
-    {
-        var vanguard = GameState.Instance.Vanguard();
-        ushort cursor = 0;
-
-        foreach (var tiles in _battleField)
-        {
-            foreach (var tile in tiles)
-            {
-                if (cursor >= vanguard.Length)
-                {
-                    return;
-                }
-
-                var knight = Instantiate(_knightPrefab);
-                knight.Initialize(vanguard[cursor], this);
-                knight.SetTo(tile);
-                cursor++;
-            }
-        }
-    }
-
     #endregion
 
     #region Field Actions
@@ -140,9 +132,8 @@ public class FieldManager : MonoBehaviour
         );
     }
 
-    public void Swap(Tile tile1, Tile tile2)
+    public void Swap(Tile tile1, Tile tile2, DWorker worker)
     {
-        var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
         CommandProcessor.Instance.ExecuteCommand(
             new SwapCommand(
                 0, // --> TODO: should this be zero?
@@ -192,7 +183,11 @@ public class FieldManager : MonoBehaviour
 
     public void Retreat(Tile battlefrontTile, Tile tile)
     {
-        CommandProcessor.Instance.ExecuteCommand(new RetreatCommand(0, battlefrontTile, tile));
+        CommandProcessor.Instance.ExecuteCommand(new RetreatCommand(
+            0,
+            battlefrontTile.Meeples[0].Core as DKnight,
+            tile.Position
+        ));
     }
 
     public void Villager(Tile tile)
@@ -210,6 +205,11 @@ public class FieldManager : MonoBehaviour
         }
 
         CommandProcessor.Instance.ExecuteCommand(new DrawVillagerCommand(0, villager, tile.Position));
+    }
+
+    public void MoveMeeple(Tile from, Tile to)
+    {
+        CommandProcessor.Instance.ExecuteCommand(new MoveVillagerCommand(0, from.Meeples[0].Core, to.Position));
     }
 
     #endregion
@@ -232,12 +232,6 @@ public class FieldManager : MonoBehaviour
                 _storeTile = tile;
                 StateManager.GameState = StateManager.State.PayForAction;
                 break;
-            case StateManager.State.Riot:
-                // _storeRiotPath = new List<Tile>();
-                // _storeRiotPath.Add(tile);
-                // Riot(_storeRiotPath);
-                // StateManager.GameState = StateManager.State.Default;
-                break;
             case StateManager.State.RiotChooseKnight:
                 _storeTile = tile;
                 StateManager.GameState = StateManager.State.PayForAction;
@@ -248,13 +242,9 @@ public class FieldManager : MonoBehaviour
                 RiotStep(_storeSecondTile, _storeTile);
 
                 if (tile.Position.IsFinal)
-                {
                     StateManager.GameState = StateManager.State.Default;
-                }
                 else
-                {
                     StateManager.GameState = StateManager.State.RiotChoosePath;
-                }
 
                 break;
             case StateManager.State.Revive:
@@ -266,17 +256,29 @@ public class FieldManager : MonoBehaviour
                 StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.RetreatChooseTile:
-                _storeSecondTile = tile;
-                StateManager.GameState = StateManager.State.RetreatChooseKnight;
-                break;
-            case StateManager.State.RetreatChooseKnight:
-                Retreat(tile, _storeSecondTile);
+                Retreat(_storeTile, tile);
                 _storeSecondTile = null;
                 StateManager.GameState = StateManager.State.Default;
+                break;
+            case StateManager.State.RetreatChooseKnight:
+                _storeTile = tile;
+                StateManager.GameState = StateManager.State.RetreatChooseTile;
                 break;
             case StateManager.State.Villager:
                 Villager(tile);
                 StateManager.GameState = StateManager.State.Default;
+                break;
+            case StateManager.State.MoveMeeple:
+                MoveMeeple(_storeTile, tile);
+                StateManager.GameState = StateManager.State.Default;
+                _storeTile = null;
+                break;
+            case StateManager.State.Default:
+                if (GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn)
+                {
+                    _storeTile = tile;
+                    StateManager.GameState = StateManager.State.MoveMeeple;
+                }
                 break;
         }
     }
@@ -291,7 +293,7 @@ public class FieldManager : MonoBehaviour
                 StateManager.GameState = StateManager.State.Default;
                 break;
             case StateManager.State.Swap2:
-                Swap(_storeTile, _storeSecondTile);
+                Swap(_storeTile, _storeSecondTile, worker);
                 _storeTile = _storeSecondTile = null;
                 StateManager.GameState = StateManager.State.Default;
                 break;
@@ -325,7 +327,7 @@ public class FieldManager : MonoBehaviour
                 EnableInjuryBased(false);
                 break;
             case StateManager.State.RiotChooseKnight:
-                EnableKnights();
+                EnableRiotableKnights();
                 break;
             case StateManager.State.RiotChoosePath:
                 EnableRiotPath();
@@ -337,20 +339,27 @@ public class FieldManager : MonoBehaviour
                 EnableInjuryBased(false);
                 break;
             case StateManager.State.RetreatChooseTile:
-                EnableEmptyTiles();
+                EnableRetreatable();
                 break;
             case StateManager.State.RetreatChooseKnight:
                 EnableBattlefield();
                 break;
             case StateManager.State.Villager:
-                EnableEmptyTiles();
+                EnableRetreatable();
+                break;
+            case StateManager.State.MoveMeeple:
+                EnableMovingMeeple();
                 break;
             case StateManager.State.Default:
                 _storeTile = null;
                 _storeSecondTile = null;
-                _storeRiotPath.Clear();
                 DisableAllTiles();
                 DisableBattlefield();
+
+                if (GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn)
+                {
+                    EnableInjuryBased(false);
+                }
                 break;
             default:
                 DisableAllTiles();
@@ -408,6 +417,21 @@ public class FieldManager : MonoBehaviour
         });
     }
 
+    private void EnableRetreatable()
+    {
+        GameState.Instance.TraverseBoard(p => 
+        {
+            var tile = TileByPosition(p);
+            tile.Interactable = 
+                GameState.Instance.IsEmpty(p) &&
+                GameState.Instance.PathExists(
+                    DPosition.LastRow(),
+                    p,
+                    p => GameState.Instance.IsEmpty(p)
+                );
+        });
+    }
+
     private void EnableKnights()
     {
         GameState.Instance.TraverseBoard(p =>
@@ -419,46 +443,60 @@ public class FieldManager : MonoBehaviour
         });
     }
 
-    private void EnableAuthorizable()
+    private void EnableRiotableKnights()
     {
-        bool nonInjuredInPreviousRow = false;
-        bool nonInjuredInCurrentRow = false;
-
+        var endpoint = new DPosition(1, 1);
         GameState.Instance.TraverseBoard(p =>
         {
-            // TODO replace with pathfinding / inFrontOf helper function
             var tile = TileByPosition(p);
+            var meeple = GameState.Instance.AtPosition(p);
+            var endguy = GameState.Instance.AtPosition(endpoint);
 
-            if (nonInjuredInPreviousRow)
-                tile.Interactable = false;
-            else
-            {
-                // check at first pos if there is something in the previous row
-                if (p.Col == 1 && p.Row != 1)
-                {
-                    nonInjuredInPreviousRow = nonInjuredInCurrentRow;
-                    nonInjuredInCurrentRow = false;
+            tile.Interactable =
+                meeple != null && meeple.GetType() == typeof(DKnight)
+                && (
+                    p.Equals(endpoint) ||
+                    (
+                        (endguy == null || (endguy.IsHealthy() && endguy.GetType() != typeof(DKnight))) &&
+                        GameState.Instance.PathExists(
+                            p,
+                            endpoint,
+                            _p => {
+                                if (_p.Equals(p))
+                                    return true;
+                                var onTheWay = GameState.Instance.AtPosition(_p);
+                                return onTheWay == null || (
+                                    onTheWay.IsHealthy() &&
+                                    onTheWay.GetType() != typeof(DKnight)
+                                );
+                            }
+                        )
+                    )
+                );
+        });
+    }
 
-                    if (nonInjuredInPreviousRow)
-                    {
-                        tile.Interactable = false;
-                        return;
-                    }
-                }
-
-                // check meeple
-                DMeeple meeple = GameState.Instance.AtPosition(p);
-                if (meeple != null)
-                {
-                    var healthy = GameState.Instance.HealthyMeepleAtPosition(p);
-                    tile.Interactable = healthy;
-                    nonInjuredInCurrentRow |= healthy;
-                }
-                else
-                {
-                    tile.Interactable = false;
-                }
-            }
+    private void EnableAuthorizable()
+    {
+        var endpoint = new DPosition(1, 1);
+        GameState.Instance.TraverseBoard(p =>
+        {
+            var tile = TileByPosition(p);
+            var meep = GameState.Instance.AtPosition(p);
+            var endguy = GameState.Instance.AtPosition(endpoint);
+            tile.Interactable =
+                meep != null && meep.IsHealthy() &&  // --> there is a healthy meeple at this position
+                (
+                    p.Equals(endpoint) || (          // --> this position is endpoint itself, or ...
+                    endguy == null &&                // --> endpoint is empty
+                    GameState.Instance.PathExists(   // --> and there is a path
+                        p,                           // --> from this point
+                        endpoint,                    // --> to the endpoint
+                        _p => p.Equals(_p)
+                            || GameState.Instance.IsEmpty(_p) // --> where the only non-empty step is the first one
+                    )
+                    )
+                );
         });
     }
 
@@ -480,6 +518,17 @@ public class FieldManager : MonoBehaviour
                     )
                 )
             );
+        });
+    }
+
+    private void EnableMovingMeeple()
+    {
+        var start = _storeTile.Position;
+
+        GameState.Instance.TraverseBoard(p => 
+        {
+            var tile = TileByPosition(p);
+            tile.Interactable = start.CanMoveTo(p) && GameState.Instance.IsEmpty(p);
         });
     }
 
@@ -510,8 +559,9 @@ public class FieldManager : MonoBehaviour
     {
         _storeTile = null;
         _storeSecondTile = null;
-        _storeRiotPath.Clear();
         _drawnVillagersThisTurn.Clear();
+
+        UpdateInteractability();
     }
     
     #endregion

@@ -32,7 +32,7 @@ public abstract class Meeple: MonoBehaviour
         
         SetTo(Core.Position.Current);
         core.Position.OnChange += SetTo;
-        OnDefault += () => { SetColor(Color.gray); Debug.Log("Change Color debug!"); };
+        OnDefault += () => { SetColor(Color.gray); };
     }
 
     protected void SetColor(Color color)
@@ -71,7 +71,7 @@ public abstract class Meeple: MonoBehaviour
         }
     }
 
-    protected void SetTo(DPosition position)
+    protected virtual void SetTo(DPosition position)
     {
         SetTo(_fieldManager.TileByPosition(position));
     }

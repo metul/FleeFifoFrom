@@ -7,7 +7,6 @@ public class Knight : Meeple
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
@@ -22,22 +21,24 @@ public class Knight : Meeple
 
         if (core.GetType() == typeof(DKnight))
         {
-            var _knight = (DKnight) core;
-            switch (_knight.Owner)
-            {
-                case (DPlayer.ID.Red):
-                    SetColor(Color.red);
-                    break;
-                case (DPlayer.ID.Blue):
-                    SetColor(Color.blue);
-                    break;
-                case (DPlayer.ID.Green):
-                    SetColor(Color.green);
-                    break;
-                case (DPlayer.ID.Yellow):
-                    SetColor(Color.yellow);
-                    break;
-            }
+            SetColor(Player.GetPlayerColor(((DKnight) core).Owner));
+        }
+    }
+
+    protected override void SetTo(DPosition position)
+    {
+        if (position == null && Core.State == DMeeple.MeepleState.OutOfBoard)
+        {
+            var fieldManager = FindObjectOfType<FieldManager>();
+            var tile = fieldManager.VacantBattlefieldTile(((DKnight) Core).Owner);
+            if (tile != null)
+                SetTo(tile);
+            else
+                base.SetTo(position);
+        }
+        else
+        {
+            base.SetTo(position);
         }
     }
 }
