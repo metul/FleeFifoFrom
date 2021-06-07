@@ -24,6 +24,8 @@ public class DPlayer
     public string Name { get; protected set; }
     public DHonor Honor { get; protected set; } = new DHonor();
 
+    public Action OnDeAuthorize;
+
     public static DPlayer[] CreateAnonymousPlayers(ID[] ids)
     {
         List<DPlayer> result = new List<DPlayer>();

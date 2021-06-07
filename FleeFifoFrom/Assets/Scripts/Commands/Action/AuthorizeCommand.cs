@@ -23,6 +23,8 @@ public class AuthorizeCommand : ActionCommand
             var honor = ((DKnight) _meeple).Authorize(_playerId);
             GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Earn(honor);
         }
+        
+        GameState.Instance.PlayerById(_playerId).OnDeAuthorize?.Invoke();
     }
 
     public override void Reverse()

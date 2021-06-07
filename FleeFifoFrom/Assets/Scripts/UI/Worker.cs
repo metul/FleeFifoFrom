@@ -51,6 +51,6 @@ public class Worker : MonoBehaviour
     private void SetColor(DPlayer.ID playerID)
     {
         var image = GetComponent<Image>();
-        image.color = Player.GetPlayerColor(playerID);
+        image.color = ColorUtils.GetPlayerColor(playerID);
     }
 }

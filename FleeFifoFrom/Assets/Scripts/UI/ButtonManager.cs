@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +7,9 @@ public class ButtonManager : MonoBehaviour
 {
     [SerializeField] private Worker _workerPrefab;
     [SerializeField] private PlayerTile _playerTilePrefab;
+
+    [SerializeField] private GameObject _actionCanvas;
+    [SerializeField] private GameObject _resetCanvas;
 
     [SerializeField] private Button[] _actionButtons;
     [SerializeField] private Button[] _resetButtons;
@@ -24,7 +28,6 @@ public class ButtonManager : MonoBehaviour
     //              - select card
     // recall:      - select action tile
     // cooperate:   - select one opponent worker
-    
 
     private void Start()
     {
@@ -51,6 +54,9 @@ public class ButtonManager : MonoBehaviour
         StateManager.OnStateUpdate += UpdateInteractability;
         GameState.Instance.OnTurnChange += turn =>
         {
+            var isActionTurn = turn == GameState.TurnTypes.ActionTurn;
+            _actionCanvas.SetActive(isActionTurn);
+            _resetCanvas.SetActive(!isActionTurn);
             UpdateInteractability();
             CommandProcessor.Instance.ClearStack();
             _fieldManager.EndTurnReset();
@@ -59,6 +65,9 @@ public class ButtonManager : MonoBehaviour
         };
 
         GameState.Instance.OnUndo += () => UpdateInteractability();
+        
+        // starting with an action turn
+        _resetCanvas.SetActive(false);
     }
 
     private void UpdateInteractability()
@@ -234,8 +243,6 @@ public class ButtonManager : MonoBehaviour
 
     public void Poach()
     {
-        // TODO: pay (card) for poaching
-        // StateManager.GameState = StateManager.State.PoachSelectCard;
         StateManager.GameState = StateManager.State.PoachSelectWorker;
     }
 
@@ -248,10 +255,6 @@ public class ButtonManager : MonoBehaviour
     {
         if(StateManager.GameState == StateManager.State.Default)
             CommandProcessor.Instance.Undo();
-        
-        // TODO add multi step command undo handling
-        // return to default state and lose all accumulated progress
-        // (-> if tile was selected but not payed yet)
         else
             StateManager.GameState = StateManager.State.Default;
     }

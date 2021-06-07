@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,10 +8,11 @@ public class HonorMarker : MonoBehaviour
 
     public void Init(DPlayer player)
     {
-        _handleImage.color = Player.GetPlayerColor(player.Id);
+        _handleImage.color = ColorUtils.GetPlayerColor(player.Id);
 
-        player.Honor.Index.OnChange = h =>
+        player.Honor.Index.OnChange += h =>
         {
+            Debug.Log("CHANGE HONOR MARKER");
             _slider.value = h;
         };
     }

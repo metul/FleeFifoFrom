@@ -4,22 +4,13 @@ using UnityEngine;
 
 public class Player 
 {
-    public Player(DPlayer.ID id)
-    {
-        ID = id;
-    }
 
-    public DPlayer.ID ID { get; private set; }
+    public static Color RedColor = new Color(0.94f,0.28f,0.44f);
+    public static Color BlueColor = new Color(0.07f,0.54f,0.7f);
+    public static Color YellowColor = new Color(1f,0.82f,0.4f);
+    public static Color GreenColor = new Color(0.02f,0.84f,0.63f);
     
-    // TODO replace with nicer colors
-    public static Color RedColor = Color.red;
-    public static Color BlueColor = Color.blue;
-    public static Color YellowColor = Color.yellow;
-    public static Color GreenColor = Color.green;
-
-    // TODO Add function, unless implemented in instance of PLayer
-    public void add() { }
-
+    // TODO deprecate getting player color via player.cs this and remove this class
     public static Color GetPlayerColor(DPlayer.ID playerID)
     {
         switch (playerID)

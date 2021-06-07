@@ -26,11 +26,14 @@ public class DVillager : DMeeple
   {
     _authorize();
     Rescuer = rescuer;
+    GameState.Instance.PlayerById(rescuer).OnDeAuthorize?.Invoke();
   }
 
   public void Deauthorize(DPosition previousPosition)
   {
     _deauthorize(previousPosition);
+    if(Rescuer != null)
+      GameState.Instance.PlayerById((DPlayer.ID) Rescuer).OnDeAuthorize?.Invoke();
     Rescuer = null;
   }
 

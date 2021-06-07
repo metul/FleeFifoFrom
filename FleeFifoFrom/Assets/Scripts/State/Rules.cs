@@ -31,4 +31,6 @@ public class Rules
   public const ushort CHILDREN_COUNT = 12;
 
   public const ushort TURN_ACTION_LIMIT = 2;
+
+  public const ushort GIANT_STRENGTH = 8;
 }

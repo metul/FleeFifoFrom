@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class DKnight : DMeeple
 {
   public DPlayer.ID Owner { get; private set; }
@@ -36,6 +38,7 @@ public class DKnight : DMeeple
   public ushort Authorize(DPlayer.ID player)
   {
     _authorize();
+    GameState.Instance.PlayerById(player).OnDeAuthorize?.Invoke();
     return (ushort) (player == Owner ? 0 : 1);
   }
 
@@ -47,6 +50,7 @@ public class DKnight : DMeeple
   public ushort Deauthorize(DPosition previousPosition, DPlayer.ID player)
   {
     _deauthorize(previousPosition);
+    GameState.Instance.PlayerById(player).OnDeAuthorize?.Invoke();
     return (ushort) (player == Owner ? 0 : 1);
   }
 }

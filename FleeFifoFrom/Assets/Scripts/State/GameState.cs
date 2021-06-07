@@ -49,6 +49,7 @@ public class GameState
   public Action OnUndo;
   
   public Observable<int> TurnActionCount;
+  public Observable<int> KnightsFightingCount;
   public bool TurnActionPossible => TurnActionCount.Current < Rules.TURN_ACTION_LIMIT;
 
   #endregion
@@ -61,6 +62,7 @@ public class GameState
     _initializeBoard();
     _initializeWorkers();
 
+
     _initializeKnights();
     _initializeVillagers();
 
@@ -69,11 +71,10 @@ public class GameState
     Knights.CopyTo(Meeple, Villagers.Length);
 
     TurnActionCount = new Observable<int>(0);
+    KnightsFightingCount = new Observable<int>((Rules.KNIGHT_COUNT - 1) * Players.Length);
 
     _drawMeeple();
     _initializeTurn();
-    
-    // OnTurnChange.Invoke(TurnType);
   }
 
   private void _initializeBoard()

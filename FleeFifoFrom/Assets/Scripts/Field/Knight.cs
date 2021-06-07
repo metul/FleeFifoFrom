@@ -21,7 +21,7 @@ public class Knight : Meeple
 
         if (core.GetType() == typeof(DKnight))
         {
-            SetColor(Player.GetPlayerColor(((DKnight) core).Owner));
+            SetColor(ColorUtils.GetPlayerColor(((DKnight) core).Owner));
         }
     }
 

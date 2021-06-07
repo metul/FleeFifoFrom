@@ -15,12 +15,14 @@ public class RetreatCommand : ResetCommand
     {
         base.Execute();
         _knight.Retreat(_position);
+        GameState.Instance.KnightsFightingCount.Current--;
     }
 
     public override void Reverse()
     {
         base.Reverse();
         _knight.UnRetreat();
+        GameState.Instance.KnightsFightingCount.Current++;
     }
 
     public override bool IsFeasible()
