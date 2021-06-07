@@ -676,6 +676,7 @@ MonoBehaviour:
   - {fileID: 93227115}
   - {fileID: 1966952455}
   - {fileID: 1475737896}
+  _tempStorage: {fileID: 0}
 --- !u!4 &357313930
 Transform:
   m_ObjectHideFlags: 0
@@ -3863,9 +3864,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb2ede373dc189944b72db8b3851455f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  authorizeWorkerDisplay: {fileID: 0}
-  swapWorkerDisplay: {fileID: 0}
-  riotWorkerDisplay: {fileID: 0}
+  _workerPrefab: {fileID: 0}
+  _playerTilePrefab: {fileID: 0}
+  _actionButtons: []
+  _resetButtons: []
+  _villagerButton: {fileID: 0}
+  _actionTiles: []
+  _playerTileAnchor: {fileID: 0}
 --- !u!1001 &1474179764
 PrefabInstance:
   m_ObjectHideFlags: 0
