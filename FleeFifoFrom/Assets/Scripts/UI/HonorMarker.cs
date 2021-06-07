@@ -9,10 +9,13 @@ public class HonorMarker : MonoBehaviour
     [SerializeField] private Image _handleImage;
     [SerializeField] private Slider _slider;
 
-    public int Value { set => _slider.value = value; }
-
-    public void Init()
+    public void Init(DPlayer player)
     {
-        
+        _handleImage.color = Player.GetPlayerColor(player.Id);
+
+        player.Honor.Index.OnChange = h =>
+        {
+            _slider.value = h;
+        };
     }
 }

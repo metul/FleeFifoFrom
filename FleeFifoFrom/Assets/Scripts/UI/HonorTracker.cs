@@ -6,17 +6,15 @@ using UnityEngine.UI;
 
 public class HonorTracker : MonoBehaviour
 {
-    [SerializeField] private Slider _markerPrefab;
+    [SerializeField] private HonorMarker _markerPrefab;
+    [SerializeField] private Transform _markerParent;
 
     private void Start()
     {
-        // create some player and values for debug
-        var players = new[]
+        foreach (var dPlayer in GameState.Instance.Players)
         {
-            new Player(DPlayer.ID.Red),
-            new Player(DPlayer.ID.Blue),
-            new Player(DPlayer.ID.Yellow),
-            new Player(DPlayer.ID.Green)
-        };
+            var marker = Instantiate(_markerPrefab, _markerParent);
+            marker.Init(dPlayer);
+        }
     }
 }
