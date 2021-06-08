@@ -12,6 +12,10 @@ public class ConnectionManager : MonoBehaviour
     [SerializeField]
     private GameObject _connectionPanel;
     [SerializeField]
+    private GameObject _waitingPanel;
+    [SerializeField]
+    private GameObject _waitingLog;
+    [SerializeField]
     private UNetTransport _transport;
 
     private void Start()
@@ -29,7 +33,8 @@ public class ConnectionManager : MonoBehaviour
 
     private void InitializeServer()
     {
-        gameObject.AddComponent<ServerEventListener>();
+        ServerEventListener sel = gameObject.AddComponent<ServerEventListener>();
+        sel.Initialize(_waitingLog);
         NetworkManager.Singleton.StartServer();
     }
 
@@ -48,6 +53,7 @@ public class ConnectionManager : MonoBehaviour
     {
         NetworkManager.Singleton.StartClient();
         _connectionPanel.SetActive(false);
+        _waitingLog.SetActive(true);
     }
 
     public void UpdateConnectionAddress(string value)
