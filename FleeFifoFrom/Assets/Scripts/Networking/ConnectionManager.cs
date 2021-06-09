@@ -1,8 +1,10 @@
 using MLAPI;
+using MLAPI.NetworkVariable;
 using MLAPI.Transports.UNET;
 using System.Linq;
 using System.Net;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Manager class for server connection and UI.
@@ -33,8 +35,7 @@ public class ConnectionManager : MonoBehaviour
 
     private void InitializeServer()
     {
-        ServerEventListener sel = gameObject.AddComponent<ServerEventListener>();
-        sel.Initialize(_waitingLog);
+        gameObject.AddComponent<ServerEventListener>();
         NetworkManager.Singleton.StartServer();
     }
 
@@ -73,5 +74,12 @@ public class ConnectionManager : MonoBehaviour
             else
                 throw new System.Exception($"Given port ({splitAddress[1]}) is invalid!");
         }
+    }
+
+    public void DisableUI()
+    {
+        _connectionPanel.SetActive(false);
+        _waitingPanel.SetActive(false);
+        _waitingLog.SetActive(false);
     }
 }
