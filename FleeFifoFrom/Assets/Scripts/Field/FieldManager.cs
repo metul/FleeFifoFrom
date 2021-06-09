@@ -236,6 +236,7 @@ public class FieldManager : MonoBehaviour
                 _storeTile = tile;
                 StateManager.GameState = StateManager.State.PayForAction;
                 break;
+            //TODO: Can we add a case for RiotChooseFollowerType
             case StateManager.State.RiotChoosePath:
                 _storeSecondTile = _storeTile;
                 _storeTile = tile;

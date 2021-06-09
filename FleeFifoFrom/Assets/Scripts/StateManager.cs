@@ -13,6 +13,7 @@ public class StateManager : MonoBehaviour
         Swap2,
         Riot, // <- current debug state
         RiotChooseKnight,
+        //S.R. Can we add RiotChooseFollowerType
         RiotChoosePath,
         Revive,
         Reprioritize,

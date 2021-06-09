@@ -20,7 +20,12 @@ public class RecallCommand: ResetCommand
     public override void Execute()
     {
         base.Execute();
-        
+
+        //S.R.: Can the following conditional be added
+        //TODO: If exists(_worker.Owner != _player), Honor ++
+        //i.e. if you reset at least one opponent worker, then gain honor
+
+
         foreach (var dWorker in _workers)
             dWorker.Release();
         
@@ -36,6 +41,10 @@ public class RecallCommand: ResetCommand
 
     public override bool IsFeasible()
     {
+
+        //TODO: I think we also need && _worker.Position.Current.IsActionTile
+        //TODO: i.e. the tile needs to have at least one worker
         return base.IsFeasible();
+        
     }
 }
