@@ -20,6 +20,19 @@ public class ConnectionManager : MonoBehaviour
     [SerializeField]
     private UNetTransport _transport;
 
+    /// <summary>
+    /// Singleton instance of the ConnectionManager.
+    /// </summary>
+    public static ConnectionManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+            Destroy(gameObject);
+        else
+            Instance = this;
+    }
+
     private void Start()
     {
 #if UNITY_SERVER
@@ -74,6 +87,11 @@ public class ConnectionManager : MonoBehaviour
             else
                 throw new System.Exception($"Given port ({splitAddress[1]}) is invalid!");
         }
+    }
+
+    public void ModifyWaitingText(int playerCount)
+    {
+        _waitingLog.GetComponentInChildren<Text>().text = $"Waiting for Players ({playerCount}/4)";
     }
 
     public void DisableUI()

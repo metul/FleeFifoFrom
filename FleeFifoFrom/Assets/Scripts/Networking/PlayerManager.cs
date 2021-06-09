@@ -49,10 +49,14 @@ public class PlayerManager : NetworkBehaviour
         PlayerCount.OnValueChanged -= OnPlayerCountChanged;
     }
 
+    /// <summary>
+    /// Callback for player count change.
+    /// </summary>
+    /// <param name="prev"> Player count before change. </param>
+    /// <param name="next"> Player count after change. </param>
     private void OnPlayerCountChanged(int prev, int next)
     {
-        // TODO
         Debug.Log($"Waiting for Players ({PlayerCount.Value}/4)");
-        //_waitingLog.GetComponentInChildren<Text>().text = $"Waiting for Players ({_playerCount.Value}/4)";
+        ConnectionManager.Instance.ModifyWaitingText(PlayerCount.Value);
     }
 }
