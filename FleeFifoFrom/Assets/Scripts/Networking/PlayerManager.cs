@@ -58,5 +58,27 @@ public class PlayerManager : NetworkBehaviour
     {
         Debug.Log($"Waiting for Players ({PlayerCount.Value}/4)");
         ConnectionManager.Instance.ModifyWaitingText(PlayerCount.Value);
+        if (PlayerCount.Value == 4)
+            StartGame();
+        else if (prev == 4 && next < prev)
+            StopGame();
+    }
+
+    /// <summary>
+    /// Initializes the game.
+    /// </summary>
+    private void StartGame()
+    {
+        ConnectionManager.Instance.DisableUI();
+        // TODO
+    }
+
+    /// <summary>
+    /// Interrupts the game.
+    /// </summary>
+    private void StopGame()
+    {
+        Debug.Log($"Player count dropped to {PlayerCount.Value} after connection loss, interrupting game...");
+        // TODO
     }
 }
