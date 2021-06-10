@@ -54,9 +54,6 @@ public class ButtonManager : MonoBehaviour
         StateManager.OnStateUpdate += UpdateInteractability;
         GameState.Instance.OnTurnChange += turn =>
         {
-            var isActionTurn = turn == GameState.TurnTypes.ActionTurn;
-            _actionCanvas.SetActive(isActionTurn);
-            _resetCanvas.SetActive(!isActionTurn);
             UpdateInteractability();
             CommandProcessor.Instance.ClearStack();
             _fieldManager.EndTurnReset();
@@ -72,6 +69,10 @@ public class ButtonManager : MonoBehaviour
 
     private void UpdateInteractability()
     {
+        var isActionTurn = GameState.Instance.TurnType == GameState.TurnTypes.ActionTurn;
+        _actionCanvas.SetActive(isActionTurn);
+        _resetCanvas.SetActive(!isActionTurn);
+
         switch (StateManager.GameState)
         {
             case StateManager.State.CountermandDrawCard:
@@ -82,12 +83,14 @@ public class ButtonManager : MonoBehaviour
                 break;
             case StateManager.State.PoachSelectWorker:
                 EnableElements(false, true, false, true);
+                _actionCanvas.SetActive(true);
                 break;
             case StateManager.State.PoachSelectCard:
                 EnableElements(false, false, false);
                 break;
             case StateManager.State.Recall:
                 EnableElements(true, false, false);
+                _actionCanvas.SetActive(true);
                 break;
             case StateManager.State.Cooperate:
                 EnableElements(false, true, false, true);
