@@ -65,9 +65,6 @@ public class ButtonManager : MonoBehaviour
         };
 
         GameState.Instance.OnUndo += () => UpdateInteractability();
-        
-        // starting with an action turn
-        _resetCanvas.SetActive(false);
     }
 
     private void UpdateInteractability()
@@ -82,14 +79,14 @@ public class ButtonManager : MonoBehaviour
                 break;
             case StateManager.State.PoachSelectWorker:
                 EnableElements(false, true, false, true);
-                _actionCanvas.SetActive(true);
+                // _actionCanvas.SetActive(true);
                 break;
             case StateManager.State.PoachSelectCard:
                 EnableElements(false, false, false);
                 break;
             case StateManager.State.Recall:
                 EnableElements(true, false, false);
-                _actionCanvas.SetActive(true);
+                // _actionCanvas.SetActive(true);
                 break;
             case StateManager.State.Cooperate:
                 EnableElements(false, true, false, true);
