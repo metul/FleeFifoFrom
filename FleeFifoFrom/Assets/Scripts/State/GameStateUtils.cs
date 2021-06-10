@@ -229,16 +229,115 @@ public static class GameStateUtils
     /// <summary>
     /// Returns whether or not a particular piece is the highest priority
     /// </summary>
-    public static int CheckPriority()
+    public static bool CheckPriority(DMeeple current)
+    {
+        /*bool result = true
+        current.Priority is the priority of the current meeple
+        for each meeple in this row
+          { 
+            if (meeple.priority > current.Priority)
+            {
+                return false
+            }
+           }
+
+        return result;*/
+        return true; //remove this
+    }
+
+
+
+    /// <summary>
+    /// Obj Helper functions
+    /// </summary>
+    /// 
+    //Count how many pieces of each type a player has
+    //Used for Rescue and Admin cards
+    /*
+public static int CountType(PlayerID player)
+{
+    {
+        int scholar = 0;
+        int merchant = 0;
+        int farmer = 0;
+        for each authorized villager in player inventory
+        {
+            if (piece.Type is Scholar)
+            {
+                scholar++;
+            }
+            elseif(piece.Type is Merchant)
+            {
+                merchant++;
+            }
+        else
+        {
+                farmer++;
+            }
+        }
+
+        return [scholar, merchant, farmer];
+        //I think we would need a data structure similar to the priority matrix itself instead
+    }
+
+}
+*/
+
+    /// <summary>
+    /// Counts how many pieces of each priority a player has
+    /// Used for rescue cards
+    /// </summary>
+    /*
+        public static int[] CountPriority(PlayerID player)
+    {   
+        int[] result = [0,0,0]; //Im fairly certain this is an incorrect array definition tho
+        int low = 0;
+        int med = 0;
+        int high = 0;
+        for each authorized villager in player inventory
+        {
+            if(piece.Priority == 2)
+            { 
+                high++;
+            }
+            elseif (piece.Priority == 1)
+            {
+                med++;
+            }
+            else
+            {
+                low++;
+            }
+        }
+        
+        return [low,med,high];
+        //I think we would need a data structurure similar to the priority matrix itself instead
+    }*/
+
+
+    //TODO: The following function could be a common parent for each objective card
+    /*
+    public static int CheckObjective()
+    {
+       for each condition
+            Check condition
+            if all conditions
+                    return true
+    }
+    */
+
+    //TODO: Would need to have a separate definiton of this
+    //or separate case types for
+    //CheckShape, CheckCount, CheckInjury, CheckHonor
+    public static int CheckCondition()
     {
         return 0;
     }
 
-    /// <summary>
-    /// Returns whether or not a particular piece can reach the front
-    /// </summary>
-    public static int AccessToFront()
+    public static int CheckShape()
     {
         return 0;
     }
+
+
 }

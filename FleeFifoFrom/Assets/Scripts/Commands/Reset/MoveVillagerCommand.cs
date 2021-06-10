@@ -15,16 +15,22 @@ public class MoveVillagerCommand : ResetCommand
   public override void Execute()
   {
     base.Execute();
-    _meeple.Position.Current = _to;
+        //TODO if (!Meeple.CurrentRow.CheckPriority())
+        //{GameState.Instance.PlayerById.Honor.Lose();}
+        //i.e. lower honor if priority broken, then move piece as usual  
+        _meeple.Position.Current = _to;
   }
 
   public override void Reverse()
   {
     base.Reverse();
     _meeple.Position.Current = _from;
-  }
+    //TODO if (!Meeple.CurrentRow.CheckPriority())
+    //{GameState.Instance.PlayerById.Honor.Earn();}
+    //i.e. raise honor retroactively if priority would have been broken 
+    }
 
-  public override bool IsFeasible()
+    public override bool IsFeasible()
   {
     return base.IsFeasible()
       && GameState.Instance.IsEmpty(_to)

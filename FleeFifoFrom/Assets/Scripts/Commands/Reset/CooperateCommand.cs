@@ -5,6 +5,8 @@ public class CooperateCommand: ResetCommand
     private DPlayer.ID _controlledBy;
     private DActionPosition.TileId _previousTile;
 
+    //TODO: Maybe deprecate, by consolidating functionality into Recall
+
     public CooperateCommand(ulong issuerID, DPlayer.ID player, DWorker worker) : base(issuerID)
     {
         _worker = worker;

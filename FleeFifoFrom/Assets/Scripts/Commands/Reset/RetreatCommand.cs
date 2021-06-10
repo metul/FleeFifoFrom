@@ -26,7 +26,10 @@ public class RetreatCommand : ResetCommand
     }
 
     public override bool IsFeasible()
-    {
+    {   
+        //S.R. Can the condition be changed to only allow to last row
+        // This is so that we can reuse the priority checker when stepping forward
+
         return base.IsFeasible()
             && GameState.Instance.IsEmpty(_position)
             && GameState.Instance.PathExists(
