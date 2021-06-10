@@ -480,11 +480,12 @@ public class FieldManager : MonoBehaviour
     private void EnableAuthorizable()
     {
         var endpoint = new DPosition(1, 1);
+        var endguy = GameState.Instance.AtPosition(endpoint);
+
         GameState.Instance.TraverseBoard(p =>
         {
             var tile = TileByPosition(p);
             var meep = GameState.Instance.AtPosition(p);
-            var endguy = GameState.Instance.AtPosition(endpoint);
             tile.Interactable =
                 meep != null && meep.IsHealthy() &&  // --> there is a healthy meeple at this position
                 (

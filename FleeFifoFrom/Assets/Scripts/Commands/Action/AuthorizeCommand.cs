@@ -61,6 +61,17 @@ public class AuthorizeCommand : ActionCommand
 
     public override bool IsFeasible()
     {
-        return base.IsFeasible();
+        var endpoint = new DPosition(1, 1);
+
+        return base.IsFeasible() && _meeple != null && _meeple.IsHealthy() && (
+            _position.Equals(endpoint) || (
+                GameState.Instance.IsEmpty(endpoint) &&
+                GameState.Instance.PathExists(
+                    _position,
+                    endpoint,
+                    _p => _p.Equals(_position) || GameState.Instance.IsEmpty(_p)
+                )
+            )
+        );
     }
 }
