@@ -8,9 +8,9 @@ public class DebugStateDisplay : MonoBehaviour
     private void Awake()
     {
         _text = GetComponentInChildren<Text>();
-        StateManager.OnStateUpdate += () =>
+        StateManager.OnStateUpdate += state =>
         {
-            _text.text = StateManager.GameState.ToString();
+            _text.text = state.ToString();
         };
     }
 }

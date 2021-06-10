@@ -10,6 +10,9 @@ public class ButtonManager : MonoBehaviour
 
     [SerializeField] private GameObject _actionCanvas;
     [SerializeField] private GameObject _resetCanvas;
+    
+    // TODO include priority canvas
+    [SerializeField] private GameObject _priorityCanvas;
 
     [SerializeField] private Button[] _actionButtons;
     [SerializeField] private Button[] _resetButtons;
@@ -51,7 +54,7 @@ public class ButtonManager : MonoBehaviour
             worker.Initialize(dWorker, this);
         }
         
-        StateManager.OnStateUpdate += UpdateInteractability;
+        StateManager.OnStateUpdate += state => UpdateInteractability();
         GameState.Instance.OnTurnChange += turn =>
         {
             var isActionTurn = turn == GameState.TurnTypes.ActionTurn;
@@ -72,7 +75,7 @@ public class ButtonManager : MonoBehaviour
 
     private void UpdateInteractability()
     {
-        switch (StateManager.GameState)
+        switch (StateManager.CurrentState)
         {
             case StateManager.State.CountermandDrawCard:
                 EnableElements(false, false, false);
@@ -154,11 +157,11 @@ public class ButtonManager : MonoBehaviour
     
     public void OnActionTileClick(ActionTile actionTile)
     {
-        switch (StateManager.GameState)
+        switch (StateManager.CurrentState)
         {
             case StateManager.State.Recall:
                 CommandProcessor.Instance.ExecuteCommand(new RecallCommand(0, actionTile.Id));
-                StateManager.GameState = StateManager.State.Default;
+                StateManager.CurrentState = StateManager.State.Default;
                 break;
             default:
                 Debug.LogWarning("This is not a state in which action tile interaction is allowed!");
@@ -168,17 +171,17 @@ public class ButtonManager : MonoBehaviour
 
     public void OnWorkerClick(Worker worker)
     {
-        switch (StateManager.GameState)
+        switch (StateManager.CurrentState)
         {
             case StateManager.State.Cooperate:
                 CommandProcessor.Instance.ExecuteCommand(new CooperateCommand(
                     0, GameState.Instance.TurnPlayer().Id, worker.Core));
-                StateManager.GameState = StateManager.State.Default;
+                StateManager.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.PoachSelectWorker:
                 CommandProcessor.Instance.ExecuteCommand(new PoachCommand(
                     0, GameState.Instance.TurnPlayer().Id, worker.Core));
-                StateManager.GameState = StateManager.State.Default;
+                StateManager.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.PayForAction:
                 _fieldManager.InvokeAction(StateManager.CurrentlyPayingFor, worker.Core);
@@ -193,22 +196,22 @@ public class ButtonManager : MonoBehaviour
 
     public void Authorize()
     {
-        StateManager.GameState = StateManager.State.Authorize;
+        StateManager.CurrentState = StateManager.State.Authorize;
     }
 
     public void Swap()
     {
-        StateManager.GameState = StateManager.State.Swap1;
+        StateManager.CurrentState = StateManager.State.Swap1;
     }
 
     public void Riot()
     {
-        StateManager.GameState = StateManager.State.RiotChooseKnight;
+        StateManager.CurrentState = StateManager.State.RiotChooseKnight;
     }
 
     public void Revive()
     {
-        StateManager.GameState = StateManager.State.Revive;
+        StateManager.CurrentState = StateManager.State.Revive;
     }
 
     public void Objective()
@@ -218,45 +221,45 @@ public class ButtonManager : MonoBehaviour
 
     public void Countermand()
     {
-        StateManager.GameState = StateManager.State.CountermandDrawCard;
+        StateManager.CurrentState = StateManager.State.CountermandDrawCard;
     }
 
     public void Reprioritize()
     {
-        StateManager.GameState = StateManager.State.Reprioritize;
+        StateManager.CurrentState = StateManager.State.Reprioritize;
     }
 
     public void Retreat()
     {
-        StateManager.GameState = StateManager.State.RetreatChooseKnight;
+        StateManager.CurrentState = StateManager.State.RetreatChooseKnight;
     }
 
     public void Recall()
     {
-        StateManager.GameState = StateManager.State.Recall;
+        StateManager.CurrentState = StateManager.State.Recall;
     }
 
     public void Cooperate()
     {
-        StateManager.GameState = StateManager.State.Cooperate;
+        StateManager.CurrentState = StateManager.State.Cooperate;
     }
 
     public void Poach()
     {
-        StateManager.GameState = StateManager.State.PoachSelectWorker;
+        StateManager.CurrentState = StateManager.State.PoachSelectWorker;
     }
 
     public void Villager()
     {
-        StateManager.GameState = StateManager.State.Villager;
+        StateManager.CurrentState = StateManager.State.Villager;
     }
 
     public void Undo()
     {
-        if(StateManager.GameState == StateManager.State.Default)
+        if(StateManager.CurrentState == StateManager.State.Default)
             CommandProcessor.Instance.Undo();
         else
-            StateManager.GameState = StateManager.State.Default;
+            StateManager.CurrentState = StateManager.State.Default;
     }
 
     public void EndTurn()

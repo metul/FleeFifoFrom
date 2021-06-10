@@ -31,27 +31,30 @@ public class StateManager : MonoBehaviour
         PayForAction
     }
 
-    private static State _gameState;
-    // TODO: change this to an Observable<GameState> instead.
-    public static Action OnStateUpdate;
+    private static State _currentState;
+    public static Action<State> OnStateUpdate;
     public static State CurrentlyPayingFor;
     
-    public static State GameState
+    public static State CurrentState
     {
-        get => _gameState;
+        get => _currentState;
         set
         {
             if (value == State.PayForAction)
             {
-                CurrentlyPayingFor = _gameState;
+                CurrentlyPayingFor = _currentState;
             }
-            _gameState = value;
-            OnStateUpdate?.Invoke();
+            _currentState = value;
+            OnStateUpdate?.Invoke(value);
         } 
     }
 
     private void Start()
     {
-        GameState = State.Default;
+        CurrentState = State.Default;
+        GameState.Instance.OnTurnChange += types =>
+        {
+            CurrentState = State.Default;
+        };
     }
 }
