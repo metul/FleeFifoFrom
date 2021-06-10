@@ -57,6 +57,8 @@ public class DVillager : DMeeple
 }
 
 // TODO: maybe later they need to go to their own files?
-public class DCommoner : DVillager {}
-public class DElder : DVillager {}
-public class DChild : DVillager {}
+public class DFarmer : DVillager { }
+
+public class DScholar : DVillager { }
+
+public class DMerchant : DVillager { }

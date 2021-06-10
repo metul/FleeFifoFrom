@@ -93,15 +93,15 @@ public class FieldManager : MonoBehaviour
             if (tile != null)
             {
                 Meeple? prefab = null;
-                if (meep.GetType() == typeof(DCommoner))
+                if (meep.GetType() == typeof(DFarmer))
                 {
                     prefab = _villagerPrefabs[0];
                 }
-                else if (meep.GetType() == typeof(DChild))
+                else if (meep.GetType() == typeof(DMerchant))
                 {
                     prefab = _villagerPrefabs[1];
                 }
-                else if (meep.GetType() == typeof(DElder))
+                else if (meep.GetType() == typeof(DScholar))
                 {
                     prefab = _villagerPrefabs[2];
                 }
@@ -176,11 +176,6 @@ public class FieldManager : MonoBehaviour
             tile.Meeples[0].Core));
     }
 
-    public void Reprioritize(Tile tile)
-    {
-        CommandProcessor.Instance.ExecuteCommand(new ReprioritizeCommand(0, tile));
-    }
-
     public void Retreat(Tile battlefrontTile, Tile tile)
     {
         CommandProcessor.Instance.ExecuteCommand(new RetreatCommand(
@@ -251,10 +246,6 @@ public class FieldManager : MonoBehaviour
             case StateManager.State.Revive:
                 _storeTile = tile;
                 StateManager.CurrentState = StateManager.State.PayForAction;
-                break;
-            case StateManager.State.Reprioritize:
-                Reprioritize(tile);
-                StateManager.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.RetreatChooseTile:
                 Retreat(_storeTile, tile);
@@ -335,9 +326,6 @@ public class FieldManager : MonoBehaviour
                 break;
             case StateManager.State.Revive:
                 EnableInjuryBased(true);
-                break;
-            case StateManager.State.Reprioritize:
-                EnableInjuryBased(false);
                 break;
             case StateManager.State.RetreatChooseTile:
                 EnableRetreatable();

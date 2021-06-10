@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3667819666926343818}
   - component: {fileID: 7640830836080027946}
   m_Layer: 0
-  m_Name: Commoner
+  m_Name: Farmer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

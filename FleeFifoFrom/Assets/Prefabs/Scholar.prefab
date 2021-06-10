@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1182205000322963868}
   - component: {fileID: 2865988018397362392}
   m_Layer: 0
-  m_Name: Elder
+  m_Name: Scholar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

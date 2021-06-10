@@ -8,7 +8,6 @@ public class DKnight : DMeeple
   {
     Owner = owner;
   }
-
   public DKnight(DPlayer.ID owner, DPosition position): this(owner, position, MeepleState.InQueue) {}
   public DKnight(DPlayer.ID owner): this(owner, null, MeepleState.OutOfBoard){}
 

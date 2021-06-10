@@ -1,31 +1,34 @@
 public class ReprioritizeCommand : ResetCommand
 {
-    private Tile _tile;
+    private DPrio _prio;
+    private bool _inscrease;
 
-    public ReprioritizeCommand(ulong issuerID, Tile tile) : base(issuerID)
+    public ReprioritizeCommand(ulong issuerID, DPrio prio, bool increase) : base(issuerID)
     {
-        _tile = tile;
+        _prio = prio;
+        _inscrease = increase;
     }
 
     public override void Execute()
-    {   
+    {
         base.Execute();
-        // Meeple.Priority.ChangePriority(old,new);
-        // old, new include: HIGH, MED, LOW
-        //Can move from any current position to any new position
-
+        if(_inscrease)
+            _prio.Increase();
+        else
+            _prio.Decrease();
     }
 
     public override void Reverse()
     {
         base.Reverse();
-        // Meeple.Priority.ChangePriority(new,old);
+        if(_inscrease)
+            _prio.Decrease();
+        else
+            _prio.Increase();
     }
 
     public override bool IsFeasible()
-  {
-    return base.IsFeasible();
-        //TODO: Reminder to check if any unique feasibility
-        //TODO: I think this action is always feasible after base
-  }
+    {
+        return _inscrease ? _prio.IsIncreasable : _prio.IsDecreasable;
+    }
 }

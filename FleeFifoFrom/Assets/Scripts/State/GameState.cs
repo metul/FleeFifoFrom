@@ -1,8 +1,8 @@
 using System;
+using System.CodeDom;
 using System.Linq;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
-using UnityEngine;
 
 public class GameState
 {
@@ -40,6 +40,7 @@ public class GameState
   public DMeeple[] Meeple { get; private set; }
   public DVillager[] Villagers { get; private set; }
   public readonly DPlayer[] Players;
+  public Dictionary<Type, DPrio> Priorities { get; private set; }
   
   public ushort TurnPlayerIndex;
   public TurnTypes TurnType;
@@ -65,6 +66,7 @@ public class GameState
 
     _initializeKnights();
     _initializeVillagers();
+    _initPrio();
 
     Meeple = new DMeeple[Villagers.Length + Knights.Length];
     Villagers.CopyTo(Meeple, 0);
@@ -119,17 +121,17 @@ public class GameState
 
     for (ushort i = 0; i < Rules.COMMONERS_COUNT; i++)
     {
-      villagers.Add(new DCommoner());
+      villagers.Add(new DFarmer());
     }
 
-    for (ushort i = 0; i < Rules.ELDERS_COUNT; i++)
+    for (ushort i = 0; i < Rules.SCHOLAR_COUNT; i++)
     {
-      villagers.Add(new DElder());
+      villagers.Add(new DScholar());
     }
 
-    for (ushort i = 0; i < Rules.CHILDREN_COUNT; i++)
+    for (ushort i = 0; i < Rules.MERCHANT_COUNT; i++)
     {
-      villagers.Add(new DChild());
+      villagers.Add(new DMerchant());
     }
 
     Villagers = villagers.ToArray();
@@ -152,6 +154,15 @@ public class GameState
         DrawVillager().Draw(p);
       }
     });
+  }
+
+  private void _initPrio()
+  {
+    Priorities = new Dictionary<Type, DPrio>();
+    foreach (var prioPair in Rules.START_PRIO_ARRAY)
+    {
+      Priorities[prioPair.Key] = new DPrio(prioPair.Value);
+    }
   }
 
   private void _initializeTurn()
@@ -217,6 +228,11 @@ public class GameState
   {
     DVillager[] bag = VillagerBag();
     return bag[Random.Range(0, bag.Length)];
+  }
+  
+  public DPrio GetPrio(DMeeple meeple)
+  {
+    return Priorities[meeple.GetType()];
   }
 
   /// <summary>

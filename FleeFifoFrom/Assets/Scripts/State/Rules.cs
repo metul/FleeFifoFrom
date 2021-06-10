@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 public class Rules
@@ -26,11 +27,20 @@ public class Rules
 
   public const ushort COMMONERS_COUNT = 32; 
 
-  public const ushort ELDERS_COUNT = 12;
+  public const ushort SCHOLAR_COUNT = 12;
 
-  public const ushort CHILDREN_COUNT = 12;
+  public const ushort MERCHANT_COUNT = 12;
 
   public const ushort TURN_ACTION_LIMIT = 2;
 
   public const ushort GIANT_STRENGTH = 8;
+
+  public const DPrio.PrioValue START_PRIO = DPrio.PrioValue.Medium;
+  public static readonly Dictionary<Type, DPrio.PrioValue> START_PRIO_ARRAY = new Dictionary<Type, DPrio.PrioValue>()
+  {
+    {typeof(DFarmer), DPrio.PrioValue.Medium},
+    {typeof(DMerchant), DPrio.PrioValue.Medium},
+    {typeof(DScholar), DPrio.PrioValue.Medium},
+    {typeof(DKnight), DPrio.PrioValue.Medium}
+  };
 }

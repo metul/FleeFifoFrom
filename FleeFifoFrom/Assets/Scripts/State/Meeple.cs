@@ -15,6 +15,7 @@ public class DMeeple : DObject
     UnTapped,   // --> the meeple is untapped
   }
 
+
 // TODO: perhaps State needs to be Observable as well?
   public MeepleState State { get; protected set; } = MeepleState.OutOfBoard;
   public Observable<MeepleQueueState> QueueState = new Observable<MeepleQueueState>(MeepleQueueState.UnTapped);
