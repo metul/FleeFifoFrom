@@ -75,7 +75,7 @@ public class GameState
     TurnActionCount = new Observable<int>(0);
     KnightsFightingCount = new Observable<int>((Rules.KNIGHT_COUNT - 1) * Players.Length);
 
-    //DrawMeeple();
+    DrawMeeple(); // TODO: Comment out for networking
     _initializeTurn();
   }
 

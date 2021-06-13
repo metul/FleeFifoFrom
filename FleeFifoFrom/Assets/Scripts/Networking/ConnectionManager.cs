@@ -1,5 +1,4 @@
 using MLAPI;
-using MLAPI.NetworkVariable;
 using MLAPI.Transports.UNET;
 using System.Linq;
 using System.Net;

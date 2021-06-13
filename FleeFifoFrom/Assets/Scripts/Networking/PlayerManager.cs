@@ -1,8 +1,6 @@
 using MLAPI;
-using MLAPI.Logging;
 using MLAPI.NetworkVariable;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -75,8 +73,6 @@ public class PlayerManager : NetworkBehaviour
             CommunicationManager.Instance.InitializeRandomSeedClientRpc(Random.Range(int.MinValue, int.MaxValue));
         // TODO: Wait until random seeded
         yield return new WaitForSeconds(3);
-        NetworkLog.LogInfoServer($"Client {NetworkManager.LocalClientId} has random sequence " +
-            $"{Random.Range(1, 10)}-{Random.Range(1, 10)}-{Random.Range(1, 10)}");
         // Set up the board
         GameState.Instance.DrawMeeple();
         // Disable connection UI

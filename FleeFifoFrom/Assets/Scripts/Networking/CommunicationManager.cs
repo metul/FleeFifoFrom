@@ -1,7 +1,6 @@
 using MLAPI;
 using MLAPI.Logging;
 using MLAPI.Messaging;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -71,21 +70,4 @@ public class CommunicationManager : NetworkBehaviour
     {
         Random.InitState(seed);
     }
-
-    //public void RequestMessage(MessageType messageType)
-    //{
-
-    //}
-
-    //[ServerRpc (RequireOwnership = false)]
-    //private void RequestMessageServerRpc(MessageType messageType)
-    //{
-
-    //}
-
-    //[ClientRpc]
-    //private void RequestMessageClientRpc(MessageType messageType)
-    //{
-
-    //}
 }
