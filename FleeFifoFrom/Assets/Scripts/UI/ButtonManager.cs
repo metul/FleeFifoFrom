@@ -17,6 +17,7 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] private Button[] _actionButtons;
     [SerializeField] private Button[] _resetButtons;
     [SerializeField] private Button _villagerButton;
+    [SerializeField] private Button _endTurnButton;
     [SerializeField] private ActionTile[] _actionTiles;
     [SerializeField] private Transform _playerTileAnchor;
     private PlayerTile[] _playerTiles;
@@ -73,7 +74,7 @@ public class ButtonManager : MonoBehaviour
             if (PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId] == GameState.Instance.TurnPlayer().Id)
                 UpdateInteractability();
             else
-                EnableElements(false, false, false);
+                EnableElements(false, false, false, endTurnAllowed: false);
         }
         else // MARK: Allow local debugging (also updates interactability on server)
             UpdateInteractability();
@@ -115,7 +116,7 @@ public class ButtonManager : MonoBehaviour
         }
     }
 
-    private void EnableElements(bool tiles, bool worker, bool playerWorker, bool opponentTileWorkers = false, bool buttons = false)
+    private void EnableElements(bool tiles, bool worker, bool playerWorker, bool opponentTileWorkers = false, bool buttons = false, bool endTurnAllowed = true)
     {
         foreach (var actionTile in _actionTiles)
         {
@@ -148,6 +149,8 @@ public class ButtonManager : MonoBehaviour
             resetButton.interactable = resetButtons;
 
         _villagerButton.interactable = buttons && GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn;
+
+        _endTurnButton.interactable = buttons && endTurnAllowed;
     }
 
     public UiTile ActionTileByPosition(DActionPosition position)
@@ -272,7 +275,10 @@ public class ButtonManager : MonoBehaviour
 
     public void EndTurn()
     {
-        GameState.Instance.RotateTurn();
+        if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
+            CommunicationManager.Instance.RotateTurn();
+        else // Allow local debugging
+            GameState.Instance.RotateTurn();
     }
 
     #endregion

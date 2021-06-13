@@ -93,4 +93,25 @@ public class CommunicationManager : NetworkBehaviour
     {
         FindObjectOfType<ButtonManager>().NetworkedUpdateInteractability(); // TODO: Use ButtonManager singleton instead?
     }
+
+    /// <summary>
+    /// Ends current turn and continues the game.
+    /// </summary>
+    public void RotateTurn()
+    {
+        RotateTurnServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void RotateTurnServerRpc()
+    {
+        GameState.Instance.RotateTurn();
+        RotateTurnClientRpc();
+    }
+
+    [ClientRpc]
+    private void RotateTurnClientRpc()
+    {
+        GameState.Instance.RotateTurn();
+    }
 }

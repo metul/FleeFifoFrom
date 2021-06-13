@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.2257134, b: 0.30692226, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -8233,6 +8233,7 @@ MonoBehaviour:
   - {fileID: 1108509923}
   - {fileID: 1807814314}
   _villagerButton: {fileID: 1216290499}
+  _endTurnButton: {fileID: 1361957604}
   _actionTiles:
   - {fileID: 1858282187}
   - {fileID: 1256910891}
