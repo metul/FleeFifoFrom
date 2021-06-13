@@ -1,6 +1,8 @@
 using MLAPI;
 using MLAPI.NetworkVariable;
+using MLAPI.NetworkVariable.Collections;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -35,8 +37,17 @@ public class PlayerManager : NetworkBehaviour
         }
     }
 
-    private NetworkVariableInt _playerCount = new NetworkVariableInt(0);
+    private NetworkVariableInt _playerCount = new NetworkVariableInt(new NetworkVariableSettings
+    {
+        WritePermission = NetworkVariablePermission.ServerOnly
+    }, 0);
     public NetworkVariableInt PlayerCount => _playerCount;
+
+    private NetworkDictionary<ulong, DPlayer.ID> _networkPlayerIDs = new NetworkDictionary<ulong, DPlayer.ID>(new NetworkVariableSettings
+    {
+        WritePermission = NetworkVariablePermission.Everyone
+    });
+    public NetworkDictionary<ulong, DPlayer.ID> NetworkPlayerIDs => _networkPlayerIDs;
 
     private void OnEnable()
     {
@@ -55,8 +66,16 @@ public class PlayerManager : NetworkBehaviour
     /// <param name="next"> Player count after change. </param>
     private void OnPlayerCountChanged(int prev, int next)
     {
+        // Handle initial invocation
+        if (prev == next)
+            return;
+        // Map client ID to player ID
+        if (!_networkPlayerIDs.ContainsKey(NetworkManager.Singleton.LocalClientId))
+            _networkPlayerIDs.Add(NetworkManager.Singleton.LocalClientId, GameState.Instance.Players[PlayerCount.Value - 1].Id);
+        // Update text
         int requiredPlayers = GameState.Instance.Players.Length;
         ConnectionManager.Instance.ModifyWaitingText(PlayerCount.Value, requiredPlayers);
+        // Initialize/interrupt game
         if (PlayerCount.Value == requiredPlayers)
             StartCoroutine(StartGame());
         else if (prev == requiredPlayers && next < prev)
