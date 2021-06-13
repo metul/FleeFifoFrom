@@ -33,7 +33,7 @@ public class StateManager : MonoBehaviour
     private static State _currentState;
     public static Action<State> OnStateUpdate;
     public static State CurrentlyPayingFor;
-    
+
     public static State CurrentState
     {
         get => _currentState;
@@ -45,7 +45,7 @@ public class StateManager : MonoBehaviour
             }
             _currentState = value;
             OnStateUpdate?.Invoke(value);
-        } 
+        }
     }
 
     private void Start()

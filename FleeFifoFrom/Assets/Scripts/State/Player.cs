@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,8 +8,9 @@ public class DPlayer
     {
         Red, Blue, Yellow, Green,
     }
-    
-    public DPlayer(ID id, string name) {
+
+    public DPlayer(ID id, string name)
+    {
         Id = id;
         Name = name;
 
@@ -31,7 +31,7 @@ public class DPlayer
         List<DPlayer> result = new List<DPlayer>();
         int i = 1;
 
-        foreach(ID id in ids)
+        foreach (ID id in ids)
         {
             result.Add(new DPlayer(id, $"Player {i++}"));
         }
@@ -46,7 +46,6 @@ public class DPlayer
         {
             ids[i] = Rules.DEFAULT_PLAYERS[i];
         }
-
         return CreateAnonymousPlayers(ids);
     }
 }

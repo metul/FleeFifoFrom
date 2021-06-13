@@ -1,6 +1,4 @@
 using MLAPI;
-using MLAPI.Logging;
-using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +10,7 @@ public class ButtonManager : MonoBehaviour
 
     [SerializeField] private GameObject _actionCanvas;
     [SerializeField] private GameObject _resetCanvas;
-    
+
     // TODO include priority canvas
     [SerializeField] private GameObject _priorityCanvas;
 
@@ -37,10 +35,10 @@ public class ButtonManager : MonoBehaviour
     private void Start()
     {
         _fieldManager = FindObjectOfType<FieldManager>();
-        
+
         // init player tiles
         _playerTiles = new PlayerTile[GameState.Instance.Players.Length];
-        
+
         for (var i = 0; i < GameState.Instance.Players.Length; i++)
         {
             var playerTile = Instantiate(_playerTilePrefab, _playerTileAnchor);
@@ -48,14 +46,14 @@ public class ButtonManager : MonoBehaviour
             _playerTiles[i] = playerTile;
 
         }
-        
+
         // init worker
         foreach (var dWorker in GameState.Instance.Workers)
         {
             var worker = Instantiate(_workerPrefab);
             worker.Initialize(dWorker, this);
         }
-        
+
         StateManager.OnStateUpdate += state => NetworkedUpdateInteractability();
         GameState.Instance.OnTurnChange += turn =>
         {
@@ -65,7 +63,6 @@ public class ButtonManager : MonoBehaviour
             // TODO highlight current player
             Debug.Log($"New turn started: {GameState.Instance.TurnPlayer().Name}'s {turn}");
         };
-
         GameState.Instance.OnUndo += () => NetworkedUpdateInteractability();
     }
 
@@ -74,18 +71,9 @@ public class ButtonManager : MonoBehaviour
         if (NetworkManager.Singleton.IsConnectedClient && !NetworkManager.Singleton.IsServer)
         {
             if (PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId] == GameState.Instance.TurnPlayer().Id)
-            {
-                NetworkLog.LogInfoServer($"Client {NetworkManager.Singleton.LocalClientId} " +
-                    $"(Player {PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId]}) says: " +
-                    $"'My {GameState.Instance.TurnType} turn!'.");
                 UpdateInteractability();
-            }
             else
-            {
-                NetworkLog.LogInfoServer($"Client {NetworkManager.Singleton.LocalClientId} " +
-                    $"(Player {PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId]}) says: 'Not my turn!'.");
                 EnableElements(false, false, false);
-            }
         }
         else // MARK: Allow local debugging (also updates interactability on server)
             UpdateInteractability();
@@ -132,11 +120,11 @@ public class ButtonManager : MonoBehaviour
         foreach (var actionTile in _actionTiles)
         {
             actionTile.Interactable = tiles;
-            if(opponentTileWorkers)
+            if (opponentTileWorkers)
                 actionTile.SetOpponentWorkerInteractable(worker, GameState.Instance.TurnPlayer());
             else
                 actionTile.SetWorkerInteractable(worker);
-            
+
         }
 
         foreach (var playerTile in _playerTiles)
@@ -144,18 +132,18 @@ public class ButtonManager : MonoBehaviour
             var currentPlayer = GameState.Instance.TurnPlayer().Id == playerTile.Id;
             playerTile.SetWorkerInteractable(playerWorker && currentPlayer);
         }
-        
-        var actionButtons = buttons 
-                     && GameState.Instance.TurnActionPossible 
+
+        var actionButtons = buttons
+                     && GameState.Instance.TurnActionPossible
                      && GameState.Instance.TurnType == GameState.TurnTypes.ActionTurn;
 
         foreach (var actionButton in _actionButtons)
             actionButton.interactable = actionButtons;
 
-        var resetButtons = buttons 
-                           && GameState.Instance.TurnActionPossible 
+        var resetButtons = buttons
+                           && GameState.Instance.TurnActionPossible
                            && GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn;
-        
+
         foreach (var resetButton in _resetButtons)
             resetButton.interactable = resetButtons;
 
@@ -168,13 +156,13 @@ public class ButtonManager : MonoBehaviour
         {
             return _actionTiles.First(a => a.Id == position.Tile);
         }
-        if(position.IsPlayerTile)
+        if (position.IsPlayerTile)
         {
             return _playerTiles.First(p => p.Id == position.Player);
         }
         return null;
     }
-    
+
     public void OnActionTileClick(ActionTile actionTile)
     {
         switch (StateManager.CurrentState)
@@ -185,7 +173,7 @@ public class ButtonManager : MonoBehaviour
                 break;
             default:
                 Debug.LogWarning("This is not a state in which action tile interaction is allowed!");
-            break;
+                break;
         }
     }
 
@@ -276,7 +264,7 @@ public class ButtonManager : MonoBehaviour
 
     public void Undo()
     {
-        if(StateManager.CurrentState == StateManager.State.Default)
+        if (StateManager.CurrentState == StateManager.State.Default)
             CommandProcessor.Instance.Undo();
         else
             StateManager.CurrentState = StateManager.State.Default;
@@ -286,6 +274,6 @@ public class ButtonManager : MonoBehaviour
     {
         GameState.Instance.RotateTurn();
     }
-    
+
     #endregion
 }
