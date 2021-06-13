@@ -65,8 +65,17 @@ public class CommunicationManager : NetworkBehaviour
         Debug.Log($"Locally processing the action {state} issued by client {publisherID}.");
     }
 
+    /// <summary>
+    /// Initializes random with same (random) seed on each client.
+    /// </summary>
+    public void InitializeRandomSeed()
+    {
+        // MARK: sometimes throws IndexOutOfRangeException?
+        InitializeRandomSeedClientRpc(Random.Range(int.MinValue, int.MaxValue));
+    }
+
     [ClientRpc]
-    public void InitializeRandomSeedClientRpc(int seed)
+    private void InitializeRandomSeedClientRpc(int seed)
     {
         Random.InitState(seed);
     }

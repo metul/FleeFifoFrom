@@ -19,6 +19,7 @@ public class ServerEventListener : MonoBehaviour
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
         NetworkManager.Singleton.OnServerStarted += OnServerStarted;
+        _playerManager.OnRequiredPlayersReached += CommunicationManager.Instance.InitializeRandomSeed;
     }
 
     private void OnDisable()
@@ -26,6 +27,7 @@ public class ServerEventListener : MonoBehaviour
         NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
         NetworkManager.Singleton.OnServerStarted -= OnServerStarted;
+        _playerManager.OnRequiredPlayersReached -= CommunicationManager.Instance.InitializeRandomSeed;
     }
 
     /// <summary>
@@ -43,9 +45,6 @@ public class ServerEventListener : MonoBehaviour
             // Check if max players reached
             if (NetworkManager.Singleton.ConnectedClients.Count > requiredPlayerCount)
                 throw new System.Exception($"Required number of players ({requiredPlayerCount}) already reached, can't connect further clients!");
-            // Initialize random with same (random) seed for each client
-            if (NetworkManager.Singleton.ConnectedClients.Count == requiredPlayerCount)
-                CommunicationManager.Instance.InitializeRandomSeedClientRpc(Random.Range(int.MinValue, int.MaxValue));
             // Register new player
             DPlayer.ID playerID = GameState.Instance.Players[_playerManager.PlayerCount.Value].Id;
             NetworkLog.LogInfoServer($"Mapping client ID {clientID} to player ID {playerID}.");

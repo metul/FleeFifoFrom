@@ -67,15 +67,21 @@ public class ButtonManager : MonoBehaviour
         };
 
         GameState.Instance.OnUndo += () => UpdateInteractability();
+        PlayerManager.Instance.OnRequiredPlayersReached += () => UpdateInteractability(); // MARK: Unsubscribe?
     }
 
     private void UpdateInteractability()
     {
         // DEBUG
-        if (NetworkManager.Singleton.IsConnectedClient && PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId] == GameState.Instance.TurnPlayer().Id)
+        if (NetworkManager.Singleton.IsConnectedClient && !NetworkManager.Singleton.IsServer)
         {
-            NetworkLog.LogInfoServer($"Client {NetworkManager.Singleton.LocalClientId} " +
-                $"(Player {PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId]}) says: 'this my turn g'");
+            Debug.Log("DEBUG");
+            if (PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId] == GameState.Instance.TurnPlayer().Id)
+                NetworkLog.LogInfoServer($"Client {NetworkManager.Singleton.LocalClientId} " +
+                    $"(Player {PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId]}) says: 'this my turn g'");
+            else
+                NetworkLog.LogInfoServer($"Client {NetworkManager.Singleton.LocalClientId} " +
+                    $"(Player {PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId]}) says: 'ima wait'");
         }
         switch (StateManager.CurrentState)
         {

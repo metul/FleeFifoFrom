@@ -96,15 +96,13 @@ public class ConnectionManager : MonoBehaviour
         _waitingLog.GetComponentInChildren<Text>().text = $"Waiting for Players ({playerCount}/{requiredPlayers})";
     }
 
-    public void SetPlayerIndicatorColor(Color color)
-    {
-        _playerIndicatorImage.color = color;
-    }
-
     public void DisableUI()
     {
         _connectionPanel.SetActive(false);
         _waitingPanel.SetActive(false);
         _waitingLog.SetActive(false);
+        // Set player indicator color on UI
+        if (!NetworkManager.Singleton.IsServer)
+            _playerIndicatorImage.color = ColorUtils.GetPlayerColor(PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId]);
     }
 }

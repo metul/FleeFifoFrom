@@ -2,6 +2,7 @@ using MLAPI;
 using MLAPI.Logging;
 using MLAPI.NetworkVariable;
 using MLAPI.NetworkVariable.Collections;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -50,6 +51,8 @@ public class PlayerManager : NetworkBehaviour
     });
     public NetworkDictionary<ulong, DPlayer.ID> NetworkPlayerIDs => _networkPlayerIDs;
 
+    public Action OnRequiredPlayersReached;
+
     private void OnEnable()
     {
         PlayerCount.OnValueChanged += OnPlayerCountChanged;
@@ -68,14 +71,15 @@ public class PlayerManager : NetworkBehaviour
     private void OnPlayerCountChanged(int prev, int next)
     {
         // MARK: Callback is unnecessarily executed at network variable initialization (e.g. 0->2, then 2->3)
-        if (IsServer)
-            return;
         // Update waiting text
         int requiredPlayerCount = GameState.Instance.Players.Length;
         ConnectionManager.Instance.ModifyWaitingText(PlayerCount.Value, requiredPlayerCount);
-        // Initialize/interrupt game (TODO: Start/Stop game on server as well?)
+        // Initialize/interrupt game
         if (PlayerCount.Value == requiredPlayerCount)
+        {
+            OnRequiredPlayersReached?.Invoke();
             StartCoroutine(StartGame());
+        }
         else if (prev == requiredPlayerCount && next < prev)
             StopGame();
     }
@@ -91,8 +95,6 @@ public class PlayerManager : NetworkBehaviour
         GameState.Instance.DrawMeeple();
         // Disable connection UI
         ConnectionManager.Instance.DisableUI();
-        // Set player indicator color on UI
-        ConnectionManager.Instance.SetPlayerIndicatorColor(ColorUtils.GetPlayerColor(NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId]));
     }
 
     /// <summary>
