@@ -67,7 +67,8 @@ public class PlayerManager : NetworkBehaviour
     /// <param name="next"> Player count after change. </param>
     private void OnPlayerCountChanged(int prev, int next)
     {
-        if (IsServer || prev == next)
+        // MARK: Callback is unnecessarily executed at network variable initialization (e.g. 0->2, then 2->3)
+        if (IsServer)
             return;
         // Update waiting text
         int requiredPlayerCount = GameState.Instance.Players.Length;
@@ -84,9 +85,6 @@ public class PlayerManager : NetworkBehaviour
     /// </summary>
     private IEnumerator StartGame()
     {
-        // Initialize random with same (random) seed for each client
-        if (IsServer)
-            CommunicationManager.Instance.InitializeRandomSeedClientRpc(Random.Range(int.MinValue, int.MaxValue));
         // TODO: Wait until random seeded
         yield return new WaitForSeconds(3);
         // Set up the board

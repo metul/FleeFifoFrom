@@ -40,8 +40,13 @@ public class ServerEventListener : MonoBehaviour
         if (!_playerManager.NetworkPlayerIDs.ContainsKey(clientID))
         {
             int requiredPlayerCount = GameState.Instance.Players.Length;
+            // Check if max players reached
             if (NetworkManager.Singleton.ConnectedClients.Count > requiredPlayerCount)
                 throw new System.Exception($"Required number of players ({requiredPlayerCount}) already reached, can't connect further clients!");
+            // Initialize random with same (random) seed for each client
+            if (NetworkManager.Singleton.ConnectedClients.Count == requiredPlayerCount)
+                CommunicationManager.Instance.InitializeRandomSeedClientRpc(Random.Range(int.MinValue, int.MaxValue));
+            // Register new player
             DPlayer.ID playerID = GameState.Instance.Players[_playerManager.PlayerCount.Value].Id;
             NetworkLog.LogInfoServer($"Mapping client ID {clientID} to player ID {playerID}.");
             _playerManager.NetworkPlayerIDs.Add(clientID, playerID);
