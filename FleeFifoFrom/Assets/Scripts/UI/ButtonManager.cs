@@ -1,3 +1,5 @@
+using MLAPI;
+using MLAPI.Logging;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -69,6 +71,12 @@ public class ButtonManager : MonoBehaviour
 
     private void UpdateInteractability()
     {
+        // DEBUG
+        if (NetworkManager.Singleton.IsConnectedClient && PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId] == GameState.Instance.TurnPlayer().Id)
+        {
+            NetworkLog.LogInfoServer($"Client {NetworkManager.Singleton.LocalClientId} " +
+                $"(Player {PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId]}) says: 'this my turn g'");
+        }
         switch (StateManager.CurrentState)
         {
             case StateManager.State.CountermandDrawCard:

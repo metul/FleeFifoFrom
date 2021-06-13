@@ -4,6 +4,7 @@ using MLAPI.NetworkVariable.Collections;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Manager class for network players.
@@ -71,7 +72,12 @@ public class PlayerManager : NetworkBehaviour
             return;
         // Map client ID to player ID
         if (!_networkPlayerIDs.ContainsKey(NetworkManager.Singleton.LocalClientId))
-            _networkPlayerIDs.Add(NetworkManager.Singleton.LocalClientId, GameState.Instance.Players[PlayerCount.Value - 1].Id);
+        {
+            DPlayer.ID playerID = GameState.Instance.Players[PlayerCount.Value - 1].Id;
+            _networkPlayerIDs.Add(NetworkManager.Singleton.LocalClientId, playerID);
+            // Set player indicator color on UI
+            ConnectionManager.Instance.SetPlayerIndicatorColor(ColorUtils.GetPlayerColor(playerID));
+        }
         // Update text
         int requiredPlayers = GameState.Instance.Players.Length;
         ConnectionManager.Instance.ModifyWaitingText(PlayerCount.Value, requiredPlayers);

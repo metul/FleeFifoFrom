@@ -19,6 +19,9 @@ public class ConnectionManager : MonoBehaviour
     [SerializeField]
     private UNetTransport _transport;
 
+    [SerializeField]
+    private Image _playerIndicatorImage;
+
     /// <summary>
     /// Singleton instance of the ConnectionManager.
     /// </summary>
@@ -91,6 +94,11 @@ public class ConnectionManager : MonoBehaviour
     public void ModifyWaitingText(int playerCount, int requiredPlayers)
     {
         _waitingLog.GetComponentInChildren<Text>().text = $"Waiting for Players ({playerCount}/{requiredPlayers})";
+    }
+
+    public void SetPlayerIndicatorColor(Color color)
+    {
+        _playerIndicatorImage.color = color;
     }
 
     public void DisableUI()
