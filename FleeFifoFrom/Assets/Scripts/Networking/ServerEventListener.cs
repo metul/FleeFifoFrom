@@ -7,6 +7,13 @@ using UnityEngine;
 /// </summary>
 public class ServerEventListener : MonoBehaviour
 {
+    private PlayerManager _playerManager;
+
+    private void Awake()
+    {
+        _playerManager = PlayerManager.Instance;
+    }
+
     private void OnEnable()
     {
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
@@ -24,23 +31,39 @@ public class ServerEventListener : MonoBehaviour
     /// <summary>
     /// Callback for client connection.
     /// </summary>
-    /// <param name="obj"> ID for connected client. </param>
-    private void OnClientConnected(ulong obj)
+    /// <param name="clientID"> ID for connected client. </param>
+    private void OnClientConnected(ulong clientID)
     {
-        NetworkLog.LogInfoServer($"Client {obj} connected at timestamp {Time.time}.");
+        NetworkLog.LogInfoServer($"Client {clientID} connected at timestamp {Time.time}.");
         NetworkLog.LogInfoServer($"There are a total of {NetworkManager.Singleton.ConnectedClients.Count} players connected.");
-        PlayerManager.Instance.PlayerCount.Value++;
+        // Map client ID to player ID
+        if (!_playerManager.NetworkPlayerIDs.ContainsKey(clientID))
+        {
+            int requiredPlayerCount = GameState.Instance.Players.Length;
+            if (NetworkManager.Singleton.ConnectedClients.Count > requiredPlayerCount)
+                throw new System.Exception($"Required number of players ({requiredPlayerCount}) already reached, can't connect further clients!");
+            DPlayer.ID playerID = GameState.Instance.Players[_playerManager.PlayerCount.Value].Id;
+            NetworkLog.LogInfoServer($"Mapping client ID {clientID} to player ID {playerID}.");
+            _playerManager.NetworkPlayerIDs.Add(clientID, playerID);
+            _playerManager.PlayerCount.Value++;
+        }
     }
 
     /// <summary>
     /// Callback for client disconnection.
     /// </summary>
-    /// <param name="obj"> ID for disconnected client. </param>
-    private void OnClientDisconnected(ulong obj)
+    /// <param name="clientID"> ID for disconnected client. </param>
+    private void OnClientDisconnected(ulong clientID)
     {
-        NetworkLog.LogInfoServer($"Client {obj} disconnected at timestamp {Time.time}.");
+        NetworkLog.LogInfoServer($"Client {clientID} disconnected at timestamp {Time.time}.");
         NetworkLog.LogInfoServer($"There are a total of {NetworkManager.Singleton.ConnectedClients.Count} players connected.");
-        PlayerManager.Instance.PlayerCount.Value--;
+        // Remove client/player ID pair
+        if (_playerManager.NetworkPlayerIDs.ContainsKey(clientID))
+        {
+            NetworkLog.LogInfoServer($"Removing client ID {clientID} from dictionary.");
+            _playerManager.NetworkPlayerIDs.Remove(clientID);
+            _playerManager.PlayerCount.Value--;
+        }
     }
 
     /// <summary>

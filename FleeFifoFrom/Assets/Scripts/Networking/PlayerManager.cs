@@ -46,7 +46,7 @@ public class PlayerManager : NetworkBehaviour
 
     private NetworkDictionary<ulong, DPlayer.ID> _networkPlayerIDs = new NetworkDictionary<ulong, DPlayer.ID>(new NetworkVariableSettings
     {
-        WritePermission = NetworkVariablePermission.Everyone
+        WritePermission = NetworkVariablePermission.ServerOnly
     });
     public NetworkDictionary<ulong, DPlayer.ID> NetworkPlayerIDs => _networkPlayerIDs;
 
@@ -69,24 +69,13 @@ public class PlayerManager : NetworkBehaviour
     {
         if (IsServer || prev == next)
             return;
-        // Map client ID to player ID
-        if (!_networkPlayerIDs.ContainsKey(NetworkManager.Singleton.LocalClientId))
-        {
-            DPlayer.ID playerID = GameState.Instance.Players[PlayerCount.Value - 1].Id;
-            NetworkLog.LogInfoServer($"{prev}/{next}: mapping client id {NetworkManager.Singleton.LocalClientId} to player id {playerID}");
-            // TODO: Fix bug where callback is unnecessarily executed on networkvariable init (e.g. 0->2, then 2->3)
-            _networkPlayerIDs.Add(NetworkManager.Singleton.LocalClientId, playerID);
-            // Set player indicator color on UI
-            ConnectionManager.Instance.SetPlayerIndicatorColor(ColorUtils.GetPlayerColor(playerID));
-        }
-        // Update text
-        int requiredPlayers = GameState.Instance.Players.Length;
-        ConnectionManager.Instance.ModifyWaitingText(PlayerCount.Value, requiredPlayers);
-        // TODO: Start/Stop game on server as well?
-        // Initialize/interrupt game
-        if (PlayerCount.Value == requiredPlayers)
+        // Update waiting text
+        int requiredPlayerCount = GameState.Instance.Players.Length;
+        ConnectionManager.Instance.ModifyWaitingText(PlayerCount.Value, requiredPlayerCount);
+        // Initialize/interrupt game (TODO: Start/Stop game on server as well?)
+        if (PlayerCount.Value == requiredPlayerCount)
             StartCoroutine(StartGame());
-        else if (prev == requiredPlayers && next < prev)
+        else if (prev == requiredPlayerCount && next < prev)
             StopGame();
     }
 
@@ -104,6 +93,8 @@ public class PlayerManager : NetworkBehaviour
         GameState.Instance.DrawMeeple();
         // Disable connection UI
         ConnectionManager.Instance.DisableUI();
+        // Set player indicator color on UI
+        ConnectionManager.Instance.SetPlayerIndicatorColor(ColorUtils.GetPlayerColor(NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId]));
     }
 
     /// <summary>
