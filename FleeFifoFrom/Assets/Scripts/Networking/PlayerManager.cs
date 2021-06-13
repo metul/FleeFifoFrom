@@ -1,4 +1,5 @@
 using MLAPI;
+using MLAPI.Logging;
 using MLAPI.NetworkVariable;
 using System.Collections;
 using System.Collections.Generic;
@@ -56,21 +57,30 @@ public class PlayerManager : NetworkBehaviour
     /// <param name="next"> Player count after change. </param>
     private void OnPlayerCountChanged(int prev, int next)
     {
-        Debug.Log($"Waiting for Players ({PlayerCount.Value}/4)");
-        ConnectionManager.Instance.ModifyWaitingText(PlayerCount.Value);
-        if (PlayerCount.Value == 4)
-            StartGame();
-        else if (prev == 4 && next < prev)
+        int requiredPlayers = GameState.Instance.Players.Length;
+        ConnectionManager.Instance.ModifyWaitingText(PlayerCount.Value, requiredPlayers);
+        if (PlayerCount.Value == requiredPlayers)
+            StartCoroutine(StartGame());
+        else if (prev == requiredPlayers && next < prev)
             StopGame();
     }
 
     /// <summary>
     /// Initializes the game.
     /// </summary>
-    private void StartGame()
+    private IEnumerator StartGame()
     {
+        // Initialize random with same (random) seed for each client
+        if (IsServer)
+            CommunicationManager.Instance.InitializeRandomSeedClientRpc(Random.Range(int.MinValue, int.MaxValue));
+        // TODO: Wait until random seeded
+        yield return new WaitForSeconds(3);
+        NetworkLog.LogInfoServer($"Client {NetworkManager.LocalClientId} has random sequence " +
+            $"{Random.Range(1, 10)}-{Random.Range(1, 10)}-{Random.Range(1, 10)}");
+        // Set up the board
+        GameState.Instance.DrawMeeple();
+        // Disable connection UI
         ConnectionManager.Instance.DisableUI();
-        // TODO
     }
 
     /// <summary>

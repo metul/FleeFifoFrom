@@ -44,25 +44,48 @@ public class CommunicationManager : NetworkBehaviour
         {
             ulong publisherID = NetworkManager.Singleton.LocalClientId;
             NetworkLog.LogInfoServer($"Client {publisherID} has called the action {state}.");
-            PublishActionServerRPC(publisherID, state);
+            PublishActionServerRpc(publisherID, state);
         }
     }
 
-    [ServerRpc (RequireOwnership = false)]
-    private void PublishActionServerRPC(ulong publisherID, StateManager.State state)
+    [ServerRpc(RequireOwnership = false)]
+    private void PublishActionServerRpc(ulong publisherID, StateManager.State state)
     {
         IEnumerable<ulong> targetClientIds = NetworkManager.Singleton.ConnectedClients.Keys.ToArray().Except(new ulong[] { publisherID });
         ClientRpcParams clientRpcParams = new ClientRpcParams
         {
             Send = new ClientRpcSendParams { TargetClientIds = targetClientIds.ToArray() }
         };
-        ProcessActionClientRPC(publisherID, state, clientRpcParams);
+        ProcessActionClientRpc(publisherID, state, clientRpcParams);
     }
 
     [ClientRpc]
-    private void ProcessActionClientRPC(ulong publisherID, StateManager.State state, ClientRpcParams clientRpcParams = default)
+    private void ProcessActionClientRpc(ulong publisherID, StateManager.State state, ClientRpcParams clientRpcParams = default)
     {
         // TODO: Process action locally
         Debug.Log($"Locally processing the action {state} issued by client {publisherID}.");
     }
+
+    [ClientRpc]
+    public void InitializeRandomSeedClientRpc(int seed)
+    {
+        Random.InitState(seed);
+    }
+
+    //public void RequestMessage(MessageType messageType)
+    //{
+
+    //}
+
+    //[ServerRpc (RequireOwnership = false)]
+    //private void RequestMessageServerRpc(MessageType messageType)
+    //{
+
+    //}
+
+    //[ClientRpc]
+    //private void RequestMessageClientRpc(MessageType messageType)
+    //{
+
+    //}
 }

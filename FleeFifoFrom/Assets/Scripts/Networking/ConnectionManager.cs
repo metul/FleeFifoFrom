@@ -89,9 +89,9 @@ public class ConnectionManager : MonoBehaviour
         }
     }
 
-    public void ModifyWaitingText(int playerCount)
+    public void ModifyWaitingText(int playerCount, int requiredPlayers)
     {
-        _waitingLog.GetComponentInChildren<Text>().text = $"Waiting for Players ({playerCount}/4)";
+        _waitingLog.GetComponentInChildren<Text>().text = $"Waiting for Players ({playerCount}/{requiredPlayers})";
     }
 
     public void DisableUI()

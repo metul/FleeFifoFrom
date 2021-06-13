@@ -75,7 +75,7 @@ public class GameState
     TurnActionCount = new Observable<int>(0);
     KnightsFightingCount = new Observable<int>((Rules.KNIGHT_COUNT - 1) * Players.Length);
 
-    _drawMeeple();
+    //DrawMeeple();
     _initializeTurn();
   }
 
@@ -137,7 +137,7 @@ public class GameState
     Villagers = villagers.ToArray();
   }
 
-  private void _drawMeeple()
+  public void DrawMeeple()
   {
     // TODO: maybe this shouldn't be here? this should be synced across the network.
 

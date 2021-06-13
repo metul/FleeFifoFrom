@@ -59,6 +59,8 @@ MonoBehaviour:
       PlayerPrefab: 1
     - Prefab: {fileID: 1739766890584101778, guid: 7331a12180cc4ea43aeacc596b975eac, type: 3}
       PlayerPrefab: 0
+    - Prefab: {fileID: 8830678049877679353, guid: da261f312d75757429df4a2cf9b69091, type: 3}
+      PlayerPrefab: 0
     PlayerPrefabHash:
       id: 0
     CreatePlayerPrefab: 1
@@ -111,6 +113,6 @@ MonoBehaviour:
   SupportWebsocket: 0
   Channels: []
   UseMLAPIRelay: 1
-  MLAPIRelayAddress: 3.140.255.24
+  MLAPIRelayAddress: 3.17.61.242
   MLAPIRelayPort: 8888
   MessageSendMode: 0
