@@ -20,6 +20,7 @@ public class ServerEventListener : MonoBehaviour
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
         NetworkManager.Singleton.OnServerStarted += OnServerStarted;
         _playerManager.OnRequiredPlayersReached += CommunicationManager.Instance.InitializeRandomSeed;
+        _playerManager.OnRequiredPlayersReached += CommunicationManager.Instance.UpdateInteractability;
     }
 
     private void OnDisable()
@@ -28,6 +29,7 @@ public class ServerEventListener : MonoBehaviour
         NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
         NetworkManager.Singleton.OnServerStarted -= OnServerStarted;
         _playerManager.OnRequiredPlayersReached -= CommunicationManager.Instance.InitializeRandomSeed;
+        _playerManager.OnRequiredPlayersReached -= CommunicationManager.Instance.UpdateInteractability;
     }
 
     /// <summary>

@@ -79,4 +79,18 @@ public class CommunicationManager : NetworkBehaviour
     {
         Random.InitState(seed);
     }
+
+    /// <summary>
+    /// Updates UI interactability by utilizing the corresponding ButtonManager method.
+    /// </summary>
+    public void UpdateInteractability()
+    {
+        UpdateInteractabilityClientRpc();
+    }
+
+    [ClientRpc]
+    private void UpdateInteractabilityClientRpc()
+    {
+        FindObjectOfType<ButtonManager>().NetworkedUpdateInteractability(); // TODO: Use ButtonManager singleton instead?
+    }
 }

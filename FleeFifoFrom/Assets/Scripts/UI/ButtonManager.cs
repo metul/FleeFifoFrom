@@ -56,33 +56,43 @@ public class ButtonManager : MonoBehaviour
             worker.Initialize(dWorker, this);
         }
         
-        StateManager.OnStateUpdate += state => UpdateInteractability();
+        StateManager.OnStateUpdate += state => NetworkedUpdateInteractability();
         GameState.Instance.OnTurnChange += turn =>
         {
-            UpdateInteractability();
+            NetworkedUpdateInteractability();
             CommandProcessor.Instance.ClearStack();
             _fieldManager.EndTurnReset();
             // TODO highlight current player
             Debug.Log($"New turn started: {GameState.Instance.TurnPlayer().Name}'s {turn}");
         };
 
-        GameState.Instance.OnUndo += () => UpdateInteractability();
-        PlayerManager.Instance.OnRequiredPlayersReached += () => UpdateInteractability(); // MARK: Unsubscribe?
+        GameState.Instance.OnUndo += () => NetworkedUpdateInteractability();
+    }
+
+    public void NetworkedUpdateInteractability()
+    {
+        if (NetworkManager.Singleton.IsConnectedClient && !NetworkManager.Singleton.IsServer)
+        {
+            if (PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId] == GameState.Instance.TurnPlayer().Id)
+            {
+                NetworkLog.LogInfoServer($"Client {NetworkManager.Singleton.LocalClientId} " +
+                    $"(Player {PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId]}) says: " +
+                    $"'My {GameState.Instance.TurnType} turn!'.");
+                UpdateInteractability();
+            }
+            else
+            {
+                NetworkLog.LogInfoServer($"Client {NetworkManager.Singleton.LocalClientId} " +
+                    $"(Player {PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId]}) says: 'Not my turn!'.");
+                EnableElements(false, false, false);
+            }
+        }
+        else // MARK: Allow local debugging (also updates interactability on server)
+            UpdateInteractability();
     }
 
     private void UpdateInteractability()
     {
-        // DEBUG
-        if (NetworkManager.Singleton.IsConnectedClient && !NetworkManager.Singleton.IsServer)
-        {
-            Debug.Log("DEBUG");
-            if (PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId] == GameState.Instance.TurnPlayer().Id)
-                NetworkLog.LogInfoServer($"Client {NetworkManager.Singleton.LocalClientId} " +
-                    $"(Player {PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId]}) says: 'this my turn g'");
-            else
-                NetworkLog.LogInfoServer($"Client {NetworkManager.Singleton.LocalClientId} " +
-                    $"(Player {PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId]}) says: 'ima wait'");
-        }
         switch (StateManager.CurrentState)
         {
             case StateManager.State.CountermandDrawCard:
