@@ -5,7 +5,7 @@ public class DebugStateDisplay : MonoBehaviour
 {
     private Text _text;
 
-    private void OnEnable()
+    private void Awake()
     {
         _text = GetComponentInChildren<Text>();
         StateManager.OnStateUpdate += state =>
@@ -13,21 +13,4 @@ public class DebugStateDisplay : MonoBehaviour
             _text.text = state.ToString();
         };
     }
-
-    private void OnDisable()
-    {
-        StateManager.OnStateUpdate -= state =>
-        {
-            _text.text = state.ToString();
-        };
-    }
-
-    //private void Awake()
-    //{
-    //    _text = GetComponentInChildren<Text>();
-    //    StateManager.OnStateUpdate += state =>
-    //    {
-    //        _text.text = state.ToString();
-    //    };
-    //}
 }

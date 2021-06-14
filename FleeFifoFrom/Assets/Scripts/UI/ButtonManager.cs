@@ -1,5 +1,4 @@
 using MLAPI;
-using MLAPI.Logging;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -72,12 +71,6 @@ public class ButtonManager : MonoBehaviour
     {
         if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault() && (!NetworkManager.Singleton?.IsServer).GetValueOrDefault())
         {
-            NetworkLog.LogInfoServer($"Client {NetworkManager.Singleton.LocalClientId} is updating interactability...");
-            if (!PlayerManager.Instance.NetworkPlayerIDs.ContainsKey(NetworkManager.Singleton.LocalClientId))
-            {
-                NetworkLog.LogInfoServer($"ID dictionary does not contain {NetworkManager.Singleton.LocalClientId} as key!");
-                return;
-            }
             if (PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId] == GameState.Instance.TurnPlayer().Id)
                 UpdateInteractability();
             else
@@ -89,7 +82,7 @@ public class ButtonManager : MonoBehaviour
 
     private void UpdateInteractability()
     {
-        switch (StateManager.CurrentState.Value)
+        switch (StateManager.CurrentState)
         {
             case StateManager.State.CountermandDrawCard:
                 EnableElements(false, false, false);
@@ -175,11 +168,11 @@ public class ButtonManager : MonoBehaviour
 
     public void OnActionTileClick(ActionTile actionTile)
     {
-        switch (StateManager.CurrentState.Value)
+        switch (StateManager.CurrentState)
         {
             case StateManager.State.Recall:
                 CommandProcessor.Instance.ExecuteCommand(new RecallCommand(0, actionTile.Id));
-                StateManager.CurrentState.Value = StateManager.State.Default;
+                StateManager.CurrentState = StateManager.State.Default;
                 break;
             default:
                 Debug.LogWarning("This is not a state in which action tile interaction is allowed!");
@@ -189,20 +182,20 @@ public class ButtonManager : MonoBehaviour
 
     public void OnWorkerClick(Worker worker)
     {
-        switch (StateManager.CurrentState.Value)
+        switch (StateManager.CurrentState)
         {
             case StateManager.State.Cooperate:
                 CommandProcessor.Instance.ExecuteCommand(new CooperateCommand(
                     0, GameState.Instance.TurnPlayer().Id, worker.Core));
-                StateManager.CurrentState.Value = StateManager.State.Default;
+                StateManager.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.PoachSelectWorker:
                 CommandProcessor.Instance.ExecuteCommand(new PoachCommand(
                     0, GameState.Instance.TurnPlayer().Id, worker.Core));
-                StateManager.CurrentState.Value = StateManager.State.Default;
+                StateManager.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.PayForAction:
-                _fieldManager.InvokeAction(StateManager.CurrentlyPayingFor.Value, worker.Core);
+                _fieldManager.InvokeAction(StateManager.CurrentlyPayingFor, worker.Core);
                 break;
             default:
                 Debug.LogWarning("This is not a state in which worker interaction is allowed!");
@@ -214,22 +207,22 @@ public class ButtonManager : MonoBehaviour
 
     public void Authorize()
     {
-        StateManager.CurrentState.Value = StateManager.State.Authorize;
+        StateManager.CurrentState = StateManager.State.Authorize;
     }
 
     public void Swap()
     {
-        StateManager.CurrentState.Value = StateManager.State.Swap1;
+        StateManager.CurrentState = StateManager.State.Swap1;
     }
 
     public void Riot()
     {
-        StateManager.CurrentState.Value = StateManager.State.RiotChooseKnight;
+        StateManager.CurrentState = StateManager.State.RiotChooseKnight;
     }
 
     public void Revive()
     {
-        StateManager.CurrentState.Value = StateManager.State.Revive;
+        StateManager.CurrentState = StateManager.State.Revive;
     }
 
     public void Objective()
@@ -239,45 +232,45 @@ public class ButtonManager : MonoBehaviour
 
     public void Countermand()
     {
-        StateManager.CurrentState.Value = StateManager.State.CountermandDrawCard;
+        StateManager.CurrentState = StateManager.State.CountermandDrawCard;
     }
 
     public void Reprioritize()
     {
-        StateManager.CurrentState.Value = StateManager.State.Reprioritize;
+        StateManager.CurrentState = StateManager.State.Reprioritize;
     }
 
     public void Retreat()
     {
-        StateManager.CurrentState.Value = StateManager.State.RetreatChooseKnight;
+        StateManager.CurrentState = StateManager.State.RetreatChooseKnight;
     }
 
     public void Recall()
     {
-        StateManager.CurrentState.Value = StateManager.State.Recall;
+        StateManager.CurrentState = StateManager.State.Recall;
     }
 
     public void Cooperate()
     {
-        StateManager.CurrentState.Value = StateManager.State.Cooperate;
+        StateManager.CurrentState = StateManager.State.Cooperate;
     }
 
     public void Poach()
     {
-        StateManager.CurrentState.Value = StateManager.State.PoachSelectWorker;
+        StateManager.CurrentState = StateManager.State.PoachSelectWorker;
     }
 
     public void Villager()
     {
-        StateManager.CurrentState.Value = StateManager.State.Villager;
+        StateManager.CurrentState = StateManager.State.Villager;
     }
 
     public void Undo()
     {
-        if (StateManager.CurrentState.Value == StateManager.State.Default)
+        if (StateManager.CurrentState == StateManager.State.Default)
             CommandProcessor.Instance.Undo();
         else
-            StateManager.CurrentState.Value = StateManager.State.Default;
+            StateManager.CurrentState = StateManager.State.Default;
     }
 
     public void EndTurn()
