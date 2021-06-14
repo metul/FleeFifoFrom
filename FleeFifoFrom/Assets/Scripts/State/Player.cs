@@ -13,6 +13,7 @@ public class DPlayer
     public DPlayer(ID id, string name) {
         Id = id;
         Name = name;
+        Honor = new DHonor();
 
         //TODO remove debug
         Honor.Score.OnChange += s =>
@@ -22,7 +23,7 @@ public class DPlayer
     }
     public ID Id { get; protected set; }
     public string Name { get; protected set; }
-    public DHonor Honor { get; protected set; } = new DHonor();
+    public DHonor Honor { get; protected set; }
 
     public Action OnDeAuthorize;
 

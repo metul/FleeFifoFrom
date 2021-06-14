@@ -26,20 +26,17 @@ public class PlayerStatsDisplay : MonoBehaviour
         _imageSaved.color = colorPlayer;
         _imageTotal.color = colorPlayer;
 
-        // TODO calculate score in gamestate and not here
-        // TODO figure out why Honor.Score dosn't work anymore
-        player.Honor.Index.OnChange += h =>
+        player.Honor.Score.OnChange += h =>
         {
-            var honor = Rules.HONOR_VALUES[h];
-            _textHonor.text = honor.ToString();
-            _textTotal.text = (GameState.Instance.PlayerScore(player.Id) + honor).ToString();
+            _textHonor.text = h.ToString();
+            _textTotal.text = GameState.Instance.PlayerScore(player.Id).ToString();
         };
         
         player.OnDeAuthorize += () =>
         {
-            var honor = Rules.HONOR_VALUES[player.Honor.Index.Current];
+            var honor = player.Honor.Score.Current;
             _textSaved.text = GameStateUtils.AuthorizedVillagers(GameState.Instance, player.Id).Length.ToString();
-            _textTotal.text = (GameState.Instance.PlayerScore(player.Id) + honor).ToString();
+            _textTotal.text = GameState.Instance.PlayerScore(player.Id).ToString();
         };
     }
 }

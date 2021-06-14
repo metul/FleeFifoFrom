@@ -2,6 +2,7 @@ using System;
 using System.CodeDom;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class GameState
@@ -13,7 +14,9 @@ public class GameState
   {
     get
     {
-      Initialize(DPlayer.CreateAnonymousPlayers());
+      if (_instance == null) {
+        Initialize(DPlayer.CreateAnonymousPlayers());
+      }
       return _instance;
     }
   }

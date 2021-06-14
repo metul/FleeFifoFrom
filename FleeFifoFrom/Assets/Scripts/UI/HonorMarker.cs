@@ -9,7 +9,7 @@ public class HonorMarker : MonoBehaviour
     public void Init(DPlayer player)
     {
         _handleImage.color = Player.GetPlayerColor(player.Id);
-        player.Honor.Index.OnChange = h =>
+        player.Honor.Index.OnChange += h =>
         {
             _slider.value = h;
         };

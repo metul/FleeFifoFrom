@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public class Observable<T>
 {
@@ -10,7 +11,7 @@ public class Observable<T>
     set
     {
       _current = value;
-      OnChange(_current);
+      OnChange(value);
     }
   }
 
@@ -21,7 +22,8 @@ public class Observable<T>
 
   public Observable<U> Map<U>(Func<T, U> map)
   {
-    Observable<U> mapped = new Observable<U>(map(Current));
+    Observable<U> mapped = new Observable<U>(map(_current));
+    mapped.Current = map(_current);
     OnChange += value => mapped.Current = map(value);
 
     return mapped;
