@@ -34,8 +34,7 @@ public class Rules
   public const ushort TURN_ACTION_LIMIT = 2;
 
   public const ushort GIANT_STRENGTH = 8;
-
-  public const DPrio.PrioValue START_PRIO = DPrio.PrioValue.Medium;
+  
   public static readonly Dictionary<Type, DPrio.PrioValue> START_PRIO_ARRAY = new Dictionary<Type, DPrio.PrioValue>()
   {
     {typeof(DFarmer), DPrio.PrioValue.Medium},
