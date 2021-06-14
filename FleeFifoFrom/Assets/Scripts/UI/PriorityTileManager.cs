@@ -82,7 +82,7 @@ public class PriorityTileManager : MonoBehaviour
         CommandProcessor.Instance.ExecuteCommand(new ReprioritizeCommand(
             0,GameState.Instance.Priorities[STRING_TYPE_MAPPING[type]], increase
         ));
-        StateManager.CurrentState = StateManager.State.Default;
+        StateManager.CurrentState.Value = StateManager.State.Default;
     }
 
     private Transform TransformFromPrio(DPrio.PrioValue prio)
