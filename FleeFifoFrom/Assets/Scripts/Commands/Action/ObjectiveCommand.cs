@@ -17,7 +17,7 @@ public class ObjectiveCommand : ActionCommand
         return base.IsFeasible();
     }
 
-    public ObjectiveCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker) : base(issuerID, playerId, worker)
+    public ObjectiveCommand(ulong issuerID, DPlayer player, DWorker worker) : base(issuerID, player, worker)
     {
     }
 }

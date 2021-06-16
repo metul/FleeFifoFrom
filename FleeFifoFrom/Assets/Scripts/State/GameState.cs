@@ -3,6 +3,7 @@ using System.CodeDom;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class GameState
@@ -236,6 +237,31 @@ public class GameState
   public DPrio GetPrio(DMeeple meeple)
   {
     return Priorities[meeple.GetType()];
+  }
+
+  public ushort GetRowMaxPriority(ushort row)
+  {
+    var rowArray = Board[row-1];
+    ushort maxPrio = (ushort) DPrio.PrioValue.Low;
+
+    foreach (DPosition pos in rowArray)
+    {
+      var currentMeeple = AtPosition(pos);
+      if (currentMeeple == null) continue;
+      
+      // update max prio if necessary
+      var currentPrio = (ushort) GetPrio(currentMeeple).Value.Current;
+      if (currentPrio >  maxPrio)
+        maxPrio = currentPrio;
+    }
+    return maxPrio;
+  }
+
+  public bool CheckPriority(DMeeple meeple)
+  {
+    var prio = GetPrio(meeple);
+    var rowPrio = GetRowMaxPriority(meeple.Position.Current.Row);
+    return (ushort) prio.Value.Current >= rowPrio;
   }
 
   /// <summary>

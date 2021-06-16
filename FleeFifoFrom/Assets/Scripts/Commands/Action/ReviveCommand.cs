@@ -5,7 +5,7 @@ public class ReviveCommand : ActionCommand
     private readonly DPosition _position;
     // private Meeple.State _originalState; // MARK: Redundant, could be replaced with Meeple.State.Injured
 
-    public ReviveCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker, DMeeple meeple) : base(issuerID, playerId, worker)
+    public ReviveCommand(ulong issuerID, DPlayer player, DWorker worker, DMeeple meeple) : base(issuerID, player, worker)
     {
         _actionId = DActionPosition.TileId.Revive;
         _meeple = meeple;

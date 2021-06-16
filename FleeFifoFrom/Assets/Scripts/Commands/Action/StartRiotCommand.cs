@@ -6,10 +6,10 @@ public class StartRiotCommand : ActionCommand
 
   public StartRiotCommand(
     ulong issuerID,
-    DPlayer.ID playerId,
+    DPlayer player,
     DWorker worker,
     DMeeple meeple
-  ) : base(issuerID, playerId, worker)
+  ) : base(issuerID, player, worker)
   {
     _actionId = DActionPosition.TileId.Riot;
     _meeple = meeple;

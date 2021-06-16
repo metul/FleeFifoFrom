@@ -13,10 +13,10 @@ public class RiotStepCommand : ActionCommand
     protected Dictionary<ushort, DPosition> _coriotorPositions;
     public RiotStepCommand(
         ulong issuerID,
-        DPlayer.ID playerId,
+        DPlayer player,
         DKnight knight,
         DPosition to
-    ) : base(issuerID, playerId, null)
+    ) : base(issuerID, player, null)
     {
         _knight = knight;
         _to = to;
@@ -43,18 +43,18 @@ public class RiotStepCommand : ActionCommand
             if (meeple.GetType().IsSubclassOf(typeof(DVillager)))
             {
                 ((DVillager) meeple).Injure();
-                GameState.Instance.PlayerById(_playerId)?.Honor.Lose();
+                GameState.Instance.PlayerById(_player.Id)?.Honor.Lose();
             }
         }
 
         if (_to.IsFinal)
         {
-            var honor = _knight.Authorize(_playerId);
-            GameState.Instance.PlayerById(_playerId)?.Honor.Earn(honor);
+            var honor = _knight.Authorize(_player.Id);
+            GameState.Instance.PlayerById(_player.Id)?.Honor.Earn(honor);
 
             foreach (var coriotor in _coriotors)
             {
-                ((DVillager) coriotor).Authorize(_playerId);
+                ((DVillager) coriotor).Authorize(_player.Id);
             }
         }
         else
@@ -77,8 +77,8 @@ public class RiotStepCommand : ActionCommand
                 ((DVillager) coriotor).Deauthorize(_coriotorPositions[coriotor.ID]);
             }
 
-            var honor = _knight.Deauthorize(_from, _playerId);
-            GameState.Instance.PlayerById(_playerId)?.Honor.Lose(honor);
+            var honor = _knight.Deauthorize(_from, _player.Id);
+            GameState.Instance.PlayerById(_player.Id)?.Honor.Lose(honor);
         }
         else
         {
@@ -95,7 +95,7 @@ public class RiotStepCommand : ActionCommand
             if (meeple.GetType().IsSubclassOf(typeof(DVillager)))
             {
                 ((DVillager) meeple).Heal();
-                GameState.Instance.PlayerById(_playerId)?.Honor.Earn();
+                GameState.Instance.PlayerById(_player.Id)?.Honor.Earn();
             }
         }
     }
