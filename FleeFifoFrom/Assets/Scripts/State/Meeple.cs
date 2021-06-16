@@ -14,7 +14,8 @@ public class DMeeple : DObject
     Tapped,     // --> the meeple is tapped
     UnTapped,   // --> the meeple is untapped
   }
-
+  
+  public Observable<bool> IsRioting = new Observable<bool>(false);
 
 // TODO: perhaps State needs to be Observable as well?
   public MeepleState State { get; protected set; } = MeepleState.OutOfBoard;

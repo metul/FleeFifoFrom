@@ -4,13 +4,17 @@ using UnityEngine;
 
 public abstract class Meeple : MonoBehaviour
 {
+    private static readonly int ANIM_RIOTING = Animator.StringToHash("rioting");
     protected const float CLOSE_ENOUGH_SNAP_VALUE = 0.01f;
     protected const float TOO_FAR_SNAP_VALUE = 500f;
+    
     [SerializeField] protected Renderer _renderer;
     [SerializeField] protected Animator _animator;
     [SerializeField] protected float _movementSpeed = 1f;
-    protected Coroutine CurrentMovement;
+    
     public DMeeple Core { get; private set; }
+    
+    protected Coroutine CurrentMovement;
 
     protected Tile _tile;
     protected FieldManager _fieldManager;
@@ -30,6 +34,7 @@ public abstract class Meeple : MonoBehaviour
 
         SetTo(Core.Position.Current);
         core.Position.OnChange += pos => SetTo(pos, false);
+        core.IsRioting.OnChange += ToggleRiotAnimation;
     }
 
     protected void SetColor(Color color)
@@ -100,5 +105,10 @@ public abstract class Meeple : MonoBehaviour
         }
 
         _transform.position = position;
+    }
+    
+    protected void ToggleRiotAnimation(bool isRioting)
+    {
+        _animator.SetBool(ANIM_RIOTING, isRioting);
     }
 }

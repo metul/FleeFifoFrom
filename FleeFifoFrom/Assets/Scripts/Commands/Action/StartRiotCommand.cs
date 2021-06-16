@@ -18,12 +18,14 @@ public class StartRiotCommand : ActionCommand
   public override void Execute()
   {
     base.Execute();
+    ((DKnight) _meeple).IsRioting.Current = true;
     GameState.Instance.PlayerById(_worker.Owner)?.Honor.Lose();
   }
 
   public override void Reverse()
   {
     base.Reverse();
+    ((DKnight) _meeple).IsRioting.Current = false;
     GameState.Instance.PlayerById(_worker.Owner)?.Honor.Earn();
   }
 

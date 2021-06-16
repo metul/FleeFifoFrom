@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class RiotStepCommand : ActionCommand
 {
-
     protected DKnight _knight;
     protected DPosition _to;
     protected DPosition _from;
@@ -55,6 +54,9 @@ public class RiotStepCommand : ActionCommand
             foreach (var coriotor in _coriotors)
             {
                 ((DVillager) coriotor).Authorize(_player.Id);
+                
+                // done rioting
+                coriotor.IsRioting.Current = false;
             }
         }
         else
@@ -63,6 +65,7 @@ public class RiotStepCommand : ActionCommand
             foreach (var coriotor in _coriotors)
             {
                 coriotor.Position.Current = _from;
+                coriotor.IsRioting.Current = true;
             }
         }
     }
@@ -75,6 +78,9 @@ public class RiotStepCommand : ActionCommand
             foreach (var coriotor in _coriotors)
             {
                 ((DVillager) coriotor).Deauthorize(_coriotorPositions[coriotor.ID]);
+                
+                // start rioting again
+                coriotor.IsRioting.Current = true;
             }
 
             var honor = _knight.Deauthorize(_from, _player.Id);
@@ -85,8 +91,11 @@ public class RiotStepCommand : ActionCommand
             foreach (var coriotor in _coriotors)
             {
                 coriotor.Position.Current = _coriotorPositions[coriotor.ID];
+                
+                // TODO check if they joined recently
+                coriotor.IsRioting.Current = false;
+                
             }
-
             _knight.Position.Current = _from;
         }
 

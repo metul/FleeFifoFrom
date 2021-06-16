@@ -51,10 +51,4 @@ public class Villager : Meeple
     {
         SetColor(_defaultColor);
     }
-    
-    // protected override IEnumerator MoveTo(Vector3 position)
-    // {
-    //     Debug.Log("MOVE VILLAGER GENTLY");
-    //     base.MoveTo(position);
-    // }
 }
