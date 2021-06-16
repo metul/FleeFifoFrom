@@ -55,6 +55,7 @@ public class GameState
   
   public Observable<int> TurnActionCount;
   public Observable<int> KnightsFightingCount;
+  public Observable<int> VillagerBagCount;
   public bool TurnActionPossible => TurnActionCount.Current < Rules.TURN_ACTION_LIMIT;
 
   #endregion
@@ -80,6 +81,7 @@ public class GameState
     KnightsFightingCount = new Observable<int>((Rules.KNIGHT_COUNT - 1) * Players.Length);
 
     DrawMeeple(); // TODO: Comment out for networking
+    UpdateVillagerBagCount();
     _initializeTurn();
   }
 
@@ -232,6 +234,12 @@ public class GameState
   {
     DVillager[] bag = VillagerBag();
     return bag[Random.Range(0, bag.Length)];
+  }
+
+  public void UpdateVillagerBagCount()
+  {
+    VillagerBagCount ??= new Observable<int>(Rules.COMMONERS_COUNT);
+    VillagerBagCount.Current = VillagerBag().Length;
   }
   
   public DPrio GetPrio(DMeeple meeple)

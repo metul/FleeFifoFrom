@@ -14,12 +14,14 @@ public class DrawVillagerCommand : ResetCommand
     {
         base.Execute();
         _villager.Draw(_position);
+        GameState.Instance.UpdateVillagerBagCount();
     }
 
     public override void Reverse()
     {
         base.Reverse();
         _villager.UnDraw();
+        GameState.Instance.UpdateVillagerBagCount();
     }
 
     public override bool IsFeasible()
