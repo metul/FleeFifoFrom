@@ -23,7 +23,7 @@ public class Knight : Meeple
             if (tile != null)
                 SetTo(tile, instantly);
             else
-                base.SetTo(position, instantly);
+                base.SetTo((DPosition) null, instantly);
         }
         else
         {

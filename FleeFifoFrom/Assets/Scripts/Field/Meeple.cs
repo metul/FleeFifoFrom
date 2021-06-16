@@ -9,6 +9,7 @@ public abstract class Meeple : MonoBehaviour
     [SerializeField] protected Renderer _renderer;
     [SerializeField] protected Animator _animator;
     [SerializeField] protected float _movementSpeed = 1f;
+    protected Coroutine CurrentMovement;
     public DMeeple Core { get; private set; }
 
     protected Tile _tile;
@@ -51,21 +52,36 @@ public abstract class Meeple : MonoBehaviour
         _tile = tile;
         _tile.Meeples.Add(this);
         _transform.SetParent(_tile.Transform);
+
         if (_tile.Meeples.Count > 1)
         {
             float angle = (float) _tile.Meeples.Count;
-            _transform.localPosition = new Vector3
+            // _transform.localPosition = new Vector3
+            var offset = new Vector3
             (((float) Math.Cos(angle)) * .6f,
                 0,
                 -((float) Math.Sin(angle)) * .6f
             );
+
+            if (instantly)
+                _transform.localPosition = offset;
+            else
+            {
+                if (CurrentMovement != null)
+                    StopCoroutine(CurrentMovement);
+                CurrentMovement = StartCoroutine(MoveTo(tile.Transform.position + offset));
+            }
         }
         else
         {
-            if(instantly)
+            if (instantly)
                 _transform.localPosition = Vector3.zero;
             else
-                StartCoroutine(MoveTo(tile.Transform.position));
+            {
+                if (CurrentMovement != null)
+                    StopCoroutine(CurrentMovement);
+                CurrentMovement = StartCoroutine(MoveTo(tile.Transform.position));
+            }
         }
     }
 
@@ -82,6 +98,7 @@ public abstract class Meeple : MonoBehaviour
             _transform.position = Vector3.Lerp(_transform.position, position, _movementSpeed * Time.deltaTime);
             yield return null;
         }
+
         _transform.position = position;
     }
 }
