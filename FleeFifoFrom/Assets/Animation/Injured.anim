@@ -202,7 +202,7 @@ AnimationClip:
   - time: 1
     functionName: SetInjuredColor
     data: 
-    objectReferenceParameter: {fileID: 0}
+    objectReferenceParameter: {fileID: 3667819666926343822, guid: 1edb1c19722ec714fa8e759e6dedef5c, type: 3}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0

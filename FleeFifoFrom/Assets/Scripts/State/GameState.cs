@@ -68,7 +68,6 @@ public class GameState
     _initializeBoard();
     _initializeWorkers();
 
-
     _initializeKnights();
     _initializeVillagers();
     _initPrio();

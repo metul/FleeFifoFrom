@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class Villager : Meeple
@@ -9,6 +10,7 @@ public class Villager : Meeple
     [SerializeField] private Color _injuredColor = Color.red;
     
     protected Action OnInjured;
+    protected Action OnUnInjured;
 
 
     public override void Initialize(DMeeple core, FieldManager fieldManager)
@@ -21,7 +23,7 @@ public class Villager : Meeple
                 if (h == DVillager.HealthStates.Injured)
                     OnInjured?.Invoke();
                 else
-                    OnDefault?.Invoke();
+                    OnUnInjured?.Invoke();
             };
         }
     }
@@ -33,13 +35,13 @@ public class Villager : Meeple
         {
             _animator.SetTrigger(ANIM_INJURED);
         };
-        OnDefault += () =>
+        OnUnInjured += () =>
         {
             _animator.SetTrigger(ANIM_UNINJURED);
         };
     }
 
-    // set by animation
+    // called by animatior
     public void SetInjuredColor()
     {
         SetColor(_injuredColor);
@@ -49,4 +51,10 @@ public class Villager : Meeple
     {
         SetColor(_defaultColor);
     }
+    
+    // protected override IEnumerator MoveTo(Vector3 position)
+    // {
+    //     Debug.Log("MOVE VILLAGER GENTLY");
+    //     base.MoveTo(position);
+    // }
 }

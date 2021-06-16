@@ -1,23 +1,24 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
-public abstract class Meeple: MonoBehaviour
+public abstract class Meeple : MonoBehaviour
 {
+    protected const float CLOSE_ENOUGH_SNAP_VALUE = 0.01f;
+    protected const float TOO_FAR_SNAP_VALUE = 500f;
     [SerializeField] protected Renderer _renderer;
+    [SerializeField] protected Animator _animator;
+    [SerializeField] protected float _movementSpeed = 1f;
     public DMeeple Core { get; private set; }
 
-    protected Action OnDefault;
-
-    private Tile _tile;
-    private FieldManager _fieldManager;
-    private Transform _transform;
+    protected Tile _tile;
+    protected FieldManager _fieldManager;
+    protected Transform _transform;
     protected Color _defaultColor;
-    protected Animator _animator;
 
     protected virtual void Start()
     {
         _defaultColor = _renderer.material.color;
-        _animator = GetComponent<Animator>();
     }
 
     public virtual void Initialize(DMeeple core, FieldManager fieldManager)
@@ -27,7 +28,7 @@ public abstract class Meeple: MonoBehaviour
         _transform = transform;
 
         SetTo(Core.Position.Current);
-        core.Position.OnChange += SetTo;
+        core.Position.OnChange += pos => SetTo(pos, false);
     }
 
     protected void SetColor(Color color)
@@ -40,7 +41,7 @@ public abstract class Meeple: MonoBehaviour
         Initialize(core, FindObjectOfType<FieldManager>());
     }
 
-    public void SetTo(Tile tile)
+    public void SetTo(Tile tile, bool instantly = true)
     {
         if (_tile == tile)
             return;
@@ -54,19 +55,33 @@ public abstract class Meeple: MonoBehaviour
         {
             float angle = (float) _tile.Meeples.Count;
             _transform.localPosition = new Vector3
-                (((float) Math.Cos(angle)) * .6f,
+            (((float) Math.Cos(angle)) * .6f,
                 0,
                 -((float) Math.Sin(angle)) * .6f
             );
         }
         else
         {
-            _transform.localPosition = Vector3.zero;
+            if(instantly)
+                _transform.localPosition = Vector3.zero;
+            else
+                StartCoroutine(MoveTo(tile.Transform.position));
         }
     }
 
-    protected virtual void SetTo(DPosition position)
+    protected virtual void SetTo(DPosition position, bool instantly = true)
     {
-        SetTo(_fieldManager.TileByPosition(position));
+        SetTo(_fieldManager.TileByPosition(position), instantly);
+    }
+
+    protected IEnumerator MoveTo(Vector3 position)
+    {
+        while ((_transform.position - position).magnitude > CLOSE_ENOUGH_SNAP_VALUE
+               && (_transform.position - position).magnitude < TOO_FAR_SNAP_VALUE)
+        {
+            _transform.position = Vector3.Lerp(_transform.position, position, _movementSpeed * Time.deltaTime);
+            yield return null;
+        }
+        _transform.position = position;
     }
 }
