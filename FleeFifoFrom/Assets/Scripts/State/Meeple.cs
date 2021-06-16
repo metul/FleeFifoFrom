@@ -44,16 +44,6 @@ public class DMeeple : DObject
     Position.Current = previousPosition;
   }
 
-  public void Tap()
-  {
-    QueueState.Current = MeepleQueueState.Tapped;
-  }
-
-  public void UnTap()
-  {
-    QueueState.Current = MeepleQueueState.UnTapped;
-  }
-
   public void Move(DPosition position)
   {
     if (State == MeepleState.InQueue && Position.Current.CanMoveTo(position))

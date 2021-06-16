@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3667819666926343818}
   - component: {fileID: 7640830836080027946}
+  - component: {fileID: 1688881371696863649}
   m_Layer: 0
   m_Name: Farmer
   m_TagString: Untagged
@@ -25,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3667819666926343822}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.012, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.42, y: 0.42, z: 0.42}
   m_Children:
   - {fileID: 468415261900851414}
@@ -44,6 +45,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4b1deb7fc6401c4395f69ed5715bcec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _renderer: {fileID: 2274843512218428058}
+  _injuredColor: {r: 1, g: 0, b: 0, a: 0}
+--- !u!95 &1688881371696863649
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3667819666926343822}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 13bb644986f9edf4a8cceff3fa63cf85, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &75044209375424317
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -73,7 +95,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5439b0d63d6f9a24f8f3c39a53d546b2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.705
+      value: 2.7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5439b0d63d6f9a24f8f3c39a53d546b2, type: 3}
       propertyPath: m_LocalPosition.z
@@ -116,5 +138,10 @@ PrefabInstance:
 --- !u!4 &468415261900851414 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5439b0d63d6f9a24f8f3c39a53d546b2, type: 3}
+  m_PrefabInstance: {fileID: 75044209375424317}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &2274843512218428058 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2205429357032508839, guid: 5439b0d63d6f9a24f8f3c39a53d546b2, type: 3}
   m_PrefabInstance: {fileID: 75044209375424317}
   m_PrefabAsset: {fileID: 0}

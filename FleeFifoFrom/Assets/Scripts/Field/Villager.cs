@@ -1,18 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Villager : Meeple
 {
-
+    private static readonly int ANIM_INJURED = Animator.StringToHash("injuredTrigger");
+    private static readonly int ANIM_UNINJURED = Animator.StringToHash("unInjuredTrigger");
+    
+    [SerializeField] private Color _injuredColor = Color.red;
+    
     protected Action OnInjured;
-    // Start is called before the first frame update
 
-    private void Awake()
-    {
-        OnInjured += () => { SetColor(Color.red); };
-    }
 
     public override void Initialize(DMeeple core, FieldManager fieldManager)
     {
@@ -29,14 +26,27 @@ public class Villager : Meeple
         }
     }
 
-    void Start()
+    protected override void Start()
     {
-        
+        base.Start();
+        OnInjured += () =>
+        {
+            _animator.SetTrigger(ANIM_INJURED);
+        };
+        OnDefault += () =>
+        {
+            _animator.SetTrigger(ANIM_UNINJURED);
+        };
     }
 
-    // Update is called once per frame
-    void Update()
+    // set by animation
+    public void SetInjuredColor()
     {
-        
+        SetColor(_injuredColor);
+    }    
+    
+    public void SetUnInjuredColor()
+    {
+        SetColor(_defaultColor);
     }
 }

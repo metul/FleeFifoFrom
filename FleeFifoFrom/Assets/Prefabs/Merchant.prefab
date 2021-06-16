@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3157514010636819143}
   - component: {fileID: 365634993346496815}
+  - component: {fileID: 353337776806363222}
   m_Layer: 0
   m_Name: Merchant
   m_TagString: Untagged
@@ -44,6 +45,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a4c3bc05d0259b4fae8fcd9f2f0c6d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _renderer: {fileID: 3134260974230869073}
+  _injuredColor: {r: 1, g: 0, b: 0, a: 1}
+--- !u!95 &353337776806363222
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3157514010636819147}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 13bb644986f9edf4a8cceff3fa63cf85, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &6233715544048502757
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -116,5 +138,10 @@ PrefabInstance:
 --- !u!4 &5838954570988576782 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: db32db356bae38245b7d58393227fc80, type: 3}
+  m_PrefabInstance: {fileID: 6233715544048502757}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &3134260974230869073 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 9078617493432505268, guid: db32db356bae38245b7d58393227fc80, type: 3}
   m_PrefabInstance: {fileID: 6233715544048502757}
   m_PrefabAsset: {fileID: 0}

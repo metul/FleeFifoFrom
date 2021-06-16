@@ -1,35 +1,38 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Meeple: MonoBehaviour
 {
+    [SerializeField] protected Renderer _renderer;
     public DMeeple Core { get; private set; }
 
     protected Action OnDefault;
-    protected Action OnTapped;
 
     private Tile _tile;
     private FieldManager _fieldManager;
     private Transform _transform;
-    private Renderer _renderer;
-    
+    protected Color _defaultColor;
+    protected Animator _animator;
+
+    protected virtual void Start()
+    {
+        _defaultColor = _renderer.material.color;
+        _animator = GetComponent<Animator>();
+    }
+
     public virtual void Initialize(DMeeple core, FieldManager fieldManager)
     {
         Core = core;
         _fieldManager = fieldManager;
         _transform = transform;
-        
+
         SetTo(Core.Position.Current);
         core.Position.OnChange += SetTo;
-        OnDefault += () => { SetColor(Color.gray); };
     }
 
     protected void SetColor(Color color)
     {
-        var rend = GetComponentInChildren<Renderer>();
-        rend.material.color = color;
+        _renderer.material.color = color;
     }
 
     public void Initialize(DMeeple core)

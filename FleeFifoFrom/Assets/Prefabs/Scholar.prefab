@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1182205000322963868}
   - component: {fileID: 2865988018397362392}
+  - component: {fileID: 106160108362650847}
   m_Layer: 0
   m_Name: Scholar
   m_TagString: Untagged
@@ -44,6 +45,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 666b2347898710441813bd2e36e7f13e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _renderer: {fileID: 6324246572615581084}
+  _injuredColor: {r: 1, g: 0, b: 0, a: 1}
+--- !u!95 &106160108362650847
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1182205000322963856}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 13bb644986f9edf4a8cceff3fa63cf85, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &8406959832353535106
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -116,5 +138,10 @@ PrefabInstance:
 --- !u!4 &8295978034701636457 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 17ba6fed067ce5b4ca00b67ac58c073c, type: 3}
+  m_PrefabInstance: {fileID: 8406959832353535106}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6324246572615581084 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2553463665631381790, guid: 17ba6fed067ce5b4ca00b67ac58c073c, type: 3}
   m_PrefabInstance: {fileID: 8406959832353535106}
   m_PrefabAsset: {fileID: 0}
