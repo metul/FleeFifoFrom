@@ -1,1 +1,0 @@
-public class Commoner : Villager { }
