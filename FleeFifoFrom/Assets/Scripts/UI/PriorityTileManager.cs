@@ -8,7 +8,7 @@ public class PriorityTileManager : MonoBehaviour
     private const string MERCHANT_TYPE = "merchant";
     private const string SCHOLAR_TYPE = "scholar";
     private const string KNIGHT_TYPE = "knight";
-    
+
     private static readonly Dictionary<string, Type> STRING_TYPE_MAPPING = new Dictionary<string, Type>()
     {
         {FARMER_TYPE, typeof(DFarmer)},
@@ -33,7 +33,21 @@ public class PriorityTileManager : MonoBehaviour
     {
         _display.SetActive(false);
 
-        StateManager.Instance.OnStateUpdate += ToggleDisplay;
+        StateManager.OnStateUpdate += state =>
+        {
+            if (state == StateManager.State.Reprioritize)
+            {
+                if (!_display.activeSelf)
+                {
+                    _display.SetActive(true);
+                }
+            }
+            else
+            {
+                if (_display.activeSelf)
+                    _display.SetActive(false);
+            }
+        };
 
         GameState.Instance.Priorities[typeof(DFarmer)].Value.OnChange += prio =>
         {
@@ -66,9 +80,9 @@ public class PriorityTileManager : MonoBehaviour
     private void ChangePriority(bool increase, string type)
     {
         CommandProcessor.Instance.ExecuteCommand(new ReprioritizeCommand(
-            0,GameState.Instance.Priorities[STRING_TYPE_MAPPING[type]], increase
+            0, GameState.Instance.Priorities[STRING_TYPE_MAPPING[type]], increase
         ));
-        StateManager.Instance.CurrentState = StateManager.State.Default;
+        StateManager.CurrentState = StateManager.State.Default;
     }
 
     private Transform TransformFromPrio(DPrio.PrioValue prio)
@@ -83,23 +97,6 @@ public class PriorityTileManager : MonoBehaviour
                 return _lowPrio;
             default:
                 return null;
-        }
-    }
-
-    // MARK: Temporarily set as public for debugging
-    public void ToggleDisplay(StateManager.State state)
-    {
-        if (state == StateManager.State.Reprioritize)
-        {
-            if (!_display.activeSelf)
-            {
-                _display.SetActive(true);
-            }
-        }
-        else
-        {
-            if (_display.activeSelf)
-                _display.SetActive(false);
         }
     }
 }

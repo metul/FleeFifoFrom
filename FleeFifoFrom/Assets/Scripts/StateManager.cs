@@ -1,38 +1,10 @@
 using MLAPI;
 using MLAPI.Logging;
-using MLAPI.NetworkVariable;
 using System;
 using UnityEngine;
 
-public class StateManager : NetworkBehaviour
+public class StateManager : MonoBehaviour
 {
-    private static StateManager _instance;
-    private static object _lock = new object();
-
-    /// <summary>
-    /// Singleton instance of the CommunicationManager.
-    /// </summary>
-    public static StateManager Instance
-    {
-        get
-        {
-            lock (_lock)
-            {
-                if (!_instance)
-                {
-                    _instance = (StateManager)FindObjectOfType(typeof(StateManager));
-                    if (!_instance)
-                    {
-                        var singleton = new GameObject { name = "StateManager" };
-                        _instance = singleton.AddComponent<StateManager>();
-                        DontDestroyOnLoad(singleton);
-                    }
-                }
-                return _instance;
-            }
-        }
-    }
-
     public enum State
     {
         Default,
@@ -60,49 +32,32 @@ public class StateManager : NetworkBehaviour
         PayForAction
     }
 
-    public Action<State> OnStateUpdate;
-    public State CurrentlyPayingFor;
+    private static State _currentState;
+    public static Action<State> OnStateUpdate;
+    public static State CurrentlyPayingFor;
 
-    public State CurrentState
+    public static State CurrentState
     {
         get => _currentState;
         set
         {
             if (_currentState != value)
             {
+                State prevState = _currentState; // MARK: Used for network logging
                 if (value == State.PayForAction)
                 {
                     CurrentlyPayingFor = _currentState;
                 }
-                NetworkLog.LogInfoServer($"Locally changing state ({_currentState} -> {value}) on client {NetworkManager.Singleton.LocalClientId}");
                 _currentState = value;
-                NetworkCurrentState.Value = (int)value;
                 OnStateUpdate?.Invoke(value);
-                // TODO: OnStateUpdate is null, possibly due to network object instantiation. Following lines are used for temporary debugging
-                FindObjectOfType<FieldManager>().NetworkedUpdateInteractability();
-                FindObjectOfType<FieldManager>().NetworkedUpdateInteractability();
-                FindObjectOfType<DebugStateDisplay>().ModifyText(_currentState);
-                FindObjectOfType<PriorityTileManager>().ToggleDisplay(_currentState);
+                // MARK: Update network state if connected, supports local debugging
+                if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
+                {
+                    NetworkLog.LogInfoServer($"Locally changed state ({prevState} -> {_currentState}) on client {NetworkManager.Singleton.LocalClientId}");
+                    NetworkStateManager.Instance.NetworkCurrentState.Value = (int)value;
+                }
             }
         }
-    }
-
-    private State _currentState;
-    private NetworkVariableInt _networkCurrentState = new NetworkVariableInt(new NetworkVariableSettings
-    {
-        WritePermission = NetworkVariablePermission.Everyone,
-        SendTickrate = 0
-    }, (int)State.Default);
-    public NetworkVariableInt NetworkCurrentState => _networkCurrentState;
-
-    private void OnEnable()
-    {
-        NetworkCurrentState.OnValueChanged += OnNetworkStateChanged;
-    }
-
-    private void OnDisable()
-    {
-        NetworkCurrentState.OnValueChanged -= OnNetworkStateChanged;
     }
 
     private void Start()
@@ -112,13 +67,5 @@ public class StateManager : NetworkBehaviour
         {
             CurrentState = State.Default;
         };
-    }
-
-    private void OnNetworkStateChanged(int prev, int next)
-    {
-        if (prev == next || next == (int)_currentState)
-            return;
-        NetworkLog.LogInfoServer($"NetworkStateChange invoked ({prev} -> {next}) on client {NetworkManager.Singleton.LocalClientId}");
-        CurrentState = (State)next;
     }
 }
