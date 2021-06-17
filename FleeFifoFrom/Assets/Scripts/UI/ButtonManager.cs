@@ -156,7 +156,7 @@ public class ButtonManager : MonoBehaviour
         switch (StateManager.CurrentState)
         {
             case StateManager.State.Recall:
-                CommandProcessor.Instance.ExecuteCommand(new RecallCommand(0, actionTile.Id));
+                CommandProcessor.Instance.ExecuteCommand(new RecallCommand(0, GameState.Instance.TurnPlayer().Id, actionTile.Id));
                 StateManager.CurrentState = StateManager.State.Default;
                 break;
             default:

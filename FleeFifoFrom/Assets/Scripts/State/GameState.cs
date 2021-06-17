@@ -210,7 +210,9 @@ public class GameState
   public int PlayerScore(DPlayer.ID player)
   {
     // TODO: later objectives and castle rewards should also be added here.
-    return this.AuthorizedVillagers(player).Length + PlayerById(player).Honor.Score.Current;
+    //Added a placeholder knights value to offset the castle (2x mult)
+    //In fact knights should always be at least 1 pt anyway
+    return this.AuthorizedVillagers(player).Length + PlayerById(player).Honor.Score.Current + 2*this.AuthorizedKnights(player).Length;
   }
 
   public void TraverseBoard(System.Action<DPosition> action)

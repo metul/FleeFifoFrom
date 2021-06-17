@@ -101,10 +101,15 @@ public static class GameStateUtils
     return state.Villagers.Where(v => v.State == DMeeple.MeepleState.Authorized && v.Rescuer == player).ToArray();
   }
 
-  /// <summary>
-  /// Will return all workers available to a player (including those whom they have poached).
-  /// </summary>
-  public static DWorker[] AvailableWorkers(this GameState state, DPlayer.ID player)
+   public static DKnight[] AuthorizedKnights(this GameState state, DPlayer.ID player)
+   {
+     return state.Knights.Where(v => v.State == DMeeple.MeepleState.Authorized && v.Owner == player).ToArray();
+   }
+
+    /// <summary>
+    /// Will return all workers available to a player (including those whom they have poached).
+    /// </summary>
+    public static DWorker[] AvailableWorkers(this GameState state, DPlayer.ID player)
   {
     return state.Workers.Where(w => w.State == DWorker.WorkerState.InPool && w.ControlledBy == player).ToArray();
   }

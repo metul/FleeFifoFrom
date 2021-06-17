@@ -19,17 +19,17 @@ public class Rules
 
   public static readonly short[] HONOR_VALUES = { -15, -12, -9, -6, -3, -1, 0, 1, 3, 6, 9, 12, 15 };
   
-  public const ushort WORKER_COUNT = 4;
+  public const ushort WORKER_COUNT = 2;
 
-  public const ushort KNIGHT_COUNT = 5;
+  public const ushort KNIGHT_COUNT = 4;
 
   public const ushort ROWS = 5;
 
-  public const ushort COMMONERS_COUNT = 32; 
+  public const ushort COMMONERS_COUNT = 10; 
 
-  public const ushort SCHOLAR_COUNT = 12;
+  public const ushort SCHOLAR_COUNT = 10;
 
-  public const ushort MERCHANT_COUNT = 12;
+  public const ushort MERCHANT_COUNT = 10;
 
   public const ushort TURN_ACTION_LIMIT = 2;
 
