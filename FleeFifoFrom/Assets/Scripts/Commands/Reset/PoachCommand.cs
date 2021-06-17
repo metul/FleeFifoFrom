@@ -1,3 +1,5 @@
+using MLAPI.Serialization;
+
 public class PoachCommand: ResetCommand
 {
     private DPlayer.ID _player;
@@ -30,5 +32,14 @@ public class PoachCommand: ResetCommand
     public override bool IsFeasible()
     {
         return base.IsFeasible() && _worker.Position.Current.IsActionTile && _worker.Owner != _player;
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+        serializer.Serialize<DPlayer.ID>(ref _player);
+        _worker.NetworkSerialize(serializer);
+        serializer.Serialize<DPlayer.ID>(ref _controlledBy);
+        serializer.Serialize<DActionPosition.TileId>(ref _previousTile);
     }
 }

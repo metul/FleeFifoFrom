@@ -58,28 +58,4 @@ public class NetworkStateManager : NetworkBehaviour
         NetworkLog.LogInfoServer($"NetworkStateChange invoked ({prev} -> {next}) on client {NetworkManager.Singleton.LocalClientId}");
         StateManager.CurrentState = (StateManager.State)next;
     }
-
-    //public State CurrentState
-    //{
-    //    get => _currentState;
-    //    set
-    //    {
-    //        if (_currentState != value)
-    //        {
-    //            if (value == State.PayForAction)
-    //            {
-    //                CurrentlyPayingFor = _currentState;
-    //            }
-    //            NetworkLog.LogInfoServer($"Locally changing state ({_currentState} -> {value}) on client {NetworkManager.Singleton.LocalClientId}");
-    //            _currentState = value;
-    //            NetworkCurrentState.Value = (int)value;
-    //            OnStateUpdate?.Invoke(value);
-    //            // TODO: OnStateUpdate is null, possibly due to network object instantiation. Following lines are used for temporary debugging
-    //            FindObjectOfType<FieldManager>().NetworkedUpdateInteractability();
-    //            FindObjectOfType<FieldManager>().NetworkedUpdateInteractability();
-    //            FindObjectOfType<DebugStateDisplay>().ModifyText(_currentState);
-    //            FindObjectOfType<PriorityTileManager>().ToggleDisplay(_currentState);
-    //        }
-    //    }
-    //}
 }

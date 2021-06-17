@@ -1,10 +1,12 @@
+using MLAPI.Serialization;
 /// Reprsents the parent for all data classes.
 /// Data classes hold logical information for game objects.
-public class DObject
+public class DObject : INetworkSerializable
 {
     private static ushort ID_CURSOR = 0;
 
-    public ushort ID { get; private set; }
+    public ushort ID { get => _id; private set => _id = value; }
+    private ushort _id;
 
     public DObject(ushort id)
     {
@@ -15,5 +17,10 @@ public class DObject
     {
         ID = ID_CURSOR;
         ID_CURSOR++;
+    }
+
+    public virtual void NetworkSerialize(NetworkSerializer serializer)
+    {
+        serializer.Serialize(ref _id);
     }
 }

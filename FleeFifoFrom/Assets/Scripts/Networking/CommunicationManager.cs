@@ -114,4 +114,75 @@ public class CommunicationManager : NetworkBehaviour
     {
         GameState.Instance.RotateTurn();
     }
+
+    public void RequestExecuteCommand(Command cmd)
+    {
+        ExecuteCommandServerRpc(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(Command cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(Command cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    private void ExecuteCommand(Command cmd)
+    {
+        CommandProcessor.Instance.Commands.Push(cmd);
+        cmd.Execute();
+    }
+
+    public void RequestUndoCommand()
+    {
+        UndoCommandServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void UndoCommandServerRpc()
+    {
+        UndoCommand();
+        UndoCommandClientRpc();
+    }
+
+    [ClientRpc]
+    private void UndoCommandClientRpc()
+    {
+        UndoCommand();
+    }
+
+    private void UndoCommand()
+    {
+        CommandProcessor.Instance.Commands.Pop()?.Reverse();
+        GameState.Instance.OnUndo?.Invoke();
+    }
+
+    public void RequestClearCommandStack()
+    {
+        ClearCommandStackServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ClearCommandStackServerRpc()
+    {
+        ClearCommandStack();
+        ClearCommandStackClientRpc();
+    }
+
+    [ClientRpc]
+    private void ClearCommandStackClientRpc()
+    {
+        ClearCommandStack();
+    }
+
+    private void ClearCommandStack()
+    {
+        CommandProcessor.Instance.Commands.Clear();
+    }
 }

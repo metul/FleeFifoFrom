@@ -4,6 +4,8 @@ using System.Linq;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
 using MLAPI;
+using UnityEngine;
+using MLAPI.Logging;
 
 public class GameState
 {
@@ -77,11 +79,17 @@ public class GameState
         TurnActionCount = new Observable<int>(0);
         KnightsFightingCount = new Observable<int>((Rules.KNIGHT_COUNT - 1) * Players.Length);
 
-        // MARK: Allows local debugging
-        //if (!NetworkManager.Singleton)
-        //    DrawMeeple();
-
         _initializeTurn();
+
+//        // MARK: Allows local debugging
+//#if !UNITY_SERVER
+//        Debug.Log("!UNITY_SERVER");
+//        if (!NetworkManager.Singleton)
+//        {
+//            Debug.Log("!NetworkManager.Singleton");
+//            DrawMeeple();
+//        }
+//#endif
     }
 
     private void _initializeBoard()
@@ -184,9 +192,9 @@ public class GameState
         TurnType = TurnTypes.ActionTurn;
     }
 
-    #endregion
+#endregion
 
-    #region utility functions
+#region utility functions
 
     public void RotateTurn()
     {
@@ -266,5 +274,5 @@ public class GameState
     {
         return AtPosition(position) == null;
     }
-    #endregion
+#endregion
 }

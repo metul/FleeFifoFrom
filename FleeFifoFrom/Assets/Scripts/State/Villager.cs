@@ -1,59 +1,68 @@
 using UnityEngine;
+using MLAPI.Serialization;
 
 public class DVillager : DMeeple
 {
-  public enum HealthStates
-  {
-    Injured,   // --> the villager is injured
-    Healthy,   // --> the villager is not injured
-  }
-
-  public Observable<HealthStates> Health = new Observable<HealthStates>(HealthStates.Healthy);
-  public DPlayer.ID? Rescuer { get; protected set; }
-
-  public void Injure()
-  {
-    Health.Current = HealthStates.Injured;
-    QueueState.Current = DMeeple.MeepleQueueState.UnTapped;
-  }
-
-  public void Heal()
-  {
-    Health.Current = HealthStates.Healthy;
-  }
-
-  public void Authorize(DPlayer.ID rescuer)
-  {
-    _authorize();
-    Rescuer = rescuer;
-    GameState.Instance.PlayerById(rescuer).OnDeAuthorize?.Invoke();
-  }
-
-  public void Deauthorize(DPosition previousPosition)
-  {
-    _deauthorize(previousPosition);
-    if(Rescuer != null)
-      GameState.Instance.PlayerById((DPlayer.ID) Rescuer).OnDeAuthorize?.Invoke();
-    Rescuer = null;
-  }
-
-  public void Draw(DPosition position)
-  {
-    if (State == MeepleState.OutOfBoard && position.IsValid)
+    public enum HealthStates
     {
-      State = MeepleState.InQueue;
-      Position.Current = position;
+        Injured,   // --> the villager is injured
+        Healthy,   // --> the villager is not injured
     }
-  }
 
-  public void UnDraw()
-  {
-    if (State == MeepleState.InQueue)
+    public Observable<HealthStates> Health = new Observable<HealthStates>(HealthStates.Healthy);
+    public DPlayer.ID? Rescuer { get => _rescuer; protected set => _rescuer = value; }
+    private DPlayer.ID? _rescuer;
+
+    public void Injure()
     {
-      State = MeepleState.OutOfBoard;
-      Position.Current = null;
+        Health.Current = HealthStates.Injured;
+        QueueState.Current = DMeeple.MeepleQueueState.UnTapped;
     }
-  }
+
+    public void Heal()
+    {
+        Health.Current = HealthStates.Healthy;
+    }
+
+    public void Authorize(DPlayer.ID rescuer)
+    {
+        _authorize();
+        Rescuer = rescuer;
+        GameState.Instance.PlayerById(rescuer).OnDeAuthorize?.Invoke();
+    }
+
+    public void Deauthorize(DPosition previousPosition)
+    {
+        _deauthorize(previousPosition);
+        if (Rescuer != null)
+            GameState.Instance.PlayerById((DPlayer.ID)Rescuer).OnDeAuthorize?.Invoke();
+        Rescuer = null;
+    }
+
+    public void Draw(DPosition position)
+    {
+        if (State == MeepleState.OutOfBoard && position.IsValid)
+        {
+            State = MeepleState.InQueue;
+            Position.Current = position;
+        }
+    }
+
+    public void UnDraw()
+    {
+        if (State == MeepleState.InQueue)
+        {
+            State = MeepleState.OutOfBoard;
+            Position.Current = null;
+        }
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+        // TODO: Serialize Observable<HealthStates> Health
+        //serializer.Serialize<DPlayer.ID?>(ref _rescuer); // TODO: Serialize DPlayer.ID? Rescuer
+    }
 }
 
 // TODO: maybe later they need to go to their own files?

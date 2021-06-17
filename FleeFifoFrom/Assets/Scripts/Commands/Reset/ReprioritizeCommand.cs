@@ -1,3 +1,5 @@
+using MLAPI.Serialization;
+
 public class ReprioritizeCommand : ResetCommand
 {
     private DPrio _prio;
@@ -30,5 +32,12 @@ public class ReprioritizeCommand : ResetCommand
     public override bool IsFeasible()
     {
         return _inscrease ? _prio.IsIncreasable : _prio.IsDecreasable;
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+        _prio.NetworkSerialize(serializer);
+        serializer.Serialize(ref _inscrease);
     }
 }

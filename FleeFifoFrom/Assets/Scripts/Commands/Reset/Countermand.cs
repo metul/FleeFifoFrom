@@ -1,3 +1,5 @@
+using MLAPI.Serialization;
+
 public class Countermand : ResetCommand
 {
     public Countermand(ulong issuerID) : base(issuerID)
@@ -28,5 +30,10 @@ public class Countermand : ResetCommand
     {
         return base.IsFeasible();
         //TODO. Always possible, as long as pawn available
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
     }
 }

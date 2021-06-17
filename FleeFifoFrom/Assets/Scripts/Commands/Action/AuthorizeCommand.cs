@@ -1,3 +1,5 @@
+using MLAPI.Serialization;
+
 public class AuthorizeCommand : ActionCommand
 {
     private readonly DMeeple _meeple;
@@ -73,5 +75,12 @@ public class AuthorizeCommand : ActionCommand
                 )
             )
         );
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+        _meeple.NetworkSerialize(serializer);
+        _position.NetworkSerialize(serializer);
     }
 }

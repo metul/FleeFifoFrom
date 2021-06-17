@@ -1,3 +1,5 @@
+using MLAPI.Serialization;
+
 public class ObjectiveCommand : ActionCommand
 {
     public override void Execute()
@@ -19,5 +21,10 @@ public class ObjectiveCommand : ActionCommand
 
     public ObjectiveCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker) : base(issuerID, playerId, worker)
     {
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
     }
 }

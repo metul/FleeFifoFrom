@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using MLAPI.Serialization;
 
 public class RiotStepCommand : ActionCommand
 {
@@ -107,5 +108,16 @@ public class RiotStepCommand : ActionCommand
                 _to,
                 m => m.IsInjured() || m.GetType() == typeof(DKnight)
             ).Length == 0;
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+        _knight.NetworkSerialize(serializer);
+        _to.NetworkSerialize(serializer);
+        _from.NetworkSerialize(serializer);
+        // TODO: Serialize DMeeple[] _onTheWay
+        // TODO: Serialize DMeeple[] _coriotors
+        // TODO: Serialize Dictionary<ushort, DPosition> _coriotorPositions
     }
 }

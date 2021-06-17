@@ -1,4 +1,5 @@
 using UnityEngine;
+using MLAPI.Serialization;
 
 public abstract class ActionCommand : Command
 {
@@ -33,5 +34,13 @@ public abstract class ActionCommand : Command
     public override bool IsFeasible()
     {
         return GameState.Instance.TurnType == GameState.TurnTypes.ActionTurn;
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+        serializer.Serialize<DActionPosition.TileId>(ref _actionId);
+        _worker.NetworkSerialize(serializer);
+        serializer.Serialize<DPlayer.ID>(ref _playerId);
     }
 }

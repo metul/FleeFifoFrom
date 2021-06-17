@@ -1,4 +1,6 @@
-public class DPrio
+using MLAPI.Serialization;
+
+public class DPrio : INetworkSerializable
 {
       public enum PrioValue
       {
@@ -35,4 +37,9 @@ public class DPrio
             if (IsDecreasable)
                   Value.Current--;
       }
+
+    public void NetworkSerialize(NetworkSerializer serializer)
+    {
+        // TODO: Serialize Observable<PrioValue> Value
+    }
 }

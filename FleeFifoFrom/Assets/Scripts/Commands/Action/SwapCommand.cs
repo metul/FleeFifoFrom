@@ -1,3 +1,5 @@
+using MLAPI.Serialization;
+
 public class SwapCommand : ActionCommand
 {
     private DMeeple? _first;
@@ -69,5 +71,12 @@ public class SwapCommand : ActionCommand
             );
 
         //TODO: The swap priority command should always be feasible after base
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+        _first.NetworkSerialize(serializer); // TODO: Nullables
+        _second.NetworkSerialize(serializer);
     }
 }

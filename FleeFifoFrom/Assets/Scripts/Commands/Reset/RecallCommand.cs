@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MLAPI.Serialization;
 
 public class RecallCommand: ResetCommand
 {
@@ -46,5 +47,15 @@ public class RecallCommand: ResetCommand
         //TODO: i.e. the tile needs to have at least one worker
         return base.IsFeasible();
         
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+        serializer.Serialize<DActionPosition.TileId>(ref _tileId);
+        // TODO: Serialize List<DWorker> _workers
+        //foreach (DWorker worker in _workers)
+        //    worker.NetworkSerialize(serializer);
+        // TODO: Serialize List<DPlayer.ID> _controlling
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using MLAPI.Serialization;
 
 public class RetreatCommand : ResetCommand
 {
@@ -37,5 +38,12 @@ public class RetreatCommand : ResetCommand
                 _position,
                 p => GameState.Instance.IsEmpty(p)
             );
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+        _knight.NetworkSerialize(serializer);
+        _position.NetworkSerialize(serializer);
     }
 }

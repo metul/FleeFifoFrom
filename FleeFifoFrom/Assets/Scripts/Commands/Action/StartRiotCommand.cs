@@ -1,34 +1,41 @@
 using UnityEngine;
+using MLAPI.Serialization;
 
-public class StartRiotCommand : ActionCommand 
+public class StartRiotCommand : ActionCommand
 {
-  private DMeeple _meeple;
+    private DMeeple _meeple;
 
-  public StartRiotCommand(
-    ulong issuerID,
-    DPlayer.ID playerId,
-    DWorker worker,
-    DMeeple meeple
-  ) : base(issuerID, playerId, worker)
-  {
-    _actionId = DActionPosition.TileId.Riot;
-    _meeple = meeple;
-  }
+    public StartRiotCommand(
+      ulong issuerID,
+      DPlayer.ID playerId,
+      DWorker worker,
+      DMeeple meeple
+    ) : base(issuerID, playerId, worker)
+    {
+        _actionId = DActionPosition.TileId.Riot;
+        _meeple = meeple;
+    }
 
-  public override void Execute()
-  {
-    base.Execute();
-    GameState.Instance.PlayerById(_worker.Owner)?.Honor.Lose();
-  }
+    public override void Execute()
+    {
+        base.Execute();
+        GameState.Instance.PlayerById(_worker.Owner)?.Honor.Lose();
+    }
 
-  public override void Reverse()
-  {
-    base.Reverse();
-    GameState.Instance.PlayerById(_worker.Owner)?.Honor.Earn();
-  }
+    public override void Reverse()
+    {
+        base.Reverse();
+        GameState.Instance.PlayerById(_worker.Owner)?.Honor.Earn();
+    }
 
-  public override bool IsFeasible()
-  {
-    return base.IsFeasible() && _meeple.GetType() == typeof(DKnight);
-  }
+    public override bool IsFeasible()
+    {
+        return base.IsFeasible() && _meeple.GetType() == typeof(DKnight);
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+        _meeple.NetworkSerialize(serializer);
+    }
 }

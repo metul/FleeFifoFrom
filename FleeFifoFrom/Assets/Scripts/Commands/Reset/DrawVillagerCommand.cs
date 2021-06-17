@@ -1,3 +1,5 @@
+using MLAPI.Serialization;
+
 public class DrawVillagerCommand : ResetCommand
 {
     private DPosition _position;
@@ -32,5 +34,12 @@ public class DrawVillagerCommand : ResetCommand
                 _position,
                 p => GameState.Instance.IsEmpty(p)
             );
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+        _position.NetworkSerialize(serializer);
+        _villager.NetworkSerialize(serializer);
     }
 }

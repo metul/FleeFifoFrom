@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MLAPI.Serialization;
 
 public abstract class ResetCommand : Command
 {
@@ -35,5 +36,11 @@ public abstract class ResetCommand : Command
     public override bool IsFeasible()
     {
         return GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn;
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+        serializer.Serialize(ref _freeCommand); // TODO: Remove?
     }
 }

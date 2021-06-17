@@ -1,3 +1,4 @@
+using MLAPI;
 using System;
 using System.Collections.Generic;
 
@@ -18,6 +19,7 @@ public sealed class CommandProcessor
     /// Data structure for storing history of commands, used for undo/redo operations.
     /// </summary>
     private Stack<Command> _commands = new Stack<Command>();
+    public Stack<Command> Commands => _commands;
 
     /// <summary>
     /// Executes command and saves into history.
@@ -27,8 +29,13 @@ public sealed class CommandProcessor
     {
         if (command.IsFeasible())
         {
-            _commands.Push(command);
-            command.Execute();
+            if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
+                CommunicationManager.Instance.RequestExecuteCommand(command);
+            else // MARK: Allow local debugging
+            {
+                _commands.Push(command);
+                command.Execute();
+            }
         }
     }
 
@@ -37,8 +44,13 @@ public sealed class CommandProcessor
     /// </summary>
     public void Undo()
     {
-        _commands.Pop()?.Reverse();
-        GameState.Instance.OnUndo?.Invoke();
+        if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
+            CommunicationManager.Instance.RequestUndoCommand();
+        else // MARK: Allow local debugging
+        {
+            _commands.Pop()?.Reverse();
+            GameState.Instance.OnUndo?.Invoke();
+        }
     }
 
     /// <summary>
@@ -46,6 +58,9 @@ public sealed class CommandProcessor
     /// </summary>
     public void ClearStack()
     {
-        _commands.Clear();    
+        if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
+            CommunicationManager.Instance.RequestClearCommandStack();
+        else // MARK: Allow local debugging
+            _commands.Clear();
     }
 }

@@ -1,3 +1,5 @@
+using MLAPI.Serialization;
+
 public class ReviveCommand : ActionCommand
 {
     //private Tile _tile;
@@ -38,5 +40,12 @@ public class ReviveCommand : ActionCommand
     public override bool IsFeasible()
     {
         return base.IsFeasible() && (_meeple.IsInjured());
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+        _meeple.NetworkSerialize(serializer);
+        _position.NetworkSerialize(serializer);
     }
 }
