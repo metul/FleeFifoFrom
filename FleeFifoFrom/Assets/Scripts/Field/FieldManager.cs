@@ -1,3 +1,4 @@
+using MLAPI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ public class FieldManager : MonoBehaviour
     private void Start()
     {
         PopulateField();
-        StateManager.OnStateUpdate += state => UpdateInteractability();
+        StateManager.Instance.OnStateUpdate += state => NetworkedUpdateInteractability();
     }
 
     private Tile[][] GetField(Transform[] sourceArray)
@@ -212,23 +213,23 @@ public class FieldManager : MonoBehaviour
 
     public void ProcessClickedTile(Tile tile)
     {
-        switch (StateManager.CurrentState)
+        switch (StateManager.Instance.CurrentState)
         {
             case StateManager.State.Authorize:
                 _storeTile = tile;
-                StateManager.CurrentState = StateManager.State.PayForAction;
+                StateManager.Instance.CurrentState = StateManager.State.PayForAction;
                 break;
             case StateManager.State.Swap1:
                 _storeSecondTile = tile;
-                StateManager.CurrentState = StateManager.State.Swap2;
+                StateManager.Instance.CurrentState = StateManager.State.Swap2;
                 break;
             case StateManager.State.Swap2:
                 _storeTile = tile;
-                StateManager.CurrentState = StateManager.State.PayForAction;
+                StateManager.Instance.CurrentState = StateManager.State.PayForAction;
                 break;
             case StateManager.State.RiotChooseKnight:
                 _storeTile = tile;
-                StateManager.CurrentState = StateManager.State.PayForAction;
+                StateManager.Instance.CurrentState = StateManager.State.PayForAction;
                 break;
             //TODO: Can we add a case for RiotChooseFollowerType
             case StateManager.State.RiotChoosePath:
@@ -237,38 +238,38 @@ public class FieldManager : MonoBehaviour
                 RiotStep(_storeSecondTile, _storeTile);
 
                 if (tile.Position.IsFinal)
-                    StateManager.CurrentState = StateManager.State.Default;
+                    StateManager.Instance.CurrentState = StateManager.State.Default;
                 else
-                    StateManager.CurrentState = StateManager.State.RiotChoosePath;
+                    StateManager.Instance.CurrentState = StateManager.State.RiotChoosePath;
 
                 break;
             case StateManager.State.Revive:
                 _storeTile = tile;
-                StateManager.CurrentState = StateManager.State.PayForAction;
+                StateManager.Instance.CurrentState = StateManager.State.PayForAction;
                 break;
             case StateManager.State.RetreatChooseTile:
                 Retreat(_storeTile, tile);
                 _storeSecondTile = null;
-                StateManager.CurrentState = StateManager.State.Default;
+                StateManager.Instance.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.RetreatChooseKnight:
                 _storeTile = tile;
-                StateManager.CurrentState = StateManager.State.RetreatChooseTile;
+                StateManager.Instance.CurrentState = StateManager.State.RetreatChooseTile;
                 break;
             case StateManager.State.Villager:
                 Villager(tile);
-                StateManager.CurrentState = StateManager.State.Default;
+                StateManager.Instance.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.MoveMeeple:
                 MoveMeeple(_storeTile, tile);
-                StateManager.CurrentState = StateManager.State.Default;
+                StateManager.Instance.CurrentState = StateManager.State.Default;
                 _storeTile = null;
                 break;
             case StateManager.State.Default:
                 if (GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn)
                 {
                     _storeTile = tile;
-                    StateManager.CurrentState = StateManager.State.MoveMeeple;
+                    StateManager.Instance.CurrentState = StateManager.State.MoveMeeple;
                 }
                 break;
         }
@@ -281,29 +282,45 @@ public class FieldManager : MonoBehaviour
             case StateManager.State.Authorize:
                 Authorize(_storeTile, worker);
                 _storeTile = null;
-                StateManager.CurrentState = StateManager.State.Default;
+                StateManager.Instance.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.Swap2:
                 Swap(_storeTile, _storeSecondTile, worker);
                 _storeTile = _storeSecondTile = null;
-                StateManager.CurrentState = StateManager.State.Default;
+                StateManager.Instance.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.Revive:
                 Revive(_storeTile, worker);
                 _storeTile = null;
-                StateManager.CurrentState = StateManager.State.Default;
+                StateManager.Instance.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.RiotChooseKnight:
                 StartRiot(_storeTile, worker);
-                StateManager.CurrentState = StateManager.State.RiotChoosePath;
+                StateManager.Instance.CurrentState = StateManager.State.RiotChoosePath;
                 break;
         }
     }
 
-
-    public void UpdateInteractability()
+    public void NetworkedUpdateInteractability()
     {
-        switch (StateManager.CurrentState)
+        if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault() && (!NetworkManager.Singleton?.IsServer).GetValueOrDefault())
+        {
+            //NetworkLog.LogInfoServer($"NetworkedUpdateInteractability: {NetworkManager.Singleton.LocalClientId}");
+            if (PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId] == GameState.Instance.TurnPlayer().Id)
+                UpdateInteractability();
+            else
+            {
+                DisableAllTiles();
+                DisableBattlefield();
+            }
+        }
+        else // MARK: Allow local debugging (also updates interactability on server)
+            UpdateInteractability();
+    }
+
+    private void UpdateInteractability()
+    {
+        switch (StateManager.Instance.CurrentState)
         {
             case StateManager.State.Authorize:
                 EnableAuthorizable();
@@ -550,7 +567,7 @@ public class FieldManager : MonoBehaviour
         _storeSecondTile = null;
         _drawnVillagersThisTurn.Clear();
 
-        UpdateInteractability();
+        NetworkedUpdateInteractability();
     }
     
     #endregion

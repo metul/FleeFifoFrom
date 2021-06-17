@@ -33,21 +33,7 @@ public class PriorityTileManager : MonoBehaviour
     {
         _display.SetActive(false);
 
-        StateManager.OnStateUpdate += state =>
-        {
-            if (state == StateManager.State.Reprioritize)
-            {
-                if (!_display.activeSelf)
-                {
-                    _display.SetActive(true);
-                }
-            }
-            else
-            {
-                if (_display.activeSelf)
-                    _display.SetActive(false);
-            }
-        };
+        StateManager.Instance.OnStateUpdate += ToggleDisplay;
 
         GameState.Instance.Priorities[typeof(DFarmer)].Value.OnChange += prio =>
         {
@@ -82,7 +68,7 @@ public class PriorityTileManager : MonoBehaviour
         CommandProcessor.Instance.ExecuteCommand(new ReprioritizeCommand(
             0,GameState.Instance.Priorities[STRING_TYPE_MAPPING[type]], increase
         ));
-        StateManager.CurrentState = StateManager.State.Default;
+        StateManager.Instance.CurrentState = StateManager.State.Default;
     }
 
     private Transform TransformFromPrio(DPrio.PrioValue prio)
@@ -97,6 +83,23 @@ public class PriorityTileManager : MonoBehaviour
                 return _lowPrio;
             default:
                 return null;
+        }
+    }
+
+    // MARK: Temporarily set as public for debugging
+    public void ToggleDisplay(StateManager.State state)
+    {
+        if (state == StateManager.State.Reprioritize)
+        {
+            if (!_display.activeSelf)
+            {
+                _display.SetActive(true);
+            }
+        }
+        else
+        {
+            if (_display.activeSelf)
+                _display.SetActive(false);
         }
     }
 }
