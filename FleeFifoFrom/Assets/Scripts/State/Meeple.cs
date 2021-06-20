@@ -84,7 +84,7 @@ public class DMeeple : DObject
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        serializer.Serialize<MeepleState>(ref _state);
+        serializer.Serialize(ref _state);
         // TODO: Serialize Observable<MeepleQueueState> QueueState
         // TODO: Observable<DPosition?> Position
     }
