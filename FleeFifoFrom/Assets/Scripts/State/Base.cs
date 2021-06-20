@@ -13,7 +13,7 @@ public class DObject : INetworkSerializable
         ID = id;
     }
 
-    public DObject()
+    public DObject() // MARK: Is non-empty default constructor problematic for serialization?
     {
         ID = ID_CURSOR;
         ID_CURSOR++;

@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using MLAPI.Serialization;
 
-public class RecallCommand: ResetCommand
+public class RecallCommand : ResetCommand, INetworkSerializable
 {
     private DActionPosition.TileId _tileId;
     private List<DWorker> _workers;
     private List<DPlayer.ID> _controlling;
+
+    // Default constructor needed for serialization
+    public RecallCommand() : base() { }
 
     public RecallCommand(ulong issuerID, DActionPosition.TileId tileId) : base(issuerID)
     {
@@ -52,10 +55,8 @@ public class RecallCommand: ResetCommand
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        serializer.Serialize<DActionPosition.TileId>(ref _tileId);
+        serializer.Serialize(ref _tileId);
         // TODO: Serialize List<DWorker> _workers
-        //foreach (DWorker worker in _workers)
-        //    worker.NetworkSerialize(serializer);
         // TODO: Serialize List<DPlayer.ID> _controlling
     }
 }

@@ -1,10 +1,13 @@
 using UnityEngine;
 using MLAPI.Serialization;
 
-public class RetreatCommand : ResetCommand
+public class RetreatCommand : ResetCommand, INetworkSerializable
 {
     private DKnight _knight;
     private DPosition _position;
+
+    // Default constructor needed for serialization
+    public RetreatCommand() : base() { }
 
     public RetreatCommand(ulong issuerID, DKnight knight, DPosition position) : base(issuerID)
     {

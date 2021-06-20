@@ -23,6 +23,9 @@ public class DPosition : INetworkSerializable
         get => Row == 1 && Col == 1;
     }
 
+    // Default constructor needed for serialization
+    public DPosition() { }
+
     public DPosition(ushort row, ushort col)
     {
         Row = row;

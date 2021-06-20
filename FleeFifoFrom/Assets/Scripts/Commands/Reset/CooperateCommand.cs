@@ -1,6 +1,6 @@
 using MLAPI.Serialization;
 
-public class CooperateCommand: ResetCommand
+public class CooperateCommand: ResetCommand, INetworkSerializable
 {
     private DPlayer.ID _player;
     private DWorker _worker;
@@ -8,6 +8,9 @@ public class CooperateCommand: ResetCommand
     private DActionPosition.TileId _previousTile;
 
     //TODO: Maybe deprecate, by consolidating functionality into Recall
+
+    // Default constructor needed for serialization
+    public CooperateCommand() : base() { }
 
     public CooperateCommand(ulong issuerID, DPlayer.ID player, DWorker worker) : base(issuerID)
     {
@@ -37,9 +40,9 @@ public class CooperateCommand: ResetCommand
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        serializer.Serialize<DPlayer.ID>(ref _player);
+        serializer.Serialize(ref _player);
         _worker.NetworkSerialize(serializer);
-        serializer.Serialize<DPlayer.ID>(ref _controlledBy);
-        serializer.Serialize<DActionPosition.TileId>(ref _previousTile);
+        serializer.Serialize(ref _controlledBy);
+        serializer.Serialize(ref _previousTile);
     }
 }

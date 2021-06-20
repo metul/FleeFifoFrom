@@ -1,7 +1,13 @@
+using MLAPI;
+using MLAPI.Logging;
 using MLAPI.Serialization;
+using UnityEngine;
 
-public class Countermand : ResetCommand
+public class Countermand : ResetCommand, INetworkSerializable
 {
+    // Default constructor needed for serialization
+    public Countermand() : base() { }
+
     public Countermand(ulong issuerID) : base(issuerID)
     {
     }
@@ -18,12 +24,13 @@ public class Countermand : ResetCommand
             Player.remove(Card);
         }
         */
-
+        NetworkLog.LogInfoServer($"Countermand executed ({_issuerID})");
     }
 
     public override void Reverse()
     {
         base.Reverse();
+        NetworkLog.LogInfoServer($"Countermand reversed ({_issuerID})");
     }
 
     public override bool IsFeasible()

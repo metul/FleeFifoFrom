@@ -1,7 +1,14 @@
 using MLAPI.Serialization;
 
-public class ObjectiveCommand : ActionCommand
+public class ObjectiveCommand : ActionCommand, INetworkSerializable
 {
+    // Default constructor needed for serialization
+    public ObjectiveCommand() : base() { }
+
+    public ObjectiveCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker) : base(issuerID, playerId, worker)
+    {
+    }
+
     public override void Execute()
     {
         base.Execute();
@@ -17,10 +24,6 @@ public class ObjectiveCommand : ActionCommand
     public override bool IsFeasible()
     {
         return base.IsFeasible();
-    }
-
-    public ObjectiveCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker) : base(issuerID, playerId, worker)
-    {
     }
 
     public override void NetworkSerialize(NetworkSerializer serializer)

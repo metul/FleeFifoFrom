@@ -1,9 +1,12 @@
 using MLAPI.Serialization;
 
-public class ReprioritizeCommand : ResetCommand
+public class ReprioritizeCommand : ResetCommand, INetworkSerializable
 {
     private DPrio _prio;
     private bool _inscrease;
+
+    // Default constructor needed for serialization
+    public ReprioritizeCommand() : base() { }
 
     public ReprioritizeCommand(ulong issuerID, DPrio prio, bool increase) : base(issuerID)
     {

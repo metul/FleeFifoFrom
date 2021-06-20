@@ -11,6 +11,9 @@ public abstract class Command : INetworkSerializable
     /// </summary>
     protected ulong _issuerID;
 
+    // Default constructor needed for serialization
+    public Command() : base() { }
+
     public Command(ulong issuerID)
     {
         _issuerID = issuerID;

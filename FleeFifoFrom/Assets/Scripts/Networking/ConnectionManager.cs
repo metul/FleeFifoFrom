@@ -45,7 +45,11 @@ public class ConnectionManager : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F1))
-            _connectionPanel.SetActive(!_connectionPanel.activeSelf);
+            CommunicationManager.Instance.RequestExecuteCommand(new Countermand(14));
+        if (Input.GetKeyDown(KeyCode.F2))
+            CommunicationManager.Instance.RequestTestExecution((byte)CommunicationManager.TesterType.SerializationTesterSubclassA, new SerializationTesterSubclassA(14, "A"));
+        if (Input.GetKeyDown(KeyCode.F3))
+            CommunicationManager.Instance.RequestTestExecution((byte)CommunicationManager.TesterType.SerializationTesterSubclassB, new SerializationTesterSubclassB(14, "B"));
     }
 
     private void InitializeServer()

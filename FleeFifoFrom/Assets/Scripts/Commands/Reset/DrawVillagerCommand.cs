@@ -1,10 +1,13 @@
 using MLAPI.Serialization;
 
-public class DrawVillagerCommand : ResetCommand
+public class DrawVillagerCommand : ResetCommand, INetworkSerializable
 {
     private DPosition _position;
     private DVillager _villager;
-    
+
+    // Default constructor needed for serialization
+    public DrawVillagerCommand() : base() { }
+
     public DrawVillagerCommand(ulong issuerID, DVillager villager, DPosition position) : base(issuerID)
     {
         _villager = villager;

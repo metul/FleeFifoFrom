@@ -1,11 +1,14 @@
 using MLAPI.Serialization;
 
-public class ReviveCommand : ActionCommand
+public class ReviveCommand : ActionCommand, INetworkSerializable
 {
     //private Tile _tile;
     private readonly DMeeple _meeple;
     private readonly DPosition _position;
     // private Meeple.State _originalState; // MARK: Redundant, could be replaced with Meeple.State.Injured
+
+    // Default constructor needed for serialization
+    public ReviveCommand() : base() { }
 
     public ReviveCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker, DMeeple meeple) : base(issuerID, playerId, worker)
     {

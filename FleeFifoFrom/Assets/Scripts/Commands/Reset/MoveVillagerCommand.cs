@@ -1,10 +1,13 @@
 using MLAPI.Serialization;
 
-public class MoveVillagerCommand : ResetCommand
+public class MoveVillagerCommand : ResetCommand, INetworkSerializable
 {
     private DMeeple _meeple;
     private DPosition _to;
     private DPosition _from;
+
+    // Default constructor needed for serialization
+    public MoveVillagerCommand() : base() { }
 
     public MoveVillagerCommand(ulong issuerID, DMeeple meeple, DPosition to) : base(issuerID)
     {

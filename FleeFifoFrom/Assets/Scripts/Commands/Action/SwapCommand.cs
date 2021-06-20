@@ -1,12 +1,15 @@
 using MLAPI.Serialization;
 
-public class SwapCommand : ActionCommand
+public class SwapCommand : ActionCommand, INetworkSerializable
 {
     private DMeeple? _first;
     private DMeeple? _second;
 
     //private MeeplePriority? _firstPriority;
     //private MeeplePriority? _secondPriority;
+
+    // Default constructor needed for serialization
+    public SwapCommand() : base() { }
 
     public SwapCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker, DMeeple? first, DMeeple? second) : base(issuerID, playerId, worker)
     {

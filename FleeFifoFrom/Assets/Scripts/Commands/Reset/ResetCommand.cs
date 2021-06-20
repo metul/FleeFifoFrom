@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using MLAPI.Serialization;
 
-public abstract class ResetCommand : Command
+public abstract class ResetCommand : Command, INetworkSerializable
 {
     protected bool _freeCommand = false;
+
+    // Default constructor needed for serialization
+    public ResetCommand() : base() { }
 
     // TODO include reset turn pawn system for reset commands
     public ResetCommand(ulong issuerID) : base(issuerID) { }
@@ -41,6 +44,6 @@ public abstract class ResetCommand : Command
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        serializer.Serialize(ref _freeCommand); // TODO: Remove?
+        serializer.Serialize(ref _freeCommand);
     }
 }

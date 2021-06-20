@@ -117,8 +117,23 @@ public class CommunicationManager : NetworkBehaviour
 
     public void RequestExecuteCommand(Command cmd)
     {
-        ExecuteCommandServerRpc(cmd);
+        switch (cmd)
+        {
+            case AuthorizeCommand authorizeCommand:
+                ExecuteCommandServerRpc(authorizeCommand);
+                break;
+            case Countermand countermandCommand:
+                ExecuteCommandServerRpc(countermandCommand);
+                break;
+            default:
+                ExecuteCommandServerRpc(cmd);
+                break;
+        }
     }
+
+    // Implement overloading methods for each command subtype since MLAPI RPCs reduce the subclass into the base class.
+    // Another option is serializing a byte for type ID and create the subclass instance inside the RPC call by serializing the class data instead.
+    #region Command Execution Overloads
 
     [ServerRpc(RequireOwnership = false)]
     private void ExecuteCommandServerRpc(Command cmd)
@@ -132,6 +147,34 @@ public class CommunicationManager : NetworkBehaviour
     {
         ExecuteCommand(cmd);
     }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(AuthorizeCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(AuthorizeCommand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(Countermand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(Countermand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    #endregion
 
     private void ExecuteCommand(Command cmd)
     {
@@ -185,4 +228,82 @@ public class CommunicationManager : NetworkBehaviour
     {
         CommandProcessor.Instance.Commands.Clear();
     }
+
+    #region Test
+
+    public enum TesterType : byte
+    {
+        SerializationTesterSubclassA,
+        SerializationTesterSubclassB
+    }
+    
+    public void RequestTestExecution(byte type, SerializationTester test)
+    {
+        NetworkLog.LogInfoServer($"RequestTestExecution: {test.GetType()}");
+        switch (test)
+        {
+            case SerializationTesterSubclassA stA:
+                TestExecutionServerRpc(type, stA);
+                break;
+            case SerializationTesterSubclassB stB:
+                TestExecutionServerRpc(type, stB);
+                break;
+            default:
+                TestExecutionServerRpc(type, test);
+                break;
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void TestExecutionServerRpc(byte type, SerializationTester test)
+    {
+        NetworkLog.LogInfoServer($"TestExecutionServerRpc: {test.GetType()}");
+        TestExecution(type, test);
+        TestExecutionClientRpc(type, test);
+    }
+
+    [ClientRpc]
+    private void TestExecutionClientRpc(byte type, SerializationTester test)
+    {
+        NetworkLog.LogInfoServer($"TestExecutionClientRpc: {test.GetType()}");
+        TestExecution(type, test);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void TestExecutionServerRpc(byte type, SerializationTesterSubclassA test)
+    {
+        NetworkLog.LogInfoServer($"TestExecutionServerRpc: {test.GetType()}");
+        TestExecution(type, test);
+        TestExecutionClientRpc(type, test);
+    }
+
+    [ClientRpc]
+    private void TestExecutionClientRpc(byte type, SerializationTesterSubclassA test)
+    {
+        NetworkLog.LogInfoServer($"TestExecutionClientRpc: {test.GetType()}");
+        TestExecution(type, test);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void TestExecutionServerRpc(byte type, SerializationTesterSubclassB test)
+    {
+        NetworkLog.LogInfoServer($"TestExecutionServerRpc: {test.GetType()}");
+        TestExecution(type, test);
+        TestExecutionClientRpc(type, test);
+    }
+
+    [ClientRpc]
+    private void TestExecutionClientRpc(byte type, SerializationTesterSubclassB test)
+    {
+        NetworkLog.LogInfoServer($"TestExecutionClientRpc: {test.GetType()}");
+        TestExecution(type, test);
+    }
+
+    public void TestExecution(byte type, SerializationTester test)
+    {
+        NetworkLog.LogInfoServer($"TestExecution: {test.GetType()}");
+        test.Execute();
+    }
+
+    #endregion
 }

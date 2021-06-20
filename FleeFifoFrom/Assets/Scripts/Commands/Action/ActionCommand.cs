@@ -1,11 +1,14 @@
 using UnityEngine;
 using MLAPI.Serialization;
 
-public abstract class ActionCommand : Command
+public abstract class ActionCommand : Command, INetworkSerializable
 {
     protected DActionPosition.TileId _actionId;
     protected DWorker? _worker;
     protected DPlayer.ID _playerId;
+
+    // Default constructor needed for serialization
+    public ActionCommand() : base() { }
 
     public ActionCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker) : base(issuerID)
     {
@@ -39,8 +42,8 @@ public abstract class ActionCommand : Command
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        serializer.Serialize<DActionPosition.TileId>(ref _actionId);
-        _worker.NetworkSerialize(serializer);
-        serializer.Serialize<DPlayer.ID>(ref _playerId);
+        serializer.Serialize(ref _actionId);
+        _worker.NetworkSerialize(serializer); // TODO: Serialize nullable
+        serializer.Serialize(ref _playerId);
     }
 }

@@ -1,9 +1,12 @@
 using UnityEngine;
 using MLAPI.Serialization;
 
-public class StartRiotCommand : ActionCommand
+public class StartRiotCommand : ActionCommand, INetworkSerializable
 {
     private DMeeple _meeple;
+
+    // Default constructor needed for serialization
+    public StartRiotCommand() : base() { }
 
     public StartRiotCommand(
       ulong issuerID,

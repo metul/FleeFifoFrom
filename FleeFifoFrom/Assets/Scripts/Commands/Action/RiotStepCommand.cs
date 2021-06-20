@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using MLAPI.Serialization;
 
-public class RiotStepCommand : ActionCommand
+public class RiotStepCommand : ActionCommand, INetworkSerializable
 {
 
     protected DKnight _knight;
@@ -12,6 +12,10 @@ public class RiotStepCommand : ActionCommand
     protected DMeeple[] _onTheWay;
     protected DMeeple[] _coriotors;
     protected Dictionary<ushort, DPosition> _coriotorPositions;
+
+    // Default constructor needed for serialization
+    public RiotStepCommand() : base() { }
+
     public RiotStepCommand(
         ulong issuerID,
         DPlayer.ID playerId,

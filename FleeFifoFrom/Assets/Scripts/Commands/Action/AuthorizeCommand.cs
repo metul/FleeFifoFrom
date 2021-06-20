@@ -1,9 +1,12 @@
 using MLAPI.Serialization;
 
-public class AuthorizeCommand : ActionCommand
+public class AuthorizeCommand : ActionCommand, INetworkSerializable
 {
     private readonly DMeeple _meeple;
     private readonly DPosition _position;
+
+    // Default constructor needed for serialization
+    public AuthorizeCommand() : base() { }
 
     public AuthorizeCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker, DMeeple meeple) : base(issuerID, playerId, worker)
     {
