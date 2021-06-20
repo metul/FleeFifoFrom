@@ -1,13 +1,7 @@
-using UnityEngine;
-using MLAPI.Serialization;
-
-public class DKnight : DMeeple, INetworkSerializable
+public class DKnight : DMeeple
 {
     public DPlayer.ID Owner { get => _owner; private set => _owner = value; }
     private DPlayer.ID _owner;
-
-    // Default constructor needed for serialization
-    public DKnight() : base() { }
 
     public DKnight(DPlayer.ID owner, DPosition position, MeepleState state) : base(position, state)
     {
@@ -56,11 +50,5 @@ public class DKnight : DMeeple, INetworkSerializable
         _deauthorize(previousPosition);
         GameState.Instance.PlayerById(player).OnDeAuthorize?.Invoke();
         return (ushort)(player == Owner ? 0 : 1);
-    }
-
-    public override void NetworkSerialize(NetworkSerializer serializer)
-    {
-        base.NetworkSerialize(serializer);
-        serializer.Serialize(ref _owner);
     }
 }

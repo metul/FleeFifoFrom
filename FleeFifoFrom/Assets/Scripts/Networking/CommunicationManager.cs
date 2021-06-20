@@ -248,6 +248,9 @@ public class CommunicationManager : NetworkBehaviour
             case SerializationTesterSubclassB stB:
                 TestExecutionServerRpc(type, stB);
                 break;
+            case SerializationTesterSubclassAuthorize stAuth:
+                TestExecutionServerRpc(type, stAuth);
+                break;
             default:
                 TestExecutionServerRpc(type, test);
                 break;
@@ -294,6 +297,21 @@ public class CommunicationManager : NetworkBehaviour
 
     [ClientRpc]
     private void TestExecutionClientRpc(byte type, SerializationTesterSubclassB test)
+    {
+        NetworkLog.LogInfoServer($"TestExecutionClientRpc: {test.GetType()}");
+        TestExecution(type, test);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void TestExecutionServerRpc(byte type, SerializationTesterSubclassAuthorize test)
+    {
+        NetworkLog.LogInfoServer($"TestExecutionServerRpc: {test.GetType()}");
+        TestExecution(type, test);
+        TestExecutionClientRpc(type, test);
+    }
+
+    [ClientRpc]
+    private void TestExecutionClientRpc(byte type, SerializationTesterSubclassAuthorize test)
     {
         NetworkLog.LogInfoServer($"TestExecutionClientRpc: {test.GetType()}");
         TestExecution(type, test);

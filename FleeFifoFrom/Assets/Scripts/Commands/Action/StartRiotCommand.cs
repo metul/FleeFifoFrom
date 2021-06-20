@@ -39,6 +39,6 @@ public class StartRiotCommand : ActionCommand, INetworkSerializable
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        _meeple.NetworkSerialize(serializer);
+        //_meeple.NetworkSerialize(serializer);
     }
 }

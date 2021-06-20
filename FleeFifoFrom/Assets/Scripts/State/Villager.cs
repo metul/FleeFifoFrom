@@ -1,6 +1,3 @@
-using UnityEngine;
-using MLAPI.Serialization;
-
 public class DVillager : DMeeple
 {
     public enum HealthStates
@@ -55,13 +52,6 @@ public class DVillager : DMeeple
             State = MeepleState.OutOfBoard;
             Position.Current = null;
         }
-    }
-
-    public override void NetworkSerialize(NetworkSerializer serializer)
-    {
-        base.NetworkSerialize(serializer);
-        // TODO: Serialize Observable<HealthStates> Health
-        //serializer.Serialize<DPlayer.ID?>(ref _rescuer); // TODO: Serialize DPlayer.ID? Rescuer
     }
 }
 

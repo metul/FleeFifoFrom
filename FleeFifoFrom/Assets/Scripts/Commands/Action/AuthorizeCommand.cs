@@ -1,9 +1,10 @@
+using MLAPI.Logging;
 using MLAPI.Serialization;
 
 public class AuthorizeCommand : ActionCommand, INetworkSerializable
 {
-    private readonly DMeeple _meeple;
-    private readonly DPosition _position;
+    private DMeeple _meeple;
+    private DPosition _position;
 
     // Default constructor needed for serialization
     public AuthorizeCommand() : base() { }
@@ -28,17 +29,20 @@ public class AuthorizeCommand : ActionCommand, INetworkSerializable
             }
             */
 
-        if (_meeple.GetType().IsSubclassOf(typeof(DVillager)))
-        {
-            ((DVillager) _meeple).Authorize(_playerId);
-        }
-        else if (_meeple.GetType() == typeof(DKnight))
-        {
-            var honor = ((DKnight) _meeple).Authorize(_playerId);
-            GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Earn(honor);
-        }
-        
-        GameState.Instance.PlayerById(_playerId).OnDeAuthorize?.Invoke();
+        NetworkLog.LogInfoServer($"Executed authorize command with IDs {_issuerID} / {_playerId}, " +
+            $"worker ({_worker?.ID} / {_worker?.Owner} / {_worker?.ControlledBy} / {_worker?.Position.Current}) and meeple ({_meeple.ID} / {_meeple.Position.Current} / {_meeple.State})");
+
+        //if (_meeple.GetType().IsSubclassOf(typeof(DVillager)))
+        //{
+        //    ((DVillager) _meeple).Authorize(_playerId);
+        //}
+        //else if (_meeple.GetType() == typeof(DKnight))
+        //{
+        //    var honor = ((DKnight) _meeple).Authorize(_playerId);
+        //    GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Earn(honor);
+        //}
+
+        //GameState.Instance.PlayerById(_playerId).OnDeAuthorize?.Invoke();
     }
 
     public override void Reverse()
@@ -83,7 +87,19 @@ public class AuthorizeCommand : ActionCommand, INetworkSerializable
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        _meeple.NetworkSerialize(serializer);
+
+        ushort meepleID = ushort.MaxValue;
+        if (!serializer.IsReading)
+            meepleID = _meeple.ID;
+
+        serializer.Serialize(ref meepleID);
+
+        if (serializer.IsReading)
+            _meeple = (DMeeple)ObjectManager.Instance.Request(meepleID); // TODO: Do we need further type casting down the line (e.g. villager)?
+
+        if (serializer.IsReading)
+            _position = new DPosition();
+
         _position.NetworkSerialize(serializer);
     }
 }

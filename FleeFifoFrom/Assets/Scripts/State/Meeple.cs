@@ -1,5 +1,3 @@
-using MLAPI.Serialization;
-
 public class DMeeple : DObject
 {
     // TODO: Perhaps better naming?
@@ -79,13 +77,5 @@ public class DMeeple : DObject
         {
             Position.Current = position;
         }
-    }
-
-    public override void NetworkSerialize(NetworkSerializer serializer)
-    {
-        base.NetworkSerialize(serializer);
-        serializer.Serialize(ref _state);
-        // TODO: Serialize Observable<MeepleQueueState> QueueState
-        // TODO: Observable<DPosition?> Position
     }
 }

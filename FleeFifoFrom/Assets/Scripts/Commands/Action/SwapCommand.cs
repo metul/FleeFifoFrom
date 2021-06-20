@@ -79,7 +79,7 @@ public class SwapCommand : ActionCommand, INetworkSerializable
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        _first.NetworkSerialize(serializer); // TODO: Nullables
-        _second.NetworkSerialize(serializer);
+        //_first.NetworkSerialize(serializer); // TODO: Nullables
+        //_second.NetworkSerialize(serializer);
     }
 }

@@ -71,3 +71,43 @@ public class SerializationTesterSubclassB : SerializationTester, INetworkSeriali
         serializer.Serialize(ref _myString);
     }
 }
+
+public class SerializationTesterSubclassAuthorize : SerializationTester, INetworkSerializable
+{
+    private DMeeple _meeple;
+    private DPosition _position;
+
+    // Default constructor needed for serialization
+    public SerializationTesterSubclassAuthorize() : base() { }
+
+    public SerializationTesterSubclassAuthorize(int valueInt, DMeeple meeple) : base(valueInt)
+    {
+        _meeple = meeple;
+        _position = meeple.Position.Current;
+    }
+
+    public override void Execute()
+    {
+        NetworkLog.LogInfoServer($"Executed SerializationTesterSubclassAuthorize with value {_myInt}, " +
+            $"meeple ({_meeple.ID} / {_meeple.Position.Current} / {_meeple.State}) and position {_position}");
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        base.NetworkSerialize(serializer);
+
+        ushort meepleID = ushort.MaxValue;
+        if (!serializer.IsReading)
+            meepleID = _meeple.ID;
+
+        serializer.Serialize(ref meepleID);
+
+        if (serializer.IsReading)
+            _meeple = (DMeeple)ObjectManager.Instance.Request(meepleID); // TODO: Do we need further type casting down the line (e.g. villager)?
+
+        if (serializer.IsReading)
+            _position = new DPosition();
+
+        _position.NetworkSerialize(serializer);
+    }
+}

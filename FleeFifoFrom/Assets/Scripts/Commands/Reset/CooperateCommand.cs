@@ -41,7 +41,7 @@ public class CooperateCommand: ResetCommand, INetworkSerializable
     {
         base.NetworkSerialize(serializer);
         serializer.Serialize(ref _player);
-        _worker.NetworkSerialize(serializer);
+        //_worker.NetworkSerialize(serializer);
         serializer.Serialize(ref _controlledBy);
         serializer.Serialize(ref _previousTile);
     }

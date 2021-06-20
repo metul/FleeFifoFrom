@@ -48,7 +48,7 @@ public class ReviveCommand : ActionCommand, INetworkSerializable
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        _meeple.NetworkSerialize(serializer);
-        _position.NetworkSerialize(serializer);
+        //_meeple.NetworkSerialize(serializer);
+        //_position.NetworkSerialize(serializer);
     }
 }

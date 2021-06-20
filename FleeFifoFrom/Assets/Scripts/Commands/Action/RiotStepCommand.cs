@@ -117,7 +117,7 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        _knight.NetworkSerialize(serializer);
+        //_knight.NetworkSerialize(serializer);
         _to.NetworkSerialize(serializer);
         _from.NetworkSerialize(serializer);
         // TODO: Serialize DMeeple[] _onTheWay

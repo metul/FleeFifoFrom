@@ -1,6 +1,3 @@
-using MLAPI.Serialization;
-using UnityEngine;
-
 public class DWorker : DObject
 {
     public enum WorkerState
@@ -53,13 +50,5 @@ public class DWorker : DObject
     {
         ControlledBy = previousOwner;
         Consume(tileId);
-    }
-
-    public override void NetworkSerialize(NetworkSerializer serializer)
-    {
-        base.NetworkSerialize(serializer);
-        serializer.Serialize(ref _owner);
-        serializer.Serialize(ref _controlledBy);
-        // TODO: Serialize Observable<DActionPosition> Position
     }
 }

@@ -43,6 +43,6 @@ public class DrawVillagerCommand : ResetCommand, INetworkSerializable
     {
         base.NetworkSerialize(serializer);
         _position.NetworkSerialize(serializer);
-        _villager.NetworkSerialize(serializer);
+        //_villager.NetworkSerialize(serializer);
     }
 }

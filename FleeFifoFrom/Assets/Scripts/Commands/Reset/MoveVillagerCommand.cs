@@ -45,7 +45,7 @@ public class MoveVillagerCommand : ResetCommand, INetworkSerializable
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        _meeple.NetworkSerialize(serializer);
+        //_meeple.NetworkSerialize(serializer);
         _to.NetworkSerialize(serializer);
         _from.NetworkSerialize(serializer);
     }

@@ -43,7 +43,25 @@ public abstract class ActionCommand : Command, INetworkSerializable
     {
         base.NetworkSerialize(serializer);
         serializer.Serialize(ref _actionId);
-        _worker.NetworkSerialize(serializer); // TODO: Serialize nullable
+
+        bool isWorkerNull = true;
+        if (!serializer.IsReading)
+            isWorkerNull = (_worker == null);
+
+        serializer.Serialize(ref isWorkerNull);
+
+        if (!isWorkerNull)
+        {
+            ushort workerID = ushort.MaxValue;
+            if (!serializer.IsReading)
+                workerID = _worker.ID;
+
+            serializer.Serialize(ref workerID);
+
+            if (serializer.IsReading)
+                _worker = (DWorker)ObjectManager.Instance.Request(workerID);
+        }
+
         serializer.Serialize(ref _playerId);
     }
 }
