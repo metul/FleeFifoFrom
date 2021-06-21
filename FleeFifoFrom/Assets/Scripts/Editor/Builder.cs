@@ -34,7 +34,7 @@ public class Builder
             scenes = new[] { _scenePath },
             locationPathName = _buildPathClient,
             target = BuildTarget.StandaloneWindows64,
-            options = BuildOptions.Development
+            options = BuildOptions.Development // MARK: Remove for release
         };
         BuildPipeline.BuildPlayer(buildPlayerOptions);
     }

@@ -61,4 +61,15 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
     {
         _material.color = color;
     }
+
+    public override bool Equals(object other)
+    {
+        if ((other == null) || !GetType().Equals(other.GetType()))
+            return false;
+        else
+        {
+            Tile otherTile = (Tile)other;
+            return (ID.x == otherTile.ID.x) && (ID.y == otherTile.ID.y);
+        }
+    }
 }

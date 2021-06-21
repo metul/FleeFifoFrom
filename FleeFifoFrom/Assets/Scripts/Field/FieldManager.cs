@@ -1,4 +1,5 @@
 using MLAPI;
+using MLAPI.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,7 +26,42 @@ public class FieldManager : MonoBehaviour
     // store tile references for multi step actions
     private Tile _storeTile;
     private Tile _storeSecondTile;
-    private List<DVillager> _drawnVillagersThisTurn = new List<DVillager>();
+    private List<DVillager> _drawnVillagersThisTurn = new List<DVillager>(); // TODO (metul): Make networked variable?
+    // Use properties for network variable update
+    public Tile StoreTile
+    {
+        get => _storeTile;
+        set
+        {
+            if (_storeTile != value) // TODO (metul): Override Equals()?
+            {
+                _storeTile = value;
+                // MARK: Update tile if connected, supports local debugging
+                if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
+                {
+                    NetworkLog.LogInfoServer($"Store Tile set to {_storeTile}.");
+                    NetworkFieldManager.Instance.NetworkStoreTile.Value = value;
+                }
+            }
+        }
+    }
+    public Tile StoreSecondTile
+    {
+        get => _storeSecondTile;
+        set
+        {
+            if (_storeSecondTile != value)
+            {
+                _storeSecondTile = value;
+                // MARK: Update tile if connected, supports local debugging
+                if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
+                {
+                    NetworkLog.LogInfoServer($"Second Store Tile set to {_storeSecondTile}.");
+                    NetworkFieldManager.Instance.NetworkStoreSecondTile.Value = value;
+                }
+            }
+        }
+    }
 
     #endregion
 
@@ -34,7 +70,7 @@ public class FieldManager : MonoBehaviour
     private void Awake()
     {
         _field = GetField(_rows);
-        _battleField = GetField(_squads);
+        _battleField = GetField(_squads); // TODO (metul): Do not register battlefield tiles (or register in a separate container)
         _tempStorageTile = _tempStorage.GetComponent<Tile>();
     }
 
@@ -57,6 +93,7 @@ public class FieldManager : MonoBehaviour
             for (var j = 0; j < tiles.Length; j++)
             {
                 tiles[j].ID = new Vector2(i, j);
+                ObjectManager.Instance.Register(tiles[j].ID, tiles[j]);
             }
         }
 
@@ -216,26 +253,26 @@ public class FieldManager : MonoBehaviour
         switch (StateManager.CurrentState)
         {
             case StateManager.State.Authorize:
-                _storeTile = tile;
+                StoreTile = tile;
                 StateManager.CurrentState = StateManager.State.PayForAction;
                 break;
             case StateManager.State.Swap1:
-                _storeSecondTile = tile;
+                StoreSecondTile = tile;
                 StateManager.CurrentState = StateManager.State.Swap2;
                 break;
             case StateManager.State.Swap2:
-                _storeTile = tile;
+                StoreTile = tile;
                 StateManager.CurrentState = StateManager.State.PayForAction;
                 break;
             case StateManager.State.RiotChooseKnight:
-                _storeTile = tile;
+                StoreTile = tile;
                 StateManager.CurrentState = StateManager.State.PayForAction;
                 break;
             //TODO: Can we add a case for RiotChooseFollowerType
             case StateManager.State.RiotChoosePath:
-                _storeSecondTile = _storeTile;
-                _storeTile = tile;
-                RiotStep(_storeSecondTile, _storeTile);
+                StoreSecondTile = StoreTile;
+                StoreTile = tile;
+                RiotStep(StoreSecondTile, StoreTile);
 
                 if (tile.Position.IsFinal)
                     StateManager.CurrentState = StateManager.State.Default;
@@ -244,16 +281,16 @@ public class FieldManager : MonoBehaviour
 
                 break;
             case StateManager.State.Revive:
-                _storeTile = tile;
+                StoreTile = tile;
                 StateManager.CurrentState = StateManager.State.PayForAction;
                 break;
             case StateManager.State.RetreatChooseTile:
-                Retreat(_storeTile, tile);
-                _storeSecondTile = null;
+                Retreat(StoreTile, tile);
+                StoreSecondTile = null;
                 StateManager.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.RetreatChooseKnight:
-                _storeTile = tile;
+                StoreTile = tile;
                 StateManager.CurrentState = StateManager.State.RetreatChooseTile;
                 break;
             case StateManager.State.Villager:
@@ -261,14 +298,14 @@ public class FieldManager : MonoBehaviour
                 StateManager.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.MoveMeeple:
-                MoveMeeple(_storeTile, tile);
+                MoveMeeple(StoreTile, tile);
                 StateManager.CurrentState = StateManager.State.Default;
-                _storeTile = null;
+                StoreTile = null;
                 break;
             case StateManager.State.Default:
                 if (GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn)
                 {
-                    _storeTile = tile;
+                    StoreTile = tile;
                     StateManager.CurrentState = StateManager.State.MoveMeeple;
                 }
                 break;
@@ -280,22 +317,22 @@ public class FieldManager : MonoBehaviour
         switch (action)
         {
             case StateManager.State.Authorize:
-                Authorize(_storeTile, worker);
-                _storeTile = null;
+                Authorize(StoreTile, worker);
+                StoreTile = null;
                 StateManager.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.Swap2:
-                Swap(_storeTile, _storeSecondTile, worker);
-                _storeTile = _storeSecondTile = null;
+                Swap(StoreTile, StoreSecondTile, worker);
+                StoreTile = StoreSecondTile = null;
                 StateManager.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.Revive:
-                Revive(_storeTile, worker);
-                _storeTile = null;
+                Revive(StoreTile, worker);
+                StoreTile = null;
                 StateManager.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.RiotChooseKnight:
-                StartRiot(_storeTile, worker);
+                StartRiot(StoreTile, worker);
                 StateManager.CurrentState = StateManager.State.RiotChoosePath;
                 break;
         }
@@ -356,8 +393,8 @@ public class FieldManager : MonoBehaviour
                 EnableMovingMeeple();
                 break;
             case StateManager.State.Default:
-                _storeTile = null;
-                _storeSecondTile = null;
+                StoreTile = null;
+                StoreSecondTile = null;
                 DisableAllTiles();
                 DisableBattlefield();
 
@@ -416,7 +453,7 @@ public class FieldManager : MonoBehaviour
         GameState.Instance.TraverseBoard(p =>
         {
             var tile = TileByPosition(p);
-            tile.Interactable = _storeSecondTile.Position.Neighbors(tile.Position) && 
+            tile.Interactable = StoreSecondTile.Position.Neighbors(tile.Position) && // TODO: StoreSecondTile is probably null
             (!overwriteInjured || GameState.Instance.HealthyMeepleAtPosition(p));
             Debug.Log($"Tile {tile.Position}: {tile.Interactable}");
         });
@@ -508,7 +545,7 @@ public class FieldManager : MonoBehaviour
 
     private void EnableRiotPath()
     {
-        var last = _storeTile.Position;
+        var last = StoreTile.Position;
 
         GameState.Instance.TraverseBoard(p =>
         {
@@ -529,7 +566,7 @@ public class FieldManager : MonoBehaviour
 
     private void EnableMovingMeeple()
     {
-        var start = _storeTile.Position;
+        var start = StoreTile.Position;
 
         GameState.Instance.TraverseBoard(p => 
         {
@@ -563,8 +600,8 @@ public class FieldManager : MonoBehaviour
 
     public void EndTurnReset()
     {
-        _storeTile = null;
-        _storeSecondTile = null;
+        StoreTile = null;
+        StoreSecondTile = null;
         _drawnVillagersThisTurn.Clear();
 
         NetworkedUpdateInteractability();

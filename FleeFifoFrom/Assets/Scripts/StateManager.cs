@@ -53,7 +53,7 @@ public class StateManager : MonoBehaviour
                 // MARK: Update network state if connected, supports local debugging
                 if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
                 {
-                    NetworkLog.LogInfoServer($"Locally changed state ({prevState} -> {_currentState}) on client {NetworkManager.Singleton.LocalClientId}");
+                    NetworkLog.LogInfoServer($"Locally changed state ({prevState} -> {_currentState}).");
                     NetworkStateManager.Instance.NetworkCurrentState.Value = (int)value;
                 }
             }

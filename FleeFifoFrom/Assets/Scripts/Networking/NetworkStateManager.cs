@@ -1,10 +1,11 @@
 using MLAPI;
 using MLAPI.Logging;
 using MLAPI.NetworkVariable;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Network counterpart of the StateManager, handles corresponding network variables.
+/// </summary>
 public class NetworkStateManager : NetworkBehaviour
 {
     private static NetworkStateManager _instance;
@@ -24,7 +25,7 @@ public class NetworkStateManager : NetworkBehaviour
                     _instance = (NetworkStateManager)FindObjectOfType(typeof(NetworkStateManager));
                     if (!_instance)
                     {
-                        var singleton = new GameObject { name = "StateManager" };
+                        var singleton = new GameObject { name = "NetworkStateManager" };
                         _instance = singleton.AddComponent<NetworkStateManager>();
                         DontDestroyOnLoad(singleton);
                     }

@@ -103,7 +103,7 @@ public class SerializationTesterSubclassAuthorize : SerializationTester, INetwor
         serializer.Serialize(ref meepleID);
 
         if (serializer.IsReading)
-            _meeple = (DMeeple)ObjectManager.Instance.Request(meepleID); // TODO: Do we need further type casting down the line (e.g. villager)?
+            _meeple = (DMeeple)ObjectManager.Instance.Request(meepleID); // TODO (metul): Do we need further type casting down the line (e.g. villager)?
 
         if (serializer.IsReading)
             _position = new DPosition();

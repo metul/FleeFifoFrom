@@ -88,7 +88,7 @@ public class PlayerManager : NetworkBehaviour
     /// </summary>
     private IEnumerator StartGame()
     {
-        // TODO: Wait until random seeded
+        // TODO (metul): Wait until random seeded
         yield return new WaitForSeconds(3);
         // Set up the board
         GameState.Instance.DrawMeeple();
@@ -102,6 +102,6 @@ public class PlayerManager : NetworkBehaviour
     private void StopGame()
     {
         Debug.Log($"Player count dropped to {PlayerCount.Value} after connection loss, interrupting game...");
-        // TODO
+        // TODO (metul)
     }
 }
