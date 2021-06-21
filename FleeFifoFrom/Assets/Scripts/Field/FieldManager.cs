@@ -34,7 +34,7 @@ public class FieldManager : MonoBehaviour
         get => _storeTile;
         set
         {
-            if (_storeTile != value) // TODO (metul): Override Equals()?
+            if (_storeTile != value)
             {
                 _storeTile = value;
                 // MARK: Update tile if connected, supports local debugging

@@ -81,15 +81,20 @@ public class GameState
 
         _initializeTurn();
 
-//        // MARK: Allows local debugging
-//#if !UNITY_SERVER
-//        Debug.Log("!UNITY_SERVER");
-//        if (!NetworkManager.Singleton)
-//        {
-//            Debug.Log("!NetworkManager.Singleton");
-//            DrawMeeple();
-//        }
-//#endif
+        // TODO (metul): Figure out why following platform dependent compilation doesn't work correctly
+
+        //        // MARK: Allows local debugging
+        //#if !UNITY_SERVER
+        //        Debug.Log("!UNITY_SERVER");
+        //        if (!NetworkManager.Singleton)
+        //        {
+        //            Debug.Log("!NetworkManager.Singleton");
+        //            DrawMeeple();
+        //        }
+        //#endif
+
+        // MARK: Temporary switch between local debugging and online (Uncomment following line for local)
+        //DrawMeeple();
     }
 
     private void _initializeBoard()
