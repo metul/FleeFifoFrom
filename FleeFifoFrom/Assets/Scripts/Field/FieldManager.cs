@@ -14,10 +14,12 @@ public class FieldManager : MonoBehaviour
     [SerializeField] private Transform[] _rows;
     [SerializeField] private Transform[] _squads;
     [SerializeField] private Transform _tempStorage;
+    [SerializeField] private Transform _authorizeStorage;
 
     private Tile[][] _field;
     private Tile[][] _battleField;
     private Tile _tempStorageTile;
+    private Tile _authorizeStorageTile;
 
     #region Placeholder
 
@@ -35,6 +37,7 @@ public class FieldManager : MonoBehaviour
         _field = GetField(_rows);
         _battleField = GetField(_squads);
         _tempStorageTile = _tempStorage.GetComponent<Tile>();
+        _authorizeStorageTile = _authorizeStorage.GetComponent<Tile>();
     }
 
     private void Start()
@@ -65,6 +68,11 @@ public class FieldManager : MonoBehaviour
     public Tile TileByPosition(DPosition position)
     {
         return (position == null) ? _tempStorageTile : _field[position.Row - 1][position.Col - 1];
+    }
+    
+    public Tile TileByStateAndPosition(DMeeple.MeepleState state, DPosition position)
+    {
+        return (state == DMeeple.MeepleState.Authorized) ? _authorizeStorageTile : TileByPosition(position);
     }
 
     public Tile VacantBattlefieldTile(DPlayer.ID playerID)

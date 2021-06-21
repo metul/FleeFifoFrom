@@ -1,39 +1,33 @@
-using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ButtonManager : MonoBehaviour
 {
+    [Header("Prefabs")]
     [SerializeField] private Worker _workerPrefab;
     [SerializeField] private PlayerTile _playerTilePrefab;
 
+    [Header("Anchors")]
+    [SerializeField] private Transform _playerTileAnchor;
     [SerializeField] private GameObject _actionCanvas;
     [SerializeField] private GameObject _resetCanvas;
     
-    // TODO include priority canvas
-    [SerializeField] private GameObject _priorityCanvas;
-
+    [Header("Buttons")]
+    [SerializeField] private ActionTile[] _actionTiles;
     [SerializeField] private Button[] _actionButtons;
     [SerializeField] private Button[] _resetButtons;
     [SerializeField] private Button _villagerButton;
-    [SerializeField] private ActionTile[] _actionTiles;
-    [SerializeField] private Transform _playerTileAnchor;
+    [SerializeField] private Button _undoButton;
+    [SerializeField] private Button _endTurnButton;
+
+    // References
     private PlayerTile[] _playerTiles;
-
     private FieldManager _fieldManager;
-
-    // card & action tile states:
-    // objective:   - draw card
-    // countermand1 - draw card
-    //              - (select card)
-    // poach:       - select one opponent worker
-    //              - select card
-    // recall:      - select action tile
-    // cooperate:   - select one opponent worker
 
     private void Start()
     {
+        // get references
         _fieldManager = FindObjectOfType<FieldManager>();
         
         // init player tiles
@@ -54,7 +48,10 @@ public class ButtonManager : MonoBehaviour
             worker.Initialize(dWorker, this);
         }
         
+        // callbacks
+        CommandProcessor.Instance.OnStackEmpty += b => { _undoButton.enabled = !b; };
         StateManager.OnStateUpdate += state => UpdateInteractability();
+        GameState.Instance.OnUndo += UpdateInteractability;
         GameState.Instance.OnTurnChange += turn =>
         {
             UpdateInteractability();
@@ -63,8 +60,9 @@ public class ButtonManager : MonoBehaviour
             // TODO highlight current player
             Debug.Log($"New turn started: {GameState.Instance.TurnPlayer().Name}'s {turn}");
         };
-
-        GameState.Instance.OnUndo += () => UpdateInteractability();
+        
+        // init other intractability
+        _undoButton.enabled = false;
     }
 
     private void UpdateInteractability()

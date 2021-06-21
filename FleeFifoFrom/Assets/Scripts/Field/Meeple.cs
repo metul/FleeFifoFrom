@@ -92,7 +92,7 @@ public abstract class Meeple : MonoBehaviour
 
     protected virtual void SetTo(DPosition position, bool instantly = true)
     {
-        SetTo(_fieldManager.TileByPosition(position), instantly);
+        SetTo(_fieldManager.TileByStateAndPosition(Core.State, position), instantly);
     }
 
     protected IEnumerator MoveTo(Vector3 position)

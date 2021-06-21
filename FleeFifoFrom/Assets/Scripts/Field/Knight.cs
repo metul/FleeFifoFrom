@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class Knight : Meeple
 {
     public override void Initialize(DMeeple core, FieldManager fieldManager)
@@ -18,8 +14,7 @@ public class Knight : Meeple
     {
         if (position == null && Core.State == DMeeple.MeepleState.OutOfBoard)
         {
-            var fieldManager = FindObjectOfType<FieldManager>();
-            var tile = fieldManager.VacantBattlefieldTile(((DKnight) Core).Owner);
+            var tile = _fieldManager.VacantBattlefieldTile(((DKnight) Core).Owner);
             if (tile != null)
                 SetTo(tile, instantly);
             else
