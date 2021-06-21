@@ -11597,10 +11597,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ConnectionUI
       objectReference: {fileID: 0}
-    - target: {fileID: 6444510046315268779, guid: cf0400cb920750a4ca924167b196c7d4, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6444510046315268780, guid: cf0400cb920750a4ca924167b196c7d4, type: 3}
       propertyPath: _transport
       value: 

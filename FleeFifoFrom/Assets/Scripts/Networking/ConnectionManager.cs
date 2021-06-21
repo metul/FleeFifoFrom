@@ -59,9 +59,10 @@ public class ConnectionManager : MonoBehaviour
         return ipString.Count(c => c == '.') == 3 && IPAddress.TryParse(ipString, out IPAddress iPAddress);
     }
 
-    public void StartHost()
+    public void StartServer()
     {
-        NetworkManager.Singleton.StartHost();
+        gameObject.AddComponent<ServerEventListener>();
+        NetworkManager.Singleton.StartServer();
         _connectionPanel.SetActive(false);
     }
 

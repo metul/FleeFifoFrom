@@ -208,7 +208,7 @@ GameObject:
   - component: {fileID: 6444510046084755046}
   - component: {fileID: 6444510046084755045}
   m_Layer: 5
-  m_Name: StartHost
+  m_Name: StartServer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -318,7 +318,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6444510046315268780}
         m_TargetAssemblyTypeName: ConnectionManager, Assembly-CSharp
-        m_MethodName: StartHost
+        m_MethodName: StartServer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -521,6 +521,7 @@ MonoBehaviour:
   _waitingPanel: {fileID: 6444510047752330180}
   _waitingLog: {fileID: 6444510045963402604}
   _transport: {fileID: 0}
+  _playerIndicatorImage: {fileID: 0}
 --- !u!1 &6444510046521425699
 GameObject:
   m_ObjectHideFlags: 0
@@ -811,7 +812,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Start Host
+  m_Text: Start Server
 --- !u!1 &6444510047162638850
 GameObject:
   m_ObjectHideFlags: 0
