@@ -133,7 +133,8 @@ public class ButtonManager : MonoBehaviour
             resetButton.interactable = resetButtons;
         
         _villagerButton.interactable = buttons && GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn;
-        _undoButton.interactable = CommandProcessor.Instance.IsUndoable;
+        _undoButton.interactable = CommandProcessor.Instance.IsUndoable ||
+                                   StateManager.CurrentState != StateManager.State.Default;
         _endTurnButton.interactable = GameState.Instance.CanEndTurn();
     }
 
