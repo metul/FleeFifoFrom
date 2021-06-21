@@ -79,7 +79,41 @@ public class SwapCommand : ActionCommand, INetworkSerializable
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        //_first.NetworkSerialize(serializer); // TODO: Nullables
-        //_second.NetworkSerialize(serializer);
+
+        bool isFirstNull = true;
+        if (!serializer.IsReading)
+            isFirstNull = (_worker == null);
+
+        serializer.Serialize(ref isFirstNull);
+
+        if (!isFirstNull)
+        {
+            ushort firstID = ushort.MaxValue;
+            if (!serializer.IsReading)
+                firstID = _first.ID;
+
+            serializer.Serialize(ref firstID);
+
+            if (serializer.IsReading)
+                _first = (DMeeple)ObjectManager.Instance.Request(firstID); // TODO: Do we need further type casting down the line (e.g. villager)?
+        }
+
+        bool isSecondNull = true;
+        if (!serializer.IsReading)
+            isSecondNull = (_worker == null);
+
+        serializer.Serialize(ref isSecondNull);
+
+        if (!isSecondNull)
+        {
+            ushort secondID = ushort.MaxValue;
+            if (!serializer.IsReading)
+                secondID = _second.ID;
+
+            serializer.Serialize(ref secondID);
+
+            if (serializer.IsReading)
+                _second = (DMeeple)ObjectManager.Instance.Request(secondID); // TODO: Do we need further type casting down the line (e.g. villager)?
+        }
     }
 }

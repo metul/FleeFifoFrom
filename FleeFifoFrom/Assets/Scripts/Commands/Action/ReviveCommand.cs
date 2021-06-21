@@ -3,8 +3,8 @@ using MLAPI.Serialization;
 public class ReviveCommand : ActionCommand, INetworkSerializable
 {
     //private Tile _tile;
-    private readonly DMeeple _meeple;
-    private readonly DPosition _position;
+    private DMeeple _meeple;
+    private DPosition _position;
     // private Meeple.State _originalState; // MARK: Redundant, could be replaced with Meeple.State.Injured
 
     // Default constructor needed for serialization
@@ -48,7 +48,19 @@ public class ReviveCommand : ActionCommand, INetworkSerializable
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        //_meeple.NetworkSerialize(serializer);
-        //_position.NetworkSerialize(serializer);
+
+        ushort meepleID = ushort.MaxValue;
+        if (!serializer.IsReading)
+            meepleID = _meeple.ID;
+
+        serializer.Serialize(ref meepleID);
+
+        if (serializer.IsReading)
+            _meeple = (DMeeple)ObjectManager.Instance.Request(meepleID); // TODO: Do we need further type casting down the line (e.g. villager)?
+
+        if (serializer.IsReading)
+            _position = new DPosition();
+
+        _position.NetworkSerialize(serializer);
     }
 }

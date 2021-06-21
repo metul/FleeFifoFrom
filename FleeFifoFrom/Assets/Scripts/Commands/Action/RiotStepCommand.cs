@@ -1,11 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 using MLAPI.Serialization;
 
 public class RiotStepCommand : ActionCommand, INetworkSerializable
 {
-
     protected DKnight _knight;
     protected DPosition _to;
     protected DPosition _from;
@@ -117,11 +114,82 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        //_knight.NetworkSerialize(serializer);
+
+        ushort knightID = ushort.MaxValue;
+        if (!serializer.IsReading)
+            knightID = _knight.ID;
+
+        serializer.Serialize(ref knightID);
+
+        if (serializer.IsReading)
+            _knight = (DKnight)ObjectManager.Instance.Request(knightID);
+
+        if (serializer.IsReading)
+        {
+            _to = new DPosition();
+            _from = new DPosition();
+        }
+
         _to.NetworkSerialize(serializer);
         _from.NetworkSerialize(serializer);
-        // TODO: Serialize DMeeple[] _onTheWay
-        // TODO: Serialize DMeeple[] _coriotors
-        // TODO: Serialize Dictionary<ushort, DPosition> _coriotorPositions
+
+        int onTheWayLength = 0;
+        if (!serializer.IsReading)
+        {
+            onTheWayLength = _onTheWay.Length;
+        }
+
+        serializer.Serialize(ref onTheWayLength);
+
+        if (serializer.IsReading)
+        {
+            _onTheWay = new DMeeple[onTheWayLength];
+        }
+
+        for (int i = 0; i < onTheWayLength; i++)
+        {
+            ushort meepleID = ushort.MaxValue;
+            if (!serializer.IsReading)
+                meepleID = _onTheWay[i].ID;
+
+            serializer.Serialize(ref meepleID);
+
+            if (serializer.IsReading)
+                _onTheWay[i] = (DMeeple)ObjectManager.Instance.Request(meepleID); // TODO: Do we need further type casting down the line (e.g. villager)?
+        }
+
+        int coriotersLength = 0;
+        if (!serializer.IsReading)
+        {
+            coriotersLength = _coriotors.Length;
+        }
+
+        serializer.Serialize(ref coriotersLength);
+
+        if (serializer.IsReading)
+        {
+            _coriotors = new DMeeple[coriotersLength];
+        }
+
+        for (int i = 0; i < coriotersLength; i++)
+        {
+            ushort meepleID = ushort.MaxValue;
+            if (!serializer.IsReading)
+                meepleID = _coriotors[i].ID;
+
+            serializer.Serialize(ref meepleID);
+
+            if (serializer.IsReading)
+                _coriotors[i] = (DMeeple)ObjectManager.Instance.Request(meepleID); // TODO: Do we need further type casting down the line (e.g. villager)?
+        }
+
+        if (serializer.IsReading)
+        {
+            _coriotorPositions = new Dictionary<ushort, DPosition>();
+            foreach (var corioter in _coriotors)
+            {
+                _coriotorPositions[corioter.ID] = corioter.Position.Current;
+            }
+        }
     }
 }
