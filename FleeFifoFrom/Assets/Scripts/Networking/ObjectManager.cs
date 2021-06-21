@@ -73,7 +73,7 @@ public sealed class ObjectManager
         if (!_tileRegistry.ContainsKey(key))
             _tileRegistry.Add(key, value);
         //else if (_tileRegistry[key] != value)
-        //    throw new Exception($"Another local tile with the same ID {key} already registered!");
+        //    throw new Exception($"Another local tile with the same ID {key} already registered!"); // TODO (metul): Temporary fix
     }
 
     /// <summary>

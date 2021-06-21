@@ -43,11 +43,6 @@ public class ConnectionManager : MonoBehaviour
 #endif
     }
 
-    private void Update()
-    {
-        
-    }
-
     private void InitializeServer()
     {
         gameObject.AddComponent<ServerEventListener>();

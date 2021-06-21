@@ -56,7 +56,7 @@ public class NetworkStateManager : NetworkBehaviour
     {
         if (prev == next || next == (int)StateManager.CurrentState)
             return;
-        NetworkLog.LogInfoServer($"NetworkStateChange invoked ({prev} -> {next}) on client {NetworkManager.Singleton.LocalClientId}");
+        NetworkLog.LogInfoServer($"NetworkStateChange invoked ({prev} -> {next}).");
         StateManager.CurrentState = (StateManager.State)next;
     }
 }

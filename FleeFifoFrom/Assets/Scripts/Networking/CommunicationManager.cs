@@ -125,6 +125,9 @@ public class CommunicationManager : NetworkBehaviour
             case AuthorizeCommand authorizeCommand:
                 ExecuteCommandServerRpc(authorizeCommand);
                 break;
+            case SwapCommand swapCommand:
+                ExecuteCommandServerRpc(swapCommand);
+                break;
             case Countermand countermandCommand:
                 ExecuteCommandServerRpc(countermandCommand);
                 break;
@@ -160,6 +163,19 @@ public class CommunicationManager : NetworkBehaviour
 
     [ClientRpc]
     private void ExecuteCommandClientRpc(AuthorizeCommand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(SwapCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(SwapCommand cmd)
     {
         ExecuteCommand(cmd);
     }
