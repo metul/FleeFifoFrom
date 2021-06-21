@@ -32,17 +32,17 @@ public class AuthorizeCommand : ActionCommand, INetworkSerializable
         NetworkLog.LogInfoServer($"Executed authorize command with IDs {_issuerID} / {_playerId}, " +
             $"worker ({_worker?.ID} / {_worker?.Owner} / {_worker?.ControlledBy} / {_worker?.Position.Current}) and meeple ({_meeple.ID} / {_meeple.Position.Current} / {_meeple.State})");
 
-        //if (_meeple.GetType().IsSubclassOf(typeof(DVillager)))
-        //{
-        //    ((DVillager) _meeple).Authorize(_playerId);
-        //}
-        //else if (_meeple.GetType() == typeof(DKnight))
-        //{
-        //    var honor = ((DKnight) _meeple).Authorize(_playerId);
-        //    GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Earn(honor);
-        //}
+        if (_meeple.GetType().IsSubclassOf(typeof(DVillager)))
+        {
+            ((DVillager)_meeple).Authorize(_playerId);
+        }
+        else if (_meeple.GetType() == typeof(DKnight))
+        {
+            var honor = ((DKnight)_meeple).Authorize(_playerId);
+            GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Earn(honor);
+        }
 
-        //GameState.Instance.PlayerById(_playerId).OnDeAuthorize?.Invoke();
+        GameState.Instance.PlayerById(_playerId).OnDeAuthorize?.Invoke();
     }
 
     public override void Reverse()

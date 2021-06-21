@@ -28,8 +28,6 @@ public class ConnectionManager : MonoBehaviour
     /// </summary>
     public static ConnectionManager Instance { get; private set; }
 
-    private DMeeple _testMeeple;
-
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -47,29 +45,13 @@ public class ConnectionManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F1))
-            CommunicationManager.Instance.RequestExecuteCommand(new AuthorizeCommand(14, DPlayer.ID.Green, null, _testMeeple));
-
-        //if (Input.GetKeyDown(KeyCode.F2))
-        //    CommunicationManager.Instance.RequestTestExecution((byte)CommunicationManager.TesterType.SerializationTesterSubclassA, new SerializationTesterSubclassA(14, "A"));
-        //if (Input.GetKeyDown(KeyCode.F3))
-        //    CommunicationManager.Instance.RequestTestExecution((byte)CommunicationManager.TesterType.SerializationTesterSubclassB, new SerializationTesterSubclassB(14, "B"));
-
-        if (Input.GetKeyDown(KeyCode.F4))
-        {
-            _testMeeple = new DMeeple(new DPosition(4, 1), DMeeple.MeepleState.InQueue);
-            NetworkLog.LogInfoServer($"Test meeple with ID {_testMeeple.ID} generated.");
-        }
-        if (Input.GetKeyDown(KeyCode.F5))
-            CommunicationManager.Instance.RequestTestExecution(0, new SerializationTesterSubclassAuthorize(14, _testMeeple));
+        
     }
 
     private void InitializeServer()
     {
         gameObject.AddComponent<ServerEventListener>();
         NetworkManager.Singleton.StartServer();
-        _testMeeple = new DMeeple(new DPosition(4, 1), DMeeple.MeepleState.InQueue);
-        NetworkLog.LogInfoServer($"Test meeple with ID {_testMeeple.ID} generated.");
     }
 
     private bool IsValidIPv4(string ipString)
