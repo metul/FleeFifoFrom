@@ -136,6 +136,9 @@ public class ButtonManager : MonoBehaviour
             playerTile.SetWorkerInteractable(playerWorker && currentPlayer);
         }
 
+        // MARK: TurnActionCount is not updated fast enough on networked version (updated after state change)
+        NetworkLog.LogInfoServer($"TurnActionPossible: {GameState.Instance.TurnActionPossible} / {GameState.Instance.TurnActionCount.Current}");
+
         var actionButtons = buttons
                      && GameState.Instance.TurnActionPossible
                      && GameState.Instance.TurnType == GameState.TurnTypes.ActionTurn;
@@ -170,6 +173,7 @@ public class ButtonManager : MonoBehaviour
 
     public void OnActionTileClick(ActionTile actionTile)
     {
+        // TODO (metul): Wait until command executed before changing state (latency on RPCs)
         switch (StateManager.CurrentState)
         {
             case StateManager.State.Recall:
@@ -184,6 +188,7 @@ public class ButtonManager : MonoBehaviour
 
     public void OnWorkerClick(Worker worker)
     {
+        // TODO (metul): Wait until command executed before changing state (latency on RPCs)
         switch (StateManager.CurrentState)
         {
             case StateManager.State.Cooperate:

@@ -285,6 +285,7 @@ public class FieldManager : MonoBehaviour
                 StoreTile = tile;
                 StateManager.CurrentState = StateManager.State.PayForAction;
                 break;
+            // TODO (metul): Wait until command executed before changing state (latency on RPCs)
             case StateManager.State.RetreatChooseTile:
                 Retreat(StoreTile, tile);
                 StoreSecondTile = null;
@@ -315,6 +316,7 @@ public class FieldManager : MonoBehaviour
 
     public void InvokeAction(StateManager.State action, DWorker worker)
     {
+        // TODO (metul): Wait until command executed before changing state (latency on RPCs)
         switch (action)
         {
             case StateManager.State.Authorize:

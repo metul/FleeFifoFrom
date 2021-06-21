@@ -29,9 +29,6 @@ public class AuthorizeCommand : ActionCommand, INetworkSerializable
             }
             */
 
-        NetworkLog.LogInfoServer($"Executed authorize command with IDs {_issuerID} / {_playerId}, " +
-            $"worker ({_worker?.ID} / {_worker?.Owner} / {_worker?.ControlledBy} / {_worker?.Position.Current}) and meeple ({_meeple.ID} / {_meeple.Position.Current} / {_meeple.State})");
-
         if (_meeple.GetType().IsSubclassOf(typeof(DVillager)))
         {
             ((DVillager)_meeple).Authorize(_playerId);
