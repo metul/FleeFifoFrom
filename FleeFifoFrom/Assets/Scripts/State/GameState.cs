@@ -1,9 +1,6 @@
 using System;
-using System.CodeDom;
 using System.Linq;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class GameState
@@ -179,6 +176,25 @@ public class GameState
   #endregion
 
   #region utility functions
+
+  public bool CanEndTurn()
+  {
+    // always true for action turns or when no villager left to draw
+    if (TurnType == TurnTypes.ActionTurn || VillagerBagCount.Current == 0)
+    {
+      return true;
+    }
+
+    // villager left: check for empty tiles
+    var valid = true;
+    TraverseBoard(p => {
+      if (IsEmpty(p))
+      {
+        valid = false;
+      }
+    });
+    return valid;
+  }
 
   public void RotateTurn()
   {

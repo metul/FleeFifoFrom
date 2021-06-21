@@ -48,8 +48,7 @@ public class ButtonManager : MonoBehaviour
             worker.Initialize(dWorker, this);
         }
         
-        // callbacks
-        CommandProcessor.Instance.OnStackEmpty += b => { _undoButton.enabled = !b; };
+        // callbacks;
         StateManager.OnStateUpdate += state => UpdateInteractability();
         GameState.Instance.OnUndo += UpdateInteractability;
         GameState.Instance.OnTurnChange += turn =>
@@ -62,7 +61,7 @@ public class ButtonManager : MonoBehaviour
         };
         
         // init other intractability
-        _undoButton.enabled = false;
+        _undoButton.interactable = false;
     }
 
     private void UpdateInteractability()
@@ -132,8 +131,10 @@ public class ButtonManager : MonoBehaviour
         
         foreach (var resetButton in _resetButtons)
             resetButton.interactable = resetButtons;
-
+        
         _villagerButton.interactable = buttons && GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn;
+        _undoButton.interactable = CommandProcessor.Instance.IsUndoable;
+        _endTurnButton.interactable = GameState.Instance.CanEndTurn();
     }
 
     public UiTile ActionTileByPosition(DActionPosition position)

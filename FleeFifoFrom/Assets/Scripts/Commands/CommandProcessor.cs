@@ -9,7 +9,10 @@ public sealed class CommandProcessor
     static CommandProcessor() { }
     private CommandProcessor() { }
 
-    public Action<bool> OnStackEmpty;
+    public bool IsUndoable
+    {
+        get => _commands.Count > 0;
+    }
 
     /// <summary>
     /// Singleton instance of the CommandProcessor.
@@ -27,15 +30,11 @@ public sealed class CommandProcessor
     /// <param name="command"> Command to be executed. </param>
     public void ExecuteCommand(Command command)
     {
-        var empty = _commands.Count == 0;
         if (command.IsFeasible())
         {
             _commands.Push(command);
             command.Execute();
         }
-
-        if (empty)
-            OnStackEmpty?.Invoke(false);
     }
 
     /// <summary>
@@ -45,9 +44,6 @@ public sealed class CommandProcessor
     {
         _commands.Pop()?.Reverse();
         GameState.Instance.OnUndo?.Invoke();
-        
-        if (_commands.Count == 0)
-            OnStackEmpty?.Invoke(true);
     }
 
     /// <summary>
@@ -56,6 +52,5 @@ public sealed class CommandProcessor
     public void ClearStack()
     {
         _commands.Clear();
-        OnStackEmpty?.Invoke(true);
     }
 }
