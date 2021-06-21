@@ -41,7 +41,16 @@ public class PoachCommand: ResetCommand, INetworkSerializable
     {
         base.NetworkSerialize(serializer);
         serializer.Serialize(ref _player);
-        //_worker.NetworkSerialize(serializer);
+
+        ushort workerID = ushort.MaxValue;
+        if (!serializer.IsReading)
+            workerID = _worker.ID;
+
+        serializer.Serialize(ref workerID);
+
+        if (serializer.IsReading)
+            _worker = (DWorker)ObjectManager.Instance.Request(workerID);
+
         serializer.Serialize(ref _controlledBy);
         serializer.Serialize(ref _previousTile);
     }

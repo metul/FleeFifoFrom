@@ -45,7 +45,22 @@ public class MoveVillagerCommand : ResetCommand, INetworkSerializable
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        //_meeple.NetworkSerialize(serializer);
+
+        ushort meepleID = ushort.MaxValue;
+        if (!serializer.IsReading)
+            meepleID = _meeple.ID;
+
+        serializer.Serialize(ref meepleID);
+
+        if (serializer.IsReading)
+            _meeple = (DMeeple)ObjectManager.Instance.Request(meepleID); // TODO (metul): Do we need further type casting down the line (e.g. villager)?
+
+        if (serializer.IsReading)
+        {
+            _to = new DPosition();
+            _from = new DPosition();
+        }
+
         _to.NetworkSerialize(serializer);
         _from.NetworkSerialize(serializer);
     }

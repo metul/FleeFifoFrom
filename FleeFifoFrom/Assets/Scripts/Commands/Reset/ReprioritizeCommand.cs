@@ -40,7 +40,9 @@ public class ReprioritizeCommand : ResetCommand, INetworkSerializable
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        _prio.NetworkSerialize(serializer);
+        
+        // TODO: Serialize prio
+
         serializer.Serialize(ref _inscrease);
     }
 }

@@ -135,16 +135,12 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
 
         int onTheWayLength = 0;
         if (!serializer.IsReading)
-        {
             onTheWayLength = _onTheWay.Length;
-        }
 
         serializer.Serialize(ref onTheWayLength);
 
         if (serializer.IsReading)
-        {
             _onTheWay = new DMeeple[onTheWayLength];
-        }
 
         for (int i = 0; i < onTheWayLength; i++)
         {
@@ -160,16 +156,12 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
 
         int coriotersLength = 0;
         if (!serializer.IsReading)
-        {
             coriotersLength = _coriotors.Length;
-        }
 
         serializer.Serialize(ref coriotersLength);
 
         if (serializer.IsReading)
-        {
             _coriotors = new DMeeple[coriotersLength];
-        }
 
         for (int i = 0; i < coriotersLength; i++)
         {
@@ -187,9 +179,7 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
         {
             _coriotorPositions = new Dictionary<ushort, DPosition>();
             foreach (var corioter in _coriotors)
-            {
                 _coriotorPositions[corioter.ID] = corioter.Position.Current;
-            }
         }
     }
 }

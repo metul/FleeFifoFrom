@@ -18,7 +18,6 @@ public class RecallCommand : ResetCommand, INetworkSerializable
 
         foreach (var dWorker in _workers)
             _controlling.Add(dWorker.ControlledBy);
-        
     }
 
     public override void Execute()
@@ -56,7 +55,33 @@ public class RecallCommand : ResetCommand, INetworkSerializable
     {
         base.NetworkSerialize(serializer);
         serializer.Serialize(ref _tileId);
-        // TODO: Serialize List<DWorker> _workers
-        // TODO: Serialize List<DPlayer.ID> _controlling
+
+        int workersLength = 0;
+        if (!serializer.IsReading)
+            workersLength = _workers.Count;
+
+        serializer.Serialize(ref workersLength);
+
+        if (serializer.IsReading)
+            _workers = new List<DWorker>();
+
+        for (int i = 0; i< workersLength; i++)
+        {
+            ushort workerID = ushort.MaxValue;
+            if (!serializer.IsReading)
+                workerID = _workers[i].ID;
+
+            serializer.Serialize(ref workerID);
+
+            if (serializer.IsReading)
+                _workers.Add((DWorker)ObjectManager.Instance.Request(workerID));
+        }
+
+        if (serializer.IsReading)
+        {
+            _controlling = new List<DPlayer.ID>();
+            foreach (var dWorker in _workers)
+                _controlling.Add(dWorker.ControlledBy);
+        }
     }
 }

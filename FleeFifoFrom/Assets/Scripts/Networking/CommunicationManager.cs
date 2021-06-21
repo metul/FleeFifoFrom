@@ -125,11 +125,44 @@ public class CommunicationManager : NetworkBehaviour
             case AuthorizeCommand authorizeCommand:
                 ExecuteCommandServerRpc(authorizeCommand);
                 break;
+            case ObjectiveCommand objectiveCommand:
+                ExecuteCommandServerRpc(objectiveCommand);
+                break;
+            case ReviveCommand reviveCommand:
+                ExecuteCommandServerRpc(reviveCommand);
+                break;
+            case RiotStepCommand riotStepCommand:
+                ExecuteCommandServerRpc(riotStepCommand);
+                break;
+            case StartRiotCommand startRiotCommand:
+                ExecuteCommandServerRpc(startRiotCommand);
+                break;
             case SwapCommand swapCommand:
                 ExecuteCommandServerRpc(swapCommand);
                 break;
+            case CooperateCommand cooperateCommand:
+                ExecuteCommandServerRpc(cooperateCommand);
+                break;
             case Countermand countermandCommand:
                 ExecuteCommandServerRpc(countermandCommand);
+                break;
+            case DrawVillagerCommand drawVillagerCommand:
+                ExecuteCommandServerRpc(drawVillagerCommand);
+                break;
+            case MoveVillagerCommand moveVillagerCommand:
+                ExecuteCommandServerRpc(moveVillagerCommand);
+                break;
+            case PoachCommand poachCommand:
+                ExecuteCommandServerRpc(poachCommand);
+                break;
+            case RecallCommand recallCommand:
+                ExecuteCommandServerRpc(recallCommand);
+                break;
+            case ReprioritizeCommand reprioritizeCommand:
+                ExecuteCommandServerRpc(reprioritizeCommand);
+                break;
+            case RetreatCommand retreatCommand:
+                ExecuteCommandServerRpc(retreatCommand);
                 break;
             default:
                 ExecuteCommandServerRpc(cmd);
@@ -168,6 +201,58 @@ public class CommunicationManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(ObjectiveCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(ObjectiveCommand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(ReviveCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(ReviveCommand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(RiotStepCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(RiotStepCommand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(StartRiotCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(StartRiotCommand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
     private void ExecuteCommandServerRpc(SwapCommand cmd)
     {
         ExecuteCommand(cmd);
@@ -181,6 +266,19 @@ public class CommunicationManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(CooperateCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(CooperateCommand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
     private void ExecuteCommandServerRpc(Countermand cmd)
     {
         ExecuteCommand(cmd);
@@ -189,6 +287,84 @@ public class CommunicationManager : NetworkBehaviour
 
     [ClientRpc]
     private void ExecuteCommandClientRpc(Countermand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(DrawVillagerCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(DrawVillagerCommand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(MoveVillagerCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(MoveVillagerCommand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(PoachCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(PoachCommand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(RecallCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(RecallCommand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(ReprioritizeCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(ReprioritizeCommand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(RetreatCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(RetreatCommand cmd)
     {
         ExecuteCommand(cmd);
     }

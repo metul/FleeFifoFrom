@@ -42,7 +42,19 @@ public class DrawVillagerCommand : ResetCommand, INetworkSerializable
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
+
+        if (serializer.IsReading)
+            _position = new DPosition();
+
         _position.NetworkSerialize(serializer);
-        //_villager.NetworkSerialize(serializer);
+
+        ushort villagerID = ushort.MaxValue;
+        if (!serializer.IsReading)
+            villagerID = _villager.ID;
+
+        serializer.Serialize(ref villagerID);
+
+        if (serializer.IsReading)
+            _villager = (DVillager)ObjectManager.Instance.Request(villagerID);
     }
 }

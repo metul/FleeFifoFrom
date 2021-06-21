@@ -27,6 +27,7 @@ public class FieldManager : MonoBehaviour
     private Tile _storeTile;
     private Tile _storeSecondTile;
     private List<DVillager> _drawnVillagersThisTurn = new List<DVillager>(); // TODO (metul): Make networked variable?
+
     // Use properties for network variable update
     public Tile StoreTile
     {

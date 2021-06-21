@@ -46,7 +46,19 @@ public class RetreatCommand : ResetCommand, INetworkSerializable
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        //_knight.NetworkSerialize(serializer);
+
+        ushort knightID = ushort.MaxValue;
+        if (!serializer.IsReading)
+            knightID = _knight.ID;
+
+        serializer.Serialize(ref knightID);
+
+        if (serializer.IsReading)
+            _knight = (DKnight)ObjectManager.Instance.Request(knightID);
+
+        if (serializer.IsReading)
+            _position = new DPosition();
+
         _position.NetworkSerialize(serializer);
     }
 }
