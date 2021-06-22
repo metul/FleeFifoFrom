@@ -90,7 +90,18 @@ public class DPosition
     return res.ToArray();
   }
 
-  public static DPosition[] LastRow()
+  public ushort GetRow()
+    {
+        return this.Row;
+    }
+
+    public ushort GetCol()
+    {
+        return this.Col;
+    }
+
+
+    public static DPosition[] LastRow()
   {
     return GetRow(Rules.ROWS);
   }

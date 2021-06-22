@@ -422,12 +422,15 @@ public class FieldManager : MonoBehaviour
         {
             var tile = TileByPosition(p);
             tile.Interactable =
-                GameState.Instance.IsEmpty(p) &&
-                GameState.Instance.PathExists(
-                    DPosition.LastRow(),
-                    p,
-                    p => GameState.Instance.IsEmpty(p)
-                );
+                GameState.Instance.IsEmpty(p)
+                && p.GetRow() == Rules.ROWS;
+
+            /*
+            GameState.Instance.PathExists(
+                DPosition.LastRow(),
+                p,
+                p => GameState.Instance.IsEmpty(p)
+            );*/
         });
     }
 
