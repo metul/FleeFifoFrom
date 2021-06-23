@@ -26,6 +26,7 @@ public class FieldManager : MonoBehaviour
     // store tile references for multi step actions
     private Tile _storeTile;
     private Tile _storeSecondTile;
+    private Stack<Tile> _riotPathStack = new Stack<Tile>();
     private List<DVillager> _drawnVillagersThisTurn = new List<DVillager>();
 
     #endregion
@@ -176,6 +177,31 @@ public class FieldManager : MonoBehaviour
         ));
     }
 
+    public void UndoRiotStep()
+    {
+        if (_riotPathStack.Count > 0)
+        {
+            _riotPathStack.Pop();
+            UpdateInteractability();
+        }
+    }
+
+    public void AuthorizeRiot()
+    {
+        var tile = _riotPathStack.Peek();
+        var knight = (DKnight) GameState.Instance.AllAtPosition(
+            tile.Position, m => m.GetType() == typeof(DKnight))[0];
+        CommandProcessor.Instance.ExecuteCommand(
+            new RiotAuthorizeCommand(
+                0,
+                GameState.Instance.TurnPlayer(),
+                knight,
+                tile.Position
+            )
+        );
+        
+    }
+
     public void Revive(Tile tile, DWorker worker)
     {
         //var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
@@ -236,20 +262,23 @@ public class FieldManager : MonoBehaviour
                 StateManager.CurrentState = StateManager.State.PayForAction;
                 break;
             case StateManager.State.RiotChooseKnight:
-                _storeTile = tile;
+                // _storeTile = tile;
+                _riotPathStack.Clear();
+                _riotPathStack.Push(tile);
                 StateManager.CurrentState = StateManager.State.PayForAction;
                 break;
             //TODO: Can we add a case for RiotChooseFollowerType
             case StateManager.State.RiotChoosePath:
-                _storeSecondTile = _storeTile;
-                _storeTile = tile;
-                RiotStep(_storeSecondTile, _storeTile);
-
+                RiotStep(_riotPathStack.Peek(), tile);
+                _riotPathStack.Push(tile);
                 if (tile.Position.IsFinal)
-                    StateManager.CurrentState = StateManager.State.Default;
+                {
+                    StateManager.CurrentState = StateManager.State.RiotAuthorize;
+                }
                 else
+                {
                     StateManager.CurrentState = StateManager.State.RiotChoosePath;
-
+                }
                 break;
             case StateManager.State.Revive:
                 _storeTile = tile;
@@ -279,7 +308,6 @@ public class FieldManager : MonoBehaviour
                     _storeTile = tile;
                     StateManager.CurrentState = StateManager.State.MoveMeeple;
                 }
-
                 break;
         }
     }
@@ -304,7 +332,7 @@ public class FieldManager : MonoBehaviour
                 StateManager.CurrentState = StateManager.State.Default;
                 break;
             case StateManager.State.RiotChooseKnight:
-                StartRiot(_storeTile, worker);
+                StartRiot(_riotPathStack.Peek(), worker);
                 StateManager.CurrentState = StateManager.State.RiotChoosePath;
                 break;
         }
@@ -323,9 +351,6 @@ public class FieldManager : MonoBehaviour
                 break;
             case StateManager.State.Swap2:
                 EnableNeighbours();
-                break;
-            case StateManager.State.Riot:
-                EnableInjuryBased(false);
                 break;
             case StateManager.State.RiotChooseKnight:
                 EnableRiotableKnights();
@@ -508,7 +533,10 @@ public class FieldManager : MonoBehaviour
 
     private void EnableRiotPath()
     {
-        var last = _storeTile.Position;
+        if(_riotPathStack.Count == 0)
+            return;
+        
+        var last = _riotPathStack.Peek().Position;
 
         GameState.Instance.TraverseBoard(p =>
         {

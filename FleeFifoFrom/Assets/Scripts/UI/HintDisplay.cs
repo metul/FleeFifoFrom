@@ -33,12 +33,12 @@ public class HintDisplay : MonoBehaviour
                 return "Choose the first piece to swap";
             case StateManager.State.Swap2:
                 return "Choose an adjacent piece";
-            case StateManager.State.Riot:
-                return "RIOT!";
             case StateManager.State.RiotChooseKnight:
                 return "Choose a Knight to start a RIOT! Put pay attention, riots will give you a lot of disgrace";
             case StateManager.State.RiotChoosePath:
                 return "Choose the next step of the knight and knock over the person on it! You can't run into other knights";
+            case StateManager.State.RiotAuthorize:
+                return "Finish the riot and enter the castle";
             case StateManager.State.Revive:
                 return "Choose an injured piece to heal them and gain honor for your good deed";
             case StateManager.State.Reprioritize:
