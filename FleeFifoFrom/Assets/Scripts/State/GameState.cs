@@ -97,7 +97,7 @@ public class GameState
 
         // MARK: Temporary switch between local debugging and online (Uncomment following line for local)
         //DrawMeeple();
-        UpdateVillagerBagCount(); // TODO (Anas-Mert)
+        UpdateVillagerBagCount(); // TODO (Anas-Mert): May have to be networked, haven't checked yet
     }
 
     private void _initializeBoard()
