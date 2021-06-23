@@ -6,34 +6,28 @@ public class StartRiotCommand : ActionCommand, INetworkSerializable
 
     // Default constructor needed for serialization
     public StartRiotCommand() : base() { }
-  public StartRiotCommand(
-    ulong issuerID,
-    DPlayer player,
-    DWorker worker,
-    DMeeple meeple
-  ) : base(issuerID, player, worker)
-  {
-    _actionId = DActionPosition.TileId.Riot;
-    _meeple = meeple;
-  }
+    public StartRiotCommand(
+      ulong issuerID,
+      DPlayer player,
+      DWorker worker,
+      DMeeple meeple
+    ) : base(issuerID, player, worker)
+    {
+        _actionId = DActionPosition.TileId.Riot;
+        _meeple = meeple;
+    }
 
-  public override void Execute()
-  {
-    base.Execute();
-    ((DKnight) _meeple).IsRioting.Current = true;
-    GameState.Instance.PlayerById(_worker.Owner)?.Honor.Lose();
-  }
-
-  public override void Reverse()
-  {
-    base.Reverse();
-    ((DKnight) _meeple).IsRioting.Current = false;
-    GameState.Instance.PlayerById(_worker.Owner)?.Honor.Earn();
-  }
+    public override void Execute()
+    {
+        base.Execute();
+        ((DKnight)_meeple).IsRioting.Current = true;
+        GameState.Instance.PlayerById(_worker.Owner)?.Honor.Lose();
+    }
 
     public override void Reverse()
     {
         base.Reverse();
+        ((DKnight)_meeple).IsRioting.Current = false;
         GameState.Instance.PlayerById(_worker.Owner)?.Honor.Earn();
     }
 

@@ -13,10 +13,12 @@ public class GameState
     private static GameState _instance = null;
     public static GameState Instance
     {
-      if (_instance == null) {
-        Initialize(DPlayer.CreateAnonymousPlayers());
-      }
-      return _instance;
+        get
+        {
+            if (_instance == null)
+                Initialize(DPlayer.CreateAnonymousPlayers());
+            return _instance;
+        }
     }
 
     public static void Initialize(DPlayer[] players)
@@ -74,7 +76,7 @@ public class GameState
         Meeple = new DMeeple[Villagers.Length + Knights.Length];
         Villagers.CopyTo(Meeple, 0);
         Knights.CopyTo(Meeple, Villagers.Length);
-    
+
 
         TurnActionCount = new Observable<int>(0);
         KnightsFightingCount = new Observable<int>((Rules.KNIGHT_COUNT - 1) * Players.Length);
@@ -95,7 +97,7 @@ public class GameState
 
         // MARK: Temporary switch between local debugging and online (Uncomment following line for local)
         //DrawMeeple();
-        UpdateVillagerBagCount(): // TODO (Anas-Mert)
+        UpdateVillagerBagCount(); // TODO (Anas-Mert)
     }
 
     private void _initializeBoard()
@@ -198,9 +200,9 @@ public class GameState
         TurnType = TurnTypes.ActionTurn;
     }
 
-#endregion
+    #endregion
 
-#region utility functions
+    #region utility functions
 
     public void RotateTurn()
     {
@@ -219,24 +221,25 @@ public class GameState
         OnTurnChange?.Invoke(TurnType);
     }
 
-  public bool CanEndTurn()
-  {
-    // always true for action turns or when no villager left to draw
-    if (TurnType == TurnTypes.ActionTurn || VillagerBagCount.Current == 0)
+    public bool CanEndTurn()
     {
-      return true;
-    }
+        // always true for action turns or when no villager left to draw
+        if (TurnType == TurnTypes.ActionTurn || VillagerBagCount.Current == 0)
+        {
+            return true;
+        }
 
-    // villager left: check for empty tiles
-    var valid = true;
-    TraverseBoard(p => {
-      if (IsEmpty(p))
-      {
-        valid = false;
-      }
-    });
-    return valid;
-  }
+        // villager left: check for empty tiles
+        var valid = true;
+        TraverseBoard(p =>
+        {
+            if (IsEmpty(p))
+            {
+                valid = false;
+            }
+        });
+        return valid;
+    }
 
     public DPlayer TurnPlayer()
     {
@@ -264,13 +267,13 @@ public class GameState
         return Villagers.Where(v => v.State == DMeeple.MeepleState.OutOfBoard).ToArray();
     }
 
-  public int PlayerScore(DPlayer.ID player)
-  {
-    // TODO: later objectives and castle rewards should also be added here.
-    //Added a placeholder knights value to offset the castle (2x mult)
-    //In fact knights should always be at least 1 pt anyway
-    return this.AuthorizedVillagers(player).Length + PlayerById(player).Honor.Score.Current + 2*this.AuthorizedKnights(player).Length;
-  }
+    public int PlayerScore(DPlayer.ID player)
+    {
+        // TODO: later objectives and castle rewards should also be added here.
+        //Added a placeholder knights value to offset the castle (2x mult)
+        //In fact knights should always be at least 1 pt anyway
+        return this.AuthorizedVillagers(player).Length + PlayerById(player).Honor.Score.Current + 2 * this.AuthorizedKnights(player).Length;
+    }
 
     public DPrio GetPrio(DMeeple meeple)
     {
@@ -288,65 +291,49 @@ public class GameState
           ));
     }
 
-  public DVillager DrawVillager()
-  {
-    DVillager[] bag = VillagerBag();
-    return bag[Random.Range(0, bag.Length)];
-  }
-
-  public void UpdateVillagerBagCount()
-  {
-    VillagerBagCount ??= new Observable<int>(Rules.COMMONERS_COUNT);
-    VillagerBagCount.Current = VillagerBag().Length;
-  }
-  
-  public DPrio GetPrio(DMeeple meeple)
-  {
-    return Priorities[meeple.GetType()];
-  }
-
-  public ushort GetRowMaxPriority(ushort row)
-  {
-    var rowArray = Board[row-1];
-    ushort maxPrio = (ushort) DPrio.PrioValue.Low;
-
-    foreach (DPosition pos in rowArray)
+    public DVillager DrawVillager()
     {
-      var currentMeeple = AtPosition(pos);
-      if (currentMeeple == null) continue;
-      
-      // update max prio if necessary
-      var currentPrio = (ushort) GetPrio(currentMeeple).Value.Current;
-      if (currentPrio >  maxPrio)
-        maxPrio = currentPrio;
+        DVillager[] bag = VillagerBag();
+        return bag[Random.Range(0, bag.Length)];
     }
-    return maxPrio;
-  }
 
-  public bool CheckPriority(DMeeple meeple)
-  {
-    var prio = GetPrio(meeple);
-    var rowPrio = GetRowMaxPriority(meeple.Position.Current.Row);
-    return (ushort) prio.Value.Current >= rowPrio;
-  }
+    public void UpdateVillagerBagCount()
+    {
+        VillagerBagCount ??= new Observable<int>(Rules.COMMONERS_COUNT);
+        VillagerBagCount.Current = VillagerBag().Length;
+    }
 
-  /// <summary>
-  /// Returns the meeple (nullable) at given position on the board.
-  /// </summary>
-  public DMeeple? AtPosition(DPosition position)
-  {
-    return Meeple.FirstOrDefault(m => (
-        m.State == DMeeple.MeepleState.InQueue
-        && m.Position.Current != null && m.Position.Current.Equals(position)
-      ));
-  }
+    public ushort GetRowMaxPriority(ushort row)
+    {
+        var rowArray = Board[row - 1];
+        ushort maxPrio = (ushort)DPrio.PrioValue.Low;
 
-  /// <summary>
-  /// Returns whether or not the given position on the board is empty.
-  /// </summary>
-  public bool IsEmpty(DPosition position)
-  {
-    return AtPosition(position) == null;
-  }
-  #endregion
+        foreach (DPosition pos in rowArray)
+        {
+            var currentMeeple = AtPosition(pos);
+            if (currentMeeple == null) continue;
+
+            // update max prio if necessary
+            var currentPrio = (ushort)GetPrio(currentMeeple).Value.Current;
+            if (currentPrio > maxPrio)
+                maxPrio = currentPrio;
+        }
+        return maxPrio;
+    }
+
+    public bool CheckPriority(DMeeple meeple)
+    {
+        var prio = GetPrio(meeple);
+        var rowPrio = GetRowMaxPriority(meeple.Position.Current.Row);
+        return (ushort)prio.Value.Current >= rowPrio;
+    }
+
+    /// <summary>
+    /// Returns whether or not the given position on the board is empty.
+    /// </summary>
+    public bool IsEmpty(DPosition position)
+    {
+        return AtPosition(position) == null;
+    }
+    #endregion
 }

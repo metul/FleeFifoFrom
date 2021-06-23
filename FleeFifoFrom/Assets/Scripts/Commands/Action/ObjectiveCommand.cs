@@ -5,7 +5,7 @@ public class ObjectiveCommand : ActionCommand, INetworkSerializable
     // Default constructor needed for serialization
     public ObjectiveCommand() : base() { }
 
-    public ObjectiveCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker) : base(issuerID, playerId, worker)
+    public ObjectiveCommand(ulong issuerID, DPlayer player, DWorker worker) : base(issuerID, player, worker)
     {
     }
 

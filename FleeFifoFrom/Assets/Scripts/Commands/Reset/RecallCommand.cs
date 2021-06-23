@@ -8,14 +8,10 @@ public class RecallCommand : ResetCommand, INetworkSerializable
     private List<DWorker> _workers;
     private List<DPlayer.ID> _controlling;
 
-<<<<<<< HEAD
     // Default constructor needed for serialization
     public RecallCommand() : base() { }
 
-    public RecallCommand(ulong issuerID, DActionPosition.TileId tileId) : base(issuerID)
-=======
     public RecallCommand(ulong issuerID, DPlayer.ID player, DActionPosition.TileId tileId) : base(issuerID)
->>>>>>> main
     {
         _player = player;
         _tileId = tileId;
