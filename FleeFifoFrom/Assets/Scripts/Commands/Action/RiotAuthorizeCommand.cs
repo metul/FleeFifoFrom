@@ -40,7 +40,7 @@ public class RiotAuthorizeCommand : ActionCommand
             ((DVillager) coriotor).Authorize(_player.Id);
 
             // done rioting
-            // coriotor.IsRioting.Current = false;
+            coriotor.IsRioting.Current = false;
         }
     }
 
@@ -52,8 +52,8 @@ public class RiotAuthorizeCommand : ActionCommand
         {
             ((DVillager) coriotor).Deauthorize(_coriotorPositions[coriotor.ID]);
 
-            // start rioting again
-            // coriotor.IsRioting.Current = true;
+            // no rioting for no one, 
+            coriotor.IsRioting.Current = false;
         }
 
         var honor = _knight.Deauthorize(_from, _player.Id);

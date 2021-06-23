@@ -30,9 +30,9 @@ public class StateManager : MonoBehaviour
         PayForAction
     }
 
-    private static readonly State[] UNDO_MILESTONES = new[]
+    private static readonly State[] UNDO_MILESTONES =
     {
-        State.Default, State.RiotChoosePath,
+        State.Default, State.RiotChoosePath, State.RiotAuthorize
     };
 
     private static State _currentState;

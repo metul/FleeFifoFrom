@@ -49,7 +49,7 @@ public class RiotStepCommand : ActionCommand
         foreach (var coriotor in _coriotors)
         {
             coriotor.Position.Current = _from;
-            // coriotor.IsRioting.Current = true;
+            coriotor.IsRioting.Current = true;
         }
     }
 
@@ -62,7 +62,7 @@ public class RiotStepCommand : ActionCommand
             coriotor.Position.Current = _coriotorPositions[coriotor.ID];
 
             // TODO check if they joined recently
-            // coriotor.IsRioting.Current = false;
+            coriotor.IsRioting.Current = false;
         }
 
         _knight.Position.Current = _from;

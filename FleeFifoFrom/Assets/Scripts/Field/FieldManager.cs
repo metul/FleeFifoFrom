@@ -593,6 +593,7 @@ public class FieldManager : MonoBehaviour
     {
         _storeTile = null;
         _storeSecondTile = null;
+        _riotPathStack.Clear();
         _drawnVillagersThisTurn.Clear();
 
         UpdateInteractability();
