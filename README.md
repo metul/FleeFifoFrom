@@ -10,4 +10,5 @@ TODO: Add project structure
 
 ## Tech Stack
 
-1.  Unity 2020.3.7f1 (recommended)
+1. Unity 2020.3.7f1 (recommended)
+2. MLAPI 0.1.0
