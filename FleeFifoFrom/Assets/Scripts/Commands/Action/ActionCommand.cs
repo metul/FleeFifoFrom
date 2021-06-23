@@ -5,14 +5,14 @@ public abstract class ActionCommand : Command, INetworkSerializable
 {
     protected DActionPosition.TileId _actionId;
     protected DWorker? _worker;
-    protected DPlayer.ID _playerId;
+    protected DPlayer _player;
 
     // Default constructor needed for serialization
     public ActionCommand() : base() { }
 
-    public ActionCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker) : base(issuerID)
+    public ActionCommand(ulong issuerID, DPlayer player, DWorker worker) : base(issuerID)
     {
-        _playerId = playerId;
+        _player = player;
         _worker = worker;
     }
 
@@ -29,7 +29,7 @@ public abstract class ActionCommand : Command, INetworkSerializable
     {
         if (_worker != null)
         {
-            _worker.UnConsume(_playerId);
+            _worker.UnConsume(_player.Id);
             GameState.Instance.TurnActionCount.Current--;
         }
     }

@@ -99,6 +99,21 @@ public class DPosition : INetworkSerializable
         return GetRow(Rules.ROWS);
     }
 
+  public ushort GetRow()
+    {
+        return this.Row;
+    }
+
+    public ushort GetCol()
+    {
+        return this.Col;
+    }
+
+
+    public static DPosition[] LastRow()
+  {
+    return GetRow(Rules.ROWS);
+  }
     public void NetworkSerialize(NetworkSerializer serializer)
     {
         serializer.Serialize(ref Row);

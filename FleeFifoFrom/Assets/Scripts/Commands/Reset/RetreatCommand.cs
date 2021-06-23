@@ -36,11 +36,13 @@ public class RetreatCommand : ResetCommand, INetworkSerializable
 
         return base.IsFeasible()
             && GameState.Instance.IsEmpty(_position)
-            && GameState.Instance.PathExists(
+            && _position.GetRow() == Rules.ROWS;
+            
+        /*&& GameState.Instance.PathExists(
                 DPosition.LastRow(),
                 _position,
                 p => GameState.Instance.IsEmpty(p)
-            );
+            );*/
     }
 
     public override void NetworkSerialize(NetworkSerializer serializer)

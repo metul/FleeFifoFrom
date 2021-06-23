@@ -1,20 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class Knight : Meeple
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public override void Initialize(DMeeple core, FieldManager fieldManager)
     {
         base.Initialize(core, fieldManager);
@@ -25,20 +10,19 @@ public class Knight : Meeple
         }
     }
 
-    protected override void SetTo(DPosition position)
+    protected override void SetTo(DPosition position, bool instantly = true)
     {
         if (position == null && Core.State == DMeeple.MeepleState.OutOfBoard)
         {
-            var fieldManager = FindObjectOfType<FieldManager>();
-            var tile = fieldManager.VacantBattlefieldTile(((DKnight) Core).Owner);
+            var tile = _fieldManager.VacantBattlefieldTile(((DKnight) Core).Owner);
             if (tile != null)
-                SetTo(tile);
+                SetTo(tile, instantly);
             else
-                base.SetTo(position);
+                base.SetTo((DPosition) null, instantly);
         }
         else
         {
-            base.SetTo(position);
+            base.SetTo(position, instantly);
         }
     }
 }

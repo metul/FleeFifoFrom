@@ -2,38 +2,43 @@ using MLAPI.Serialization;
 
 public class MoveVillagerCommand : ResetCommand, INetworkSerializable
 {
-    private DMeeple _meeple;
-    private DPosition _to;
-    private DPosition _from;
+  private readonly DMeeple _meeple;
+  private readonly DPosition _to;
+  private readonly DPosition _from;
+  private readonly DPlayer _player;
 
     // Default constructor needed for serialization
     public MoveVillagerCommand() : base() { }
+  public MoveVillagerCommand(ulong issuerID, DPlayer player, DMeeple meeple, DPosition to) : base(issuerID)
+  {
+    _player = player;
+    _meeple = meeple;
+    _to = to;
+    _from = meeple.Position.Current;
+    _freeCommand = true;
+  }
 
-    public MoveVillagerCommand(ulong issuerID, DMeeple meeple, DPosition to) : base(issuerID)
-    {
-        _meeple = meeple;
-        _to = to;
-        _from = meeple.Position.Current;
-        _freeCommand = true;
-    }
+  public override void Execute()
+  {
+    base.Execute();
 
-    public override void Execute()
-    {
-        base.Execute();
-        //TODO if (!Meeple.CurrentRow.CheckPriority())
-        //{GameState.Instance.PlayerById.Honor.Lose();}
         //i.e. lower honor if priority broken, then move piece as usual  
+        if (!GameState.Instance.CheckPriority(_meeple))
+          _player.Honor.Lose();
+        
         _meeple.Position.Current = _to;
     }
 
-    public override void Reverse()
-    {
-        base.Reverse();
-        _meeple.Position.Current = _from;
-        //TODO if (!Meeple.CurrentRow.CheckPriority())
-        //{GameState.Instance.PlayerById.Honor.Earn();}
-        //i.e. raise honor retroactively if priority would have been broken 
-    }
+  public override void Reverse()
+  {
+    base.Reverse();
+    _meeple.Position.Current = _from;
+    
+    //i.e. raise honor retroactively if priority would have been broken 
+    if (!GameState.Instance.CheckPriority(_meeple))
+      _player.Honor.Earn();
+
+  }
 
     public override bool IsFeasible()
     {

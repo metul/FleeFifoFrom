@@ -16,10 +16,12 @@ public class FieldManager : MonoBehaviour
     [SerializeField] private Transform[] _rows;
     [SerializeField] private Transform[] _squads;
     [SerializeField] private Transform _tempStorage;
+    [SerializeField] private Transform _authorizeStorage;
 
     private Tile[][] _field;
     private Tile[][] _battleField;
     private Tile _tempStorageTile;
+    private Tile _authorizeStorageTile;
 
     #region Placeholder
 
@@ -73,6 +75,7 @@ public class FieldManager : MonoBehaviour
         _field = GetField(_rows);
         _battleField = GetField(_squads); // TODO (metul): Do not register battlefield tiles (or register in a separate container)
         _tempStorageTile = _tempStorage.GetComponent<Tile>();
+        _authorizeStorageTile = _authorizeStorage.GetComponent<Tile>();
     }
 
     private void Start()
@@ -104,6 +107,11 @@ public class FieldManager : MonoBehaviour
     public Tile TileByPosition(DPosition position)
     {
         return (position == null) ? _tempStorageTile : _field[position.Row - 1][position.Col - 1];
+    }
+    
+    public Tile TileByStateAndPosition(DMeeple.MeepleState state, DPosition position)
+    {
+        return (state == DMeeple.MeepleState.Authorized) ? _authorizeStorageTile : TileByPosition(position);
     }
 
     public Tile VacantBattlefieldTile(DPlayer.ID playerID)
@@ -166,7 +174,7 @@ public class FieldManager : MonoBehaviour
     public void Authorize(Tile tile, DWorker worker)
     {
         CommandProcessor.Instance.ExecuteCommand(
-            new AuthorizeCommand(0, GameState.Instance.TurnPlayer().Id, worker, tile.Meeples[0].Core)
+            new AuthorizeCommand(0, GameState.Instance.TurnPlayer(), worker, tile.Meeples[0].Core)
         );
     }
 
@@ -175,7 +183,7 @@ public class FieldManager : MonoBehaviour
         CommandProcessor.Instance.ExecuteCommand(
             new SwapCommand(
                 0, // --> TODO: should this be zero?
-                GameState.Instance.TurnPlayer().Id,
+                GameState.Instance.TurnPlayer(),
                 worker,
                 GameState.Instance.AtPosition(tile1.Position),
                 GameState.Instance.AtPosition(tile2.Position)
@@ -189,7 +197,7 @@ public class FieldManager : MonoBehaviour
         CommandProcessor.Instance.ExecuteCommand(
             new RiotStepCommand(
                 0,
-                GameState.Instance.TurnPlayer().Id,
+                GameState.Instance.TurnPlayer(),
                 knight,
                 to.Position
             )
@@ -201,7 +209,7 @@ public class FieldManager : MonoBehaviour
         var meeple = GameState.Instance.AtPosition(tile.Position);
         CommandProcessor.Instance.ExecuteCommand(new StartRiotCommand(
             0,
-            GameState.Instance.TurnPlayer().Id,
+            GameState.Instance.TurnPlayer(),
             worker,
             meeple
         ));
@@ -210,7 +218,7 @@ public class FieldManager : MonoBehaviour
     public void Revive(Tile tile, DWorker worker)
     {
         //var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
-        CommandProcessor.Instance.ExecuteCommand(new ReviveCommand(0, GameState.Instance.TurnPlayer().Id, worker,
+        CommandProcessor.Instance.ExecuteCommand(new ReviveCommand(0, GameState.Instance.TurnPlayer(), worker,
             tile.Meeples[0].Core));
     }
 
@@ -229,7 +237,7 @@ public class FieldManager : MonoBehaviour
         // it must be due to an undo of the draw villager command
         // draw this villager again, to have consistent undo/redo
         DVillager villager = _drawnVillagersThisTurn.FirstOrDefault(v => v.State == DMeeple.MeepleState.OutOfBoard);
-        
+
         // no undrawn villager in list, draw new one
         if (villager == null)
         {
@@ -242,7 +250,8 @@ public class FieldManager : MonoBehaviour
 
     public void MoveMeeple(Tile from, Tile to)
     {
-        CommandProcessor.Instance.ExecuteCommand(new MoveVillagerCommand(0, from.Meeples[0].Core, to.Position));
+        CommandProcessor.Instance.ExecuteCommand(new MoveVillagerCommand(0, GameState.Instance.TurnPlayer(),
+            from.Meeples[0].Core, to.Position));
     }
 
     #endregion
@@ -310,6 +319,7 @@ public class FieldManager : MonoBehaviour
                     StoreTile = tile;
                     StateManager.CurrentState = StateManager.State.MoveMeeple;
                 }
+
                 break;
         }
     }
@@ -405,6 +415,7 @@ public class FieldManager : MonoBehaviour
                 {
                     EnableInjuryBased(false);
                 }
+
                 break;
             default:
                 DisableAllTiles();
@@ -456,24 +467,27 @@ public class FieldManager : MonoBehaviour
         GameState.Instance.TraverseBoard(p =>
         {
             var tile = TileByPosition(p);
-            tile.Interactable = StoreSecondTile.Position.Neighbors(tile.Position) && // TODO: StoreSecondTile is probably null
-            (!overwriteInjured || GameState.Instance.HealthyMeepleAtPosition(p));
+            tile.Interactable = _storeSecondTile.Position.Neighbors(tile.Position) &&
+                                (!overwriteInjured || GameState.Instance.HealthyMeepleAtPosition(p));
             Debug.Log($"Tile {tile.Position}: {tile.Interactable}");
         });
     }
 
     private void EnableRetreatable()
     {
-        GameState.Instance.TraverseBoard(p => 
+        GameState.Instance.TraverseBoard(p =>
         {
             var tile = TileByPosition(p);
-            tile.Interactable = 
-                GameState.Instance.IsEmpty(p) &&
-                GameState.Instance.PathExists(
-                    DPosition.LastRow(),
-                    p,
-                    p => GameState.Instance.IsEmpty(p)
-                );
+            tile.Interactable =
+                GameState.Instance.IsEmpty(p)
+                && p.GetRow() == Rules.ROWS;
+
+            /*
+            GameState.Instance.PathExists(
+                DPosition.LastRow(),
+                p,
+                p => GameState.Instance.IsEmpty(p)
+            );*/
         });
     }
 
@@ -499,25 +513,27 @@ public class FieldManager : MonoBehaviour
 
             tile.Interactable =
                 meeple != null && meeple.GetType() == typeof(DKnight)
-                && (
-                    p.Equals(endpoint) ||
-                    (
-                        (endguy == null || (endguy.IsHealthy() && endguy.GetType() != typeof(DKnight))) &&
-                        GameState.Instance.PathExists(
-                            p,
-                            endpoint,
-                            _p => {
-                                if (_p.Equals(p))
-                                    return true;
-                                var onTheWay = GameState.Instance.AtPosition(_p);
-                                return onTheWay == null || (
-                                    onTheWay.IsHealthy() &&
-                                    onTheWay.GetType() != typeof(DKnight)
-                                );
-                            }
-                        )
-                    )
-                );
+                               && (
+                                   p.Equals(endpoint) ||
+                                   (
+                                       (endguy == null ||
+                                        (endguy.IsHealthy() && endguy.GetType() != typeof(DKnight))) &&
+                                       GameState.Instance.PathExists(
+                                           p,
+                                           endpoint,
+                                           _p =>
+                                           {
+                                               if (_p.Equals(p))
+                                                   return true;
+                                               var onTheWay = GameState.Instance.AtPosition(_p);
+                                               return onTheWay == null || (
+                                                   onTheWay.IsHealthy() &&
+                                                   onTheWay.GetType() != typeof(DKnight)
+                                               );
+                                           }
+                                       )
+                                   )
+                               );
         });
     }
 
@@ -531,16 +547,17 @@ public class FieldManager : MonoBehaviour
             var tile = TileByPosition(p);
             var meep = GameState.Instance.AtPosition(p);
             tile.Interactable =
-                meep != null && meep.IsHealthy() &&  // --> there is a healthy meeple at this position
+                meep != null && meep.IsHealthy() && // --> there is a healthy meeple at this position
                 (
-                    p.Equals(endpoint) || (          // --> this position is endpoint itself, or ...
-                    endguy == null &&                // --> endpoint is empty
-                    GameState.Instance.PathExists(   // --> and there is a path
-                        p,                           // --> from this point
-                        endpoint,                    // --> to the endpoint
-                        _p => p.Equals(_p)
-                            || GameState.Instance.IsEmpty(_p) // --> where the only non-empty step is the first one
-                    )
+                    p.Equals(endpoint) || ( // --> this position is endpoint itself, or ...
+                        endguy == null && // --> endpoint is empty
+                        GameState.Instance.PathExists( // --> and there is a path
+                            p, // --> from this point
+                            endpoint, // --> to the endpoint
+                            _p => p.Equals(_p)
+                                  || GameState.Instance
+                                      .IsEmpty(_p) // --> where the only non-empty step is the first one
+                        )
                     )
                 );
         });
@@ -571,7 +588,7 @@ public class FieldManager : MonoBehaviour
     {
         var start = StoreTile.Position;
 
-        GameState.Instance.TraverseBoard(p => 
+        GameState.Instance.TraverseBoard(p =>
         {
             var tile = TileByPosition(p);
             tile.Interactable = start.CanMoveTo(p) && GameState.Instance.IsEmpty(p);
@@ -609,6 +626,6 @@ public class FieldManager : MonoBehaviour
 
         NetworkedUpdateInteractability();
     }
-    
+
     #endregion
 }

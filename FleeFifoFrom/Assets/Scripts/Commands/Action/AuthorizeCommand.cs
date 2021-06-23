@@ -9,7 +9,7 @@ public class AuthorizeCommand : ActionCommand, INetworkSerializable
     // Default constructor needed for serialization
     public AuthorizeCommand() : base() { }
 
-    public AuthorizeCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker, DMeeple meeple) : base(issuerID, playerId, worker)
+    public AuthorizeCommand(ulong issuerID, DPlayer player, DWorker worker, DMeeple meeple) : base(issuerID, player, worker)
     {
         _actionId = DActionPosition.TileId.Authorize;
         _meeple = meeple;
@@ -20,26 +20,21 @@ public class AuthorizeCommand : ActionCommand, INetworkSerializable
     {   
         base.Execute();
 
-        //TODO: Priority Check before authorizing. 
-        //Realistically matters for second action only
-
-        /*if(!_meeple.Position.Current.CheckPriority())
-         * {
-        GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Lose();
-            }
-            */
+        // Priority Check before authorizing. 
+        if (!GameState.Instance.CheckPriority(_meeple))
+            _player.Honor.Lose();
 
         if (_meeple.GetType().IsSubclassOf(typeof(DVillager)))
         {
-            ((DVillager)_meeple).Authorize(_playerId);
+            ((DVillager) _meeple).Authorize(_player.Id);
         }
         else if (_meeple.GetType() == typeof(DKnight))
         {
-            var honor = ((DKnight)_meeple).Authorize(_playerId);
+            var honor = ((DKnight) _meeple).Authorize(_player.Id);
             GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Earn(honor);
         }
-
-        GameState.Instance.PlayerById(_playerId).OnDeAuthorize?.Invoke();
+        
+        _player.OnDeAuthorize?.Invoke();
     }
 
     public override void Reverse()
@@ -52,17 +47,13 @@ public class AuthorizeCommand : ActionCommand, INetworkSerializable
         }
         else if (_meeple.GetType() == typeof(DKnight))
         {
-            var honor = ((DKnight) _meeple).Deauthorize(_position, _playerId);
+            var honor = ((DKnight) _meeple).Deauthorize(_position, _player.Id);
             GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Lose(honor);
         }
 
-        //TODO: Priority Check after deauthorizing. 
-
-        /*if(!_meeple.Position.Current.CheckPriority())
-         * {
-        GameState.Instance.PlayerById(_worker.ControlledBy)?.Honor.Earn();
-            }
-            */
+        // Priority Check after deauthorizing. 
+        if (!GameState.Instance.CheckPriority(_meeple))
+            _player?.Honor.Earn();
     }
 
     public override bool IsFeasible()

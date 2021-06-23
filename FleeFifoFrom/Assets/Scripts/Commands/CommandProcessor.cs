@@ -10,6 +10,11 @@ public sealed class CommandProcessor
     static CommandProcessor() { }
     private CommandProcessor() { }
 
+    public bool IsUndoable
+    {
+        get => _commands.Count > 0;
+    }
+
     /// <summary>
     /// Singleton instance of the CommandProcessor.
     /// </summary>

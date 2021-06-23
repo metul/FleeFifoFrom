@@ -15,10 +15,10 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
 
     public RiotStepCommand(
         ulong issuerID,
-        DPlayer.ID playerId,
+        DPlayer player,
         DKnight knight,
         DPosition to
-    ) : base(issuerID, playerId, null)
+    ) : base(issuerID, player, null)
     {
         _knight = knight;
         _to = to;
@@ -45,18 +45,21 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
             if (meeple.GetType().IsSubclassOf(typeof(DVillager)))
             {
                 ((DVillager) meeple).Injure();
-                GameState.Instance.PlayerById(_playerId)?.Honor.Lose();
+                GameState.Instance.PlayerById(_player.Id)?.Honor.Lose();
             }
         }
 
         if (_to.IsFinal)
         {
-            var honor = _knight.Authorize(_playerId);
-            GameState.Instance.PlayerById(_playerId)?.Honor.Earn(honor);
+            var honor = _knight.Authorize(_player.Id);
+            GameState.Instance.PlayerById(_player.Id)?.Honor.Earn(honor);
 
             foreach (var coriotor in _coriotors)
             {
-                ((DVillager) coriotor).Authorize(_playerId);
+                ((DVillager) coriotor).Authorize(_player.Id);
+                
+                // done rioting
+                coriotor.IsRioting.Current = false;
             }
         }
         else
@@ -65,6 +68,7 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
             foreach (var coriotor in _coriotors)
             {
                 coriotor.Position.Current = _from;
+                coriotor.IsRioting.Current = true;
             }
         }
     }
@@ -77,18 +81,24 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
             foreach (var coriotor in _coriotors)
             {
                 ((DVillager) coriotor).Deauthorize(_coriotorPositions[coriotor.ID]);
+                
+                // start rioting again
+                coriotor.IsRioting.Current = true;
             }
 
-            var honor = _knight.Deauthorize(_from, _playerId);
-            GameState.Instance.PlayerById(_playerId)?.Honor.Lose(honor);
+            var honor = _knight.Deauthorize(_from, _player.Id);
+            GameState.Instance.PlayerById(_player.Id)?.Honor.Lose(honor);
         }
         else
         {
             foreach (var coriotor in _coriotors)
             {
                 coriotor.Position.Current = _coriotorPositions[coriotor.ID];
+                
+                // TODO check if they joined recently
+                coriotor.IsRioting.Current = false;
+                
             }
-
             _knight.Position.Current = _from;
         }
 
@@ -97,7 +107,7 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
             if (meeple.GetType().IsSubclassOf(typeof(DVillager)))
             {
                 ((DVillager) meeple).Heal();
-                GameState.Instance.PlayerById(_playerId)?.Honor.Earn();
+                GameState.Instance.PlayerById(_player.Id)?.Honor.Earn();
             }
         }
     }

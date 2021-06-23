@@ -10,7 +10,7 @@ public class ReviveCommand : ActionCommand, INetworkSerializable
     // Default constructor needed for serialization
     public ReviveCommand() : base() { }
 
-    public ReviveCommand(ulong issuerID, DPlayer.ID playerId, DWorker worker, DMeeple meeple) : base(issuerID, playerId, worker)
+    public ReviveCommand(ulong issuerID, DPlayer player, DWorker worker, DMeeple meeple) : base(issuerID, player, worker)
     {
         _actionId = DActionPosition.TileId.Revive;
         _meeple = meeple;

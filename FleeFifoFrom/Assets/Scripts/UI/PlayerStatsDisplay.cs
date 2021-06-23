@@ -25,15 +25,16 @@ public class PlayerStatsDisplay : MonoBehaviour
         _imageHonor.color = colorPlayer;
         _imageSaved.color = colorPlayer;
         _imageTotal.color = colorPlayer;
-        
+
         player.Honor.Score.OnChange += h =>
         {
             _textHonor.text = h.ToString();
             _textTotal.text = GameState.Instance.PlayerScore(player.Id).ToString();
         };
-
+        
         player.OnDeAuthorize += () =>
         {
+            var honor = player.Honor.Score.Current;
             _textSaved.text = GameStateUtils.AuthorizedVillagers(GameState.Instance, player.Id).Length.ToString();
             _textTotal.text = GameState.Instance.PlayerScore(player.Id).ToString();
         };

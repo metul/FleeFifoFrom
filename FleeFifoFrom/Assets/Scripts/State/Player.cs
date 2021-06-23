@@ -6,23 +6,21 @@ public class DPlayer
 {
     public enum ID
     {
-        Red, Blue, Yellow, Green,
+        Red = 0, 
+        Blue = 1, 
+        Green = 3,
+        Yellow = 2 
     }
 
     public DPlayer(ID id, string name)
     {
         Id = id;
         Name = name;
-
-        //TODO remove debug
-        Honor.Score.OnChange += s =>
-        {
-            Debug.Log($"Player {id}, {name} has now {s} honor");
-        };
+        Honor = new DHonor();
     }
     public ID Id { get; protected set; }
     public string Name { get; protected set; }
-    public DHonor Honor { get; protected set; } = new DHonor();
+    public DHonor Honor { get; protected set; }
 
     public Action OnDeAuthorize;
 

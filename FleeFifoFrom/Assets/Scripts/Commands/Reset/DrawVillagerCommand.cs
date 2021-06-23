@@ -19,12 +19,14 @@ public class DrawVillagerCommand : ResetCommand, INetworkSerializable
     {
         base.Execute();
         _villager.Draw(_position);
+        GameState.Instance.UpdateVillagerBagCount();
     }
 
     public override void Reverse()
     {
         base.Reverse();
         _villager.UnDraw();
+        GameState.Instance.UpdateVillagerBagCount();
     }
 
     public override bool IsFeasible()
@@ -32,11 +34,13 @@ public class DrawVillagerCommand : ResetCommand, INetworkSerializable
         return base.IsFeasible()
             && _villager.State == DMeeple.MeepleState.OutOfBoard
             && GameState.Instance.IsEmpty(_position)
-            && GameState.Instance.PathExists(
-                DPosition.LastRow(),
-                _position,
-                p => GameState.Instance.IsEmpty(p)
-            );
+            && _position.GetRow() == Rules.ROWS;
+            
+            //&& GameState.Instance.PathExists(
+                //DPosition.LastRow(),
+                //_position,
+                //p => GameState.Instance.IsEmpty(p)
+            //);
     }
 
     public override void NetworkSerialize(NetworkSerializer serializer)

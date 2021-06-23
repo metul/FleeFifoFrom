@@ -6,36 +6,30 @@ using UnityEngine.UI;
 
 public class ButtonManager : MonoBehaviour
 {
+    [Header("Prefabs")]
     [SerializeField] private Worker _workerPrefab;
     [SerializeField] private PlayerTile _playerTilePrefab;
 
+    [Header("Anchors")]
+    [SerializeField] private Transform _playerTileAnchor;
     [SerializeField] private GameObject _actionCanvas;
     [SerializeField] private GameObject _resetCanvas;
-
-    // TODO include priority canvas
-    [SerializeField] private GameObject _priorityCanvas;
-
+    
+    [Header("Buttons")]
+    [SerializeField] private ActionTile[] _actionTiles;
     [SerializeField] private Button[] _actionButtons;
     [SerializeField] private Button[] _resetButtons;
     [SerializeField] private Button _villagerButton;
+    [SerializeField] private Button _undoButton;
     [SerializeField] private Button _endTurnButton;
-    [SerializeField] private ActionTile[] _actionTiles;
-    [SerializeField] private Transform _playerTileAnchor;
+
+    // References
     private PlayerTile[] _playerTiles;
-
     private FieldManager _fieldManager;
-
-    // card & action tile states:
-    // objective:   - draw card
-    // countermand1 - draw card
-    //              - (select card)
-    // poach:       - select one opponent worker
-    //              - select card
-    // recall:      - select action tile
-    // cooperate:   - select one opponent worker
 
     private void Start()
     {
+        // get references
         _fieldManager = FindObjectOfType<FieldManager>();
 
         // init player tiles
@@ -65,6 +59,9 @@ public class ButtonManager : MonoBehaviour
             // TODO highlight current player
             Debug.Log($"New turn started: {GameState.Instance.TurnPlayer().Name}'s {turn}");
         };
+        
+        // init other intractability
+        _undoButton.interactable = false;
         GameState.Instance.OnUndo += () => NetworkedUpdateInteractability();
     }
 
@@ -152,10 +149,11 @@ public class ButtonManager : MonoBehaviour
 
         foreach (var resetButton in _resetButtons)
             resetButton.interactable = resetButtons;
-
+        
         _villagerButton.interactable = buttons && GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn;
-
-        _endTurnButton.interactable = buttons && endTurnAllowed;
+        _undoButton.interactable = CommandProcessor.Instance.IsUndoable ||
+                                   StateManager.CurrentState != StateManager.State.Default;
+        _endTurnButton.interactable = GameState.Instance.CanEndTurn();
     }
 
     public UiTile ActionTileByPosition(DActionPosition position)
@@ -177,7 +175,7 @@ public class ButtonManager : MonoBehaviour
         switch (StateManager.CurrentState)
         {
             case StateManager.State.Recall:
-                CommandProcessor.Instance.ExecuteCommand(new RecallCommand(0, actionTile.Id));
+                CommandProcessor.Instance.ExecuteCommand(new RecallCommand(0, GameState.Instance.TurnPlayer().Id, actionTile.Id));
                 StateManager.CurrentState = StateManager.State.Default;
                 break;
             default:

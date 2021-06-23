@@ -9,18 +9,18 @@ public class DMeeple : DObject
         Authorized, // --> the meeple is authorized to enter the castle
     }
 
-    public enum MeepleQueueState
-    {
-        Tapped,     // --> the meeple is tapped
-        UnTapped,   // --> the meeple is untapped
-    }
+  public enum MeepleQueueState
+  {
+    Tapped,     // --> the meeple is tapped
+    UnTapped,   // --> the meeple is untapped
+  }
+  
+  public Observable<bool> IsRioting = new Observable<bool>(false);
 
-
-    // TODO: perhaps State needs to be Observable as well?
-    public MeepleState State { get => _state; protected set => _state = value; }
-    private MeepleState _state = MeepleState.OutOfBoard;
-    public Observable<MeepleQueueState> QueueState = new Observable<MeepleQueueState>(MeepleQueueState.UnTapped);
-    public Observable<DPosition?> Position;
+// TODO: perhaps State needs to be Observable as well?
+  public MeepleState State { get; protected set; } = MeepleState.OutOfBoard;
+  public Observable<MeepleQueueState> QueueState = new Observable<MeepleQueueState>(MeepleQueueState.UnTapped);
+  public Observable<DPosition?> Position;
 
     public DMeeple(DPosition position, MeepleState state) : base()
     {
@@ -45,17 +45,9 @@ public class DMeeple : DObject
         Position.Current = previousPosition;
     }
 
-    public void Tap()
-    {
-        QueueState.Current = MeepleQueueState.Tapped;
-    }
-
-    public void UnTap()
-    {
-        QueueState.Current = MeepleQueueState.UnTapped;
-    }
-
-    public void Move(DPosition position)
+  public void Move(DPosition position)
+  {
+    if (State == MeepleState.InQueue && Position.Current.CanMoveTo(position))
     {
         if (State == MeepleState.InQueue && Position.Current.CanMoveTo(position))
         {
