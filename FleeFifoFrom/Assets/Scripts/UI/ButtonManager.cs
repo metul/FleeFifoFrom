@@ -14,6 +14,7 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] private Transform _playerTileAnchor;
     [SerializeField] private GameObject _actionCanvas;
     [SerializeField] private GameObject _resetCanvas;
+    [SerializeField] private GameObject _finishRiotButton;
     
     [Header("Buttons")]
     [SerializeField] private ActionTile[] _actionTiles;
@@ -109,6 +110,10 @@ public class ButtonManager : MonoBehaviour
             case StateManager.State.Default:
                 EnableElements(false, false, false, buttons: true);
                 break;
+            case StateManager.State.RiotAuthorize:
+                EnableElements(false, false, false);
+                _finishRiotButton.SetActive(true);
+                break;
             default:
                 EnableElements(false, false, false);
                 break;
@@ -154,6 +159,9 @@ public class ButtonManager : MonoBehaviour
         _undoButton.interactable = CommandProcessor.Instance.IsUndoable ||
                                    StateManager.CurrentState != StateManager.State.Default;
         _endTurnButton.interactable = GameState.Instance.CanEndTurn();
+        
+        // included this only half assed, is set true directly in the switch state on State RiotAuthorize
+        _finishRiotButton.SetActive(false);
     }
 
     public UiTile ActionTileByPosition(DActionPosition position)
@@ -270,12 +278,29 @@ public class ButtonManager : MonoBehaviour
         StateManager.CurrentState = StateManager.State.Villager;
     }
 
+    public void RiotAuthorize()
+    {
+        _fieldManager.AuthorizeRiot();
+        StateManager.CurrentState = StateManager.State.Default;
+    }
+
     public void Undo()
     {
-        if (StateManager.CurrentState == StateManager.State.Default)
+        // clear riot stack in field manager if current state is a riot path choosing state
+        if(StateManager.IsRiotStep())
+            _fieldManager.UndoRiotStep();
+        
+        // undo 
+        if (StateManager.IsCurrentStateMilestone())
+        {
             CommandProcessor.Instance.Undo();
+            StateManager.UndoUntilLastMilestone();
+        }
+        // undo current selection step
         else
-            StateManager.CurrentState = StateManager.State.Default;
+        {
+            StateManager.Undo();
+        }
     }
 
     public void EndTurn()

@@ -49,58 +49,28 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
             }
         }
 
-        if (_to.IsFinal)
+        _knight.Position.Current = _to;
+        foreach (var coriotor in _coriotors)
         {
-            var honor = _knight.Authorize(_player.Id);
-            GameState.Instance.PlayerById(_player.Id)?.Honor.Earn(honor);
-
-            foreach (var coriotor in _coriotors)
-            {
-                ((DVillager) coriotor).Authorize(_player.Id);
-                
-                // done rioting
-                coriotor.IsRioting.Current = false;
-            }
-        }
-        else
-        {
-            _knight.Position.Current = _to;
-            foreach (var coriotor in _coriotors)
-            {
-                coriotor.Position.Current = _from;
-                coriotor.IsRioting.Current = true;
-            }
+            coriotor.Position.Current = _from;
+            coriotor.IsRioting.Current = true;
         }
     }
 
     public override void Reverse()
     {
         base.Reverse();
-        if (_to.IsFinal)
-        {
-            foreach (var coriotor in _coriotors)
-            {
-                ((DVillager) coriotor).Deauthorize(_coriotorPositions[coriotor.ID]);
-                
-                // start rioting again
-                coriotor.IsRioting.Current = true;
-            }
 
-            var honor = _knight.Deauthorize(_from, _player.Id);
-            GameState.Instance.PlayerById(_player.Id)?.Honor.Lose(honor);
-        }
-        else
+        foreach (var coriotor in _coriotors)
         {
-            foreach (var coriotor in _coriotors)
-            {
-                coriotor.Position.Current = _coriotorPositions[coriotor.ID];
-                
-                // TODO check if they joined recently
-                coriotor.IsRioting.Current = false;
-                
-            }
-            _knight.Position.Current = _from;
+            coriotor.Position.Current = _coriotorPositions[coriotor.ID];
+
+            // TODO check if they joined recently
+            coriotor.IsRioting.Current = false;
         }
+
+        _knight.Position.Current = _from;
+
 
         foreach (var meeple in _onTheWay)
         {
@@ -115,10 +85,10 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
     public override bool IsFeasible()
     {
         return base.IsFeasible()
-            && GameState.Instance.AllAtPosition(
-                _to,
-                m => m.IsInjured() || m.GetType() == typeof(DKnight)
-            ).Length == 0;
+               && GameState.Instance.AllAtPosition(
+                   _to,
+                   m => m.IsInjured() || m.GetType() == typeof(DKnight)
+               ).Length == 0;
     }
 
     public override void NetworkSerialize(NetworkSerializer serializer)

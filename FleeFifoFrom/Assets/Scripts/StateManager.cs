@@ -1,6 +1,9 @@
 using MLAPI;
 using MLAPI.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
 public class StateManager : MonoBehaviour
@@ -11,18 +14,15 @@ public class StateManager : MonoBehaviour
         Authorize,
         Swap1,
         Swap2,
-        Riot, // <- current debug state
         RiotChooseKnight,
-        //S.R. Can we add RiotChooseFollowerType
         RiotChoosePath,
+        RiotAuthorize, // <- current debug state
         Revive,
         Reprioritize,
         RetreatChooseTile,
         RetreatChooseKnight,
         Villager,
         MoveMeeple,
-        ResetTurnSelect,
-        ResetTurnMove,
         CountermandDrawCard,
         CountermandSelectCard,
         PoachSelectWorker,
@@ -32,8 +32,15 @@ public class StateManager : MonoBehaviour
         PayForAction
     }
 
+    private static readonly State[] UNDO_MILESTONES =
+    {
+        State.Default, State.RiotChoosePath, State.RiotAuthorize
+    };
+
     private static State _currentState;
+    private static Stack<State> _stateStack = new Stack<State>();
     public static Action<State> OnStateUpdate;
+
     public static State CurrentlyPayingFor;
 
     public static State CurrentState
@@ -41,21 +48,20 @@ public class StateManager : MonoBehaviour
         get => _currentState;
         set
         {
-            if (_currentState != value)
+            State prevState = _currentState; // MARK: Used for network logging
+            if (value == State.PayForAction)
             {
-                State prevState = _currentState; // MARK: Used for network logging
-                if (value == State.PayForAction)
-                {
-                    CurrentlyPayingFor = _currentState;
-                }
-                _currentState = value;
-                OnStateUpdate?.Invoke(value);
-                // MARK: Update network state if connected, supports local debugging
-                if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
-                {
-                    NetworkLog.LogInfoServer($"Locally changed state ({prevState} -> {_currentState}).");
-                    NetworkStateManager.Instance.NetworkCurrentState.Value = (int)value;
-                }
+                CurrentlyPayingFor = _currentState;
+            }
+
+            _currentState = value;
+            _stateStack.Push(value);
+            OnStateUpdate?.Invoke(value);
+            // MARK: Update network state if connected, supports local debugging
+            if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
+            {
+                NetworkLog.LogInfoServer($"Locally changed state ({prevState} -> {_currentState}).");
+                NetworkStateManager.Instance.NetworkCurrentState.Value = (int) value;
             }
         }
     }
@@ -63,9 +69,52 @@ public class StateManager : MonoBehaviour
     private void Start()
     {
         CurrentState = State.Default;
-        GameState.Instance.OnTurnChange += types =>
+        GameState.Instance.OnTurnChange += types => { CurrentState = State.Default; };
+
+        GameState.Instance.OnTurnChange += _ =>
         {
+            _stateStack.Clear();
             CurrentState = State.Default;
         };
+    }
+
+    public static void Undo()
+    {
+        if (_stateStack.Count <= 1)
+            return;
+
+        _stateStack.Pop();
+        var previousState = _stateStack.Peek();
+        _currentState = previousState;
+        OnStateUpdate?.Invoke(previousState);
+    }
+
+    public static void UndoUntilLastMilestone()
+    {
+        var abort = false;
+        var changedState = false;
+        while (_stateStack.Count > 1 && !abort)
+        {
+            _stateStack.Pop();
+            var previousState = _stateStack.Peek();
+            _currentState = previousState;
+            changedState = true;
+
+            if (UNDO_MILESTONES.Contains(previousState))
+                abort = true;
+        }
+
+        if (changedState)
+            OnStateUpdate?.Invoke(_stateStack.Peek());
+    }
+
+    public static bool IsCurrentStateMilestone()
+    {
+        return UNDO_MILESTONES.Contains(_currentState);
+    }
+
+    public static bool IsRiotStep()
+    {
+        return CurrentState == State.RiotChoosePath || CurrentState == State.RiotAuthorize;
     }
 }
