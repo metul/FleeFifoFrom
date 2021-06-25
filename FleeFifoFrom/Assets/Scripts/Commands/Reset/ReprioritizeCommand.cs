@@ -2,22 +2,24 @@ using MLAPI.Serialization;
 
 public class ReprioritizeCommand : ResetCommand, INetworkSerializable
 {
+    private string _prioType;
     private DPrio _prio;
-    private bool _inscrease;
+    private bool _increase;
 
     // Default constructor needed for serialization
     public ReprioritizeCommand() : base() { }
 
-    public ReprioritizeCommand(ulong issuerID, DPrio prio, bool increase) : base(issuerID)
+    public ReprioritizeCommand(ulong issuerID, string prioType, bool increase) : base(issuerID)
     {
-        _prio = prio;
-        _inscrease = increase;
+        _prioType = prioType;
+        _prio = GameState.Instance.Priorities[PriorityTileManager.STRING_TYPE_MAPPING[_prioType]];
+        _increase = increase;
     }
 
     public override void Execute()
     {
         base.Execute();
-        if(_inscrease)
+        if(_increase)
             _prio.Increase();
         else
             _prio.Decrease();
@@ -26,7 +28,7 @@ public class ReprioritizeCommand : ResetCommand, INetworkSerializable
     public override void Reverse()
     {
         base.Reverse();
-        if(_inscrease)
+        if(_increase)
             _prio.Decrease();
         else
             _prio.Increase();
@@ -34,15 +36,18 @@ public class ReprioritizeCommand : ResetCommand, INetworkSerializable
 
     public override bool IsFeasible()
     {
-        return _inscrease ? _prio.IsIncreasable : _prio.IsDecreasable;
+        return _increase ? _prio.IsIncreasable : _prio.IsDecreasable;
     }
 
     public override void NetworkSerialize(NetworkSerializer serializer)
     {
         base.NetworkSerialize(serializer);
-        
-        // TODO (metul): Serialize prio
 
-        serializer.Serialize(ref _inscrease);
+        serializer.Serialize(ref _prioType);
+
+        if (serializer.IsReading)
+            _prio = GameState.Instance.Priorities[PriorityTileManager.STRING_TYPE_MAPPING[_prioType]];
+
+        serializer.Serialize(ref _increase);
     }
 }

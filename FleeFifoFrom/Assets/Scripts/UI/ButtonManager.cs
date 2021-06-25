@@ -158,7 +158,7 @@ public class ButtonManager : MonoBehaviour
         _villagerButton.interactable = buttons && GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn;
         _undoButton.interactable = CommandProcessor.Instance.IsUndoable ||
                                    StateManager.CurrentState != StateManager.State.Default;
-        _endTurnButton.interactable = GameState.Instance.CanEndTurn();
+        _endTurnButton.interactable = GameState.Instance.CanEndTurn() && endTurnAllowed;
         
         // included this only half assed, is set true directly in the switch state on State RiotAuthorize
         _finishRiotButton.SetActive(false);
