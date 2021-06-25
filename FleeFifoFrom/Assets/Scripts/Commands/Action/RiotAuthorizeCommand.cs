@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using MLAPI.Serialization;
 
-public class RiotAuthorizeCommand : ActionCommand
+public class RiotAuthorizeCommand : ActionCommand, INetworkSerializable
 {
     protected DKnight _knight;
     protected DPosition _from;
