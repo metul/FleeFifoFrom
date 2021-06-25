@@ -9,7 +9,7 @@ public class HonorMarker : MonoBehaviour
 
     public void Init(DPlayer player)
     {
-        _handleImage.color = Player.GetPlayerColor(player.Id);
+        _handleImage.color = ColorUtils.GetPlayerColor(player.Id);
 
         var cnt = (GameState.Instance.Players.Length + 1f) / 2f;
         var nr = ((int) player.Id + 1) - cnt;

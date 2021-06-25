@@ -7,6 +7,8 @@ public class RiotAuthorizeCommand : ActionCommand
     protected DMeeple[] _coriotors;
     protected Dictionary<ushort, DPosition> _coriotorPositions;
 
+    // Default constructor needed for serialization
+    public RiotAuthorizeCommand() {}
     public RiotAuthorizeCommand(
         ulong issuerID,
         DPlayer player,
