@@ -9,7 +9,7 @@ public class PriorityTileManager : MonoBehaviour
     private const string SCHOLAR_TYPE = "scholar";
     private const string KNIGHT_TYPE = "knight";
 
-    private static readonly Dictionary<string, Type> STRING_TYPE_MAPPING = new Dictionary<string, Type>()
+    public static readonly Dictionary<string, Type> STRING_TYPE_MAPPING = new Dictionary<string, Type>()
     {
         {FARMER_TYPE, typeof(DFarmer)},
         {MERCHANT_TYPE, typeof(DMerchant)},
@@ -80,7 +80,7 @@ public class PriorityTileManager : MonoBehaviour
     private void ChangePriority(bool increase, string type)
     {
         CommandProcessor.Instance.ExecuteCommand(new ReprioritizeCommand(
-            0, GameState.Instance.Priorities[STRING_TYPE_MAPPING[type]], increase
+            0, type, increase
         ));
         StateManager.CurrentState = StateManager.State.Default;
     }
