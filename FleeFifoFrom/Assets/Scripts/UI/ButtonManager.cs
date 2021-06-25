@@ -139,7 +139,7 @@ public class ButtonManager : MonoBehaviour
         }
 
         // MARK: TurnActionCount is not updated fast enough on networked version (updated after state change)
-        NetworkLog.LogInfoServer($"TurnActionPossible: {GameState.Instance.TurnActionPossible} / {GameState.Instance.TurnActionCount.Current}");
+        //NetworkLog.LogInfoServer($"TurnActionPossible: {GameState.Instance.TurnActionPossible} / {GameState.Instance.TurnActionCount.Current}");
 
         var actionButtons = buttons
                      && GameState.Instance.TurnActionPossible
