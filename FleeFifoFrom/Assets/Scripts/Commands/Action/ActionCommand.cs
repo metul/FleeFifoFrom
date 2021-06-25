@@ -59,9 +59,16 @@ public abstract class ActionCommand : Command, INetworkSerializable
             serializer.Serialize(ref workerID);
 
             if (serializer.IsReading)
-                _worker = (DWorker)ObjectManager.Instance.Request(workerID);
+                _worker = (DWorker)RegistryManager.Instance.Request(workerID);
         }
 
-        //serializer.Serialize(ref _playerId); // TODO (metul): Serialize player
+        DPlayer.ID playerID = DPlayer.ID.Black;
+        if (!serializer.IsReading)
+            playerID = _player.Id;
+
+        serializer.Serialize(ref playerID);
+
+        if (serializer.IsReading)
+            _player = RegistryManager.Instance.Request(playerID);
     }
 }

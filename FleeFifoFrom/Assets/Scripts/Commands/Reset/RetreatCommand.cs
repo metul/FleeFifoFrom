@@ -56,7 +56,7 @@ public class RetreatCommand : ResetCommand, INetworkSerializable
         serializer.Serialize(ref knightID);
 
         if (serializer.IsReading)
-            _knight = (DKnight)ObjectManager.Instance.Request(knightID);
+            _knight = (DKnight)RegistryManager.Instance.Request(knightID);
 
         if (serializer.IsReading)
             _position = new DPosition();

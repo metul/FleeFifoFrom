@@ -102,7 +102,7 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
         serializer.Serialize(ref knightID);
 
         if (serializer.IsReading)
-            _knight = (DKnight)ObjectManager.Instance.Request(knightID);
+            _knight = (DKnight)RegistryManager.Instance.Request(knightID);
 
         if (serializer.IsReading)
         {
@@ -131,7 +131,7 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
             serializer.Serialize(ref meepleID);
 
             if (serializer.IsReading)
-                _onTheWay[i] = (DMeeple)ObjectManager.Instance.Request(meepleID); // TODO (metul): Do we need further type casting down the line (e.g. villager)?
+                _onTheWay[i] = (DMeeple)RegistryManager.Instance.Request(meepleID); // TODO (metul): Do we need further type casting down the line (e.g. villager)?
         }
 
         int coriotersLength = 0;
@@ -152,7 +152,7 @@ public class RiotStepCommand : ActionCommand, INetworkSerializable
             serializer.Serialize(ref meepleID);
 
             if (serializer.IsReading)
-                _coriotors[i] = (DMeeple)ObjectManager.Instance.Request(meepleID); // TODO (metul): Do we need further type casting down the line (e.g. villager)?
+                _coriotors[i] = (DMeeple)RegistryManager.Instance.Request(meepleID); // TODO (metul): Do we need further type casting down the line (e.g. villager)?
         }
 
         if (serializer.IsReading)

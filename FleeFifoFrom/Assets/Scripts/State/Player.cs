@@ -6,6 +6,7 @@ public class DPlayer
 {
     public enum ID
     {
+        Black = -1, // TODO: Used only as a defult value currently, coloring etc. needs to be handled
         Red = 0, 
         Blue = 1, 
         Green = 3,
@@ -17,6 +18,7 @@ public class DPlayer
         Id = id;
         Name = name;
         Honor = new DHonor();
+        RegistryManager.Instance.Register(Id, this);
     }
     public ID Id { get; protected set; }
     public string Name { get; protected set; }

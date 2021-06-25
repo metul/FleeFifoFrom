@@ -89,7 +89,7 @@ public class RecallCommand : ResetCommand, INetworkSerializable
             serializer.Serialize(ref workerID);
 
             if (serializer.IsReading)
-                _workers.Add((DWorker)ObjectManager.Instance.Request(workerID));
+                _workers.Add((DWorker)RegistryManager.Instance.Request(workerID));
         }
 
         if (serializer.IsReading)

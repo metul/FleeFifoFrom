@@ -59,6 +59,6 @@ public class DrawVillagerCommand : ResetCommand, INetworkSerializable
         serializer.Serialize(ref villagerID);
 
         if (serializer.IsReading)
-            _villager = (DVillager)ObjectManager.Instance.Request(villagerID);
+            _villager = (DVillager)RegistryManager.Instance.Request(villagerID);
     }
 }

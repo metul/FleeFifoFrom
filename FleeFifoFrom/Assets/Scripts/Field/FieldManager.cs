@@ -98,7 +98,7 @@ public class FieldManager : MonoBehaviour
             for (var j = 0; j < tiles.Length; j++)
             {
                 tiles[j].ID = new Vector2(i, j);
-                ObjectManager.Instance.Register(tiles[j].ID, tiles[j]);
+                RegistryManager.Instance.Register(tiles[j].ID, tiles[j]);
             }
         }
 

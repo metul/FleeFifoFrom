@@ -41,7 +41,7 @@ public class ReprioritizeCommand : ResetCommand, INetworkSerializable
     {
         base.NetworkSerialize(serializer);
         
-        // TODO: Serialize prio
+        // TODO (metul): Serialize prio
 
         serializer.Serialize(ref _inscrease);
     }

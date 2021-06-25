@@ -4,23 +4,28 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Manager class for registering DObjects and Tiles, utilized for command synchronization.
+/// Manager class for registering DObjects, DPlayers and Tiles, utilized for command synchronization.
 /// </summary>
-public sealed class ObjectManager
+public sealed class RegistryManager
 {
-    static ObjectManager() { }
+    static RegistryManager() { }
 
-    private ObjectManager() { }
+    private RegistryManager() { }
 
     /// <summary>
-    /// The singleton instance of the ObjectManager.
+    /// The singleton instance of the RegistryManager.
     /// </summary>
-    public static ObjectManager Instance { get; } = new ObjectManager();
+    public static RegistryManager Instance { get; } = new RegistryManager();
 
     /// <summary>
     /// Dictionary storing object data.
     /// </summary>
     private Dictionary<ushort, DObject> _objectRegistry = new Dictionary<ushort, DObject>();
+
+    /// <summary>
+    /// Dictionary storing object data.
+    /// </summary>
+    private Dictionary<DPlayer.ID, DPlayer> _playerRegistry = new Dictionary<DPlayer.ID, DPlayer>();
 
     /// <summary>
     /// Dictionary storing object data.
@@ -61,6 +66,42 @@ public sealed class ObjectManager
             throw new Exception($"No local object with the ID {key} is registered!");
         else
             return _objectRegistry[key];
+    }
+
+    /// <summary>
+    /// Registers a local player.
+    /// </summary>
+    /// <param name="key"> Key for registering the player. </param>
+    /// <param name="value"> Local player to store. </param>
+    public void Register(DPlayer.ID key, DPlayer value)
+    {
+        if (!_playerRegistry.ContainsKey(key))
+            _playerRegistry.Add(key, value);
+        else if (_playerRegistry[key] != value) // TODO: Probably need to override Equals() on DObject
+            throw new Exception($"Another local player with the same ID {key} already registered!");
+    }
+
+    /// <summary>
+    /// Deregisters a local player.
+    /// </summary>
+    /// <param name="key"> Key for deregistering the player. </param>
+    public void Deregister(DPlayer.ID key)
+    {
+        if (!_playerRegistry.Remove(key))
+            throw new Exception($"No local player with the ID {key} is registered!");
+    }
+
+    /// <summary>
+    /// Finds and returns an player if present.
+    /// </summary>
+    /// <param name="key"> Key to use for retrieval. </param>
+    /// <returns> Registered local player. </returns>
+    public DPlayer Request(DPlayer.ID key)
+    {
+        if (!_playerRegistry.ContainsKey(key))
+            throw new Exception($"No local player with the ID {key} is registered!");
+        else
+            return _playerRegistry[key];
     }
 
     /// <summary>

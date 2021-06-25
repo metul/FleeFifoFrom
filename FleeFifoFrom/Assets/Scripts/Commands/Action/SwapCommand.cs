@@ -68,7 +68,7 @@ public class SwapCommand : ActionCommand, INetworkSerializable
             serializer.Serialize(ref firstID);
 
             if (serializer.IsReading)
-                _first = (DMeeple)ObjectManager.Instance.Request(firstID); // TODO (metul): Do we need further type casting down the line (e.g. villager)?
+                _first = (DMeeple)RegistryManager.Instance.Request(firstID); // TODO (metul): Do we need further type casting down the line (e.g. villager)?
         }
 
         bool isSecondNull = true;
@@ -86,7 +86,7 @@ public class SwapCommand : ActionCommand, INetworkSerializable
             serializer.Serialize(ref secondID);
 
             if (serializer.IsReading)
-                _second = (DMeeple)ObjectManager.Instance.Request(secondID); // TODO (metul): Do we need further type casting down the line (e.g. villager)?
+                _second = (DMeeple)RegistryManager.Instance.Request(secondID); // TODO (metul): Do we need further type casting down the line (e.g. villager)?
         }
     }
 }

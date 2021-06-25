@@ -5,7 +5,7 @@ public class MoveVillagerCommand : ResetCommand, INetworkSerializable
     private DMeeple _meeple;
     private DPosition _to;
     private DPosition _from;
-    private readonly DPlayer _player;
+    private DPlayer _player;
 
     // Default constructor needed for serialization
     public MoveVillagerCommand() : base() { }
@@ -58,7 +58,7 @@ public class MoveVillagerCommand : ResetCommand, INetworkSerializable
         serializer.Serialize(ref meepleID);
 
         if (serializer.IsReading)
-            _meeple = (DMeeple)ObjectManager.Instance.Request(meepleID); // TODO (metul): Do we need further type casting down the line (e.g. villager)?
+            _meeple = (DMeeple)RegistryManager.Instance.Request(meepleID); // TODO (metul): Do we need further type casting down the line (e.g. villager)?
 
         if (serializer.IsReading)
         {
@@ -68,5 +68,14 @@ public class MoveVillagerCommand : ResetCommand, INetworkSerializable
 
         _to.NetworkSerialize(serializer);
         _from.NetworkSerialize(serializer);
+
+        DPlayer.ID playerID = DPlayer.ID.Black;
+        if (!serializer.IsReading)
+            playerID = _player.Id;
+
+        serializer.Serialize(ref playerID);
+
+        if (serializer.IsReading)
+            _player = RegistryManager.Instance.Request(playerID);
     }
 }

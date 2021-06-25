@@ -49,7 +49,7 @@ public class PoachCommand: ResetCommand, INetworkSerializable
         serializer.Serialize(ref workerID);
 
         if (serializer.IsReading)
-            _worker = (DWorker)ObjectManager.Instance.Request(workerID);
+            _worker = (DWorker)RegistryManager.Instance.Request(workerID);
 
         serializer.Serialize(ref _controlledBy);
         serializer.Serialize(ref _previousTile);

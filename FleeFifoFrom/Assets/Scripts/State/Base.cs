@@ -16,6 +16,6 @@ public class DObject
     {
         ID = ID_CURSOR;
         ID_CURSOR++;
-        ObjectManager.Instance.Register(ID, this);
+        RegistryManager.Instance.Register(ID, this);
     }
 }

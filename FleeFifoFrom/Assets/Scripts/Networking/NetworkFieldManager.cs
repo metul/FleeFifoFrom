@@ -57,7 +57,7 @@ public class NetworkFieldManager : NetworkBehaviour
         {
             using (var reader = PooledNetworkReader.Get(stream))
             {
-                return ObjectManager.Instance.Request(reader.ReadVector2Packed());
+                return RegistryManager.Instance.Request(reader.ReadVector2Packed());
             }
         });
         NetworkStoreTile.OnValueChanged += OnNetworkStoreTileChanged;
