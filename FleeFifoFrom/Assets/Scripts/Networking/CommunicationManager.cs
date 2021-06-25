@@ -103,11 +103,14 @@ public class CommunicationManager : NetworkBehaviour
             case ReviveCommand reviveCommand:
                 ExecuteCommandServerRpc(reviveCommand);
                 break;
+            case StartRiotCommand startRiotCommand:
+                ExecuteCommandServerRpc(startRiotCommand);
+                break;
             case RiotStepCommand riotStepCommand:
                 ExecuteCommandServerRpc(riotStepCommand);
                 break;
-            case StartRiotCommand startRiotCommand:
-                ExecuteCommandServerRpc(startRiotCommand);
+            case RiotAuthorizeCommand riotAuthorizeCommand:
+                ExecuteCommandServerRpc(riotAuthorizeCommand);
                 break;
             case SwapCommand swapCommand:
                 ExecuteCommandServerRpc(swapCommand);
@@ -197,6 +200,19 @@ public class CommunicationManager : NetworkBehaviour
     {
         ExecuteCommand(cmd);
     }
+    
+    [ServerRpc(RequireOwnership = false)]
+    private void ExecuteCommandServerRpc(StartRiotCommand cmd)
+    {
+        ExecuteCommand(cmd);
+        ExecuteCommandClientRpc(cmd);
+    }
+
+    [ClientRpc]
+    private void ExecuteCommandClientRpc(StartRiotCommand cmd)
+    {
+        ExecuteCommand(cmd);
+    }
 
     [ServerRpc(RequireOwnership = false)]
     private void ExecuteCommandServerRpc(RiotStepCommand cmd)
@@ -210,16 +226,16 @@ public class CommunicationManager : NetworkBehaviour
     {
         ExecuteCommand(cmd);
     }
-
+    
     [ServerRpc(RequireOwnership = false)]
-    private void ExecuteCommandServerRpc(StartRiotCommand cmd)
+    private void ExecuteCommandServerRpc(RiotAuthorizeCommand cmd)
     {
         ExecuteCommand(cmd);
         ExecuteCommandClientRpc(cmd);
     }
 
     [ClientRpc]
-    private void ExecuteCommandClientRpc(StartRiotCommand cmd)
+    private void ExecuteCommandClientRpc(RiotAuthorizeCommand cmd)
     {
         ExecuteCommand(cmd);
     }

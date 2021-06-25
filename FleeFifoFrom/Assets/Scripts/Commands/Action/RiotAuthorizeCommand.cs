@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MLAPI.Serialization;
 
 public class RiotAuthorizeCommand : ActionCommand
 {
@@ -9,6 +10,7 @@ public class RiotAuthorizeCommand : ActionCommand
 
     // Default constructor needed for serialization
     public RiotAuthorizeCommand() {}
+    
     public RiotAuthorizeCommand(
         ulong issuerID,
         DPlayer player,
@@ -65,5 +67,56 @@ public class RiotAuthorizeCommand : ActionCommand
     public override bool IsFeasible()
     {
         return base.IsFeasible();
+    }
+
+    public override void NetworkSerialize(NetworkSerializer serializer)
+    {
+        // TODO (Anas-Mert) serialize RiotAuthorizeCommand
+        
+        base.NetworkSerialize(serializer);
+        
+        ushort knightID = ushort.MaxValue;
+        if (!serializer.IsReading)
+            knightID = _knight.ID;
+        
+        serializer.Serialize(ref knightID);
+        
+        if (serializer.IsReading)
+            _knight = (DKnight)RegistryManager.Instance.Request(knightID);
+        
+        if (serializer.IsReading)
+        {
+            _from = new DPosition();
+        }
+        
+        _from.NetworkSerialize(serializer);
+
+        int coriotersLength = 0;
+        if (!serializer.IsReading)
+            coriotersLength = _coriotors.Length;
+
+        serializer.Serialize(ref coriotersLength);
+
+        if (serializer.IsReading)
+            _coriotors = new DMeeple[coriotersLength];
+
+        for (int i = 0; i < coriotersLength; i++)
+        {
+            ushort meepleID = ushort.MaxValue;
+            if (!serializer.IsReading)
+                meepleID = _coriotors[i].ID;
+
+            serializer.Serialize(ref meepleID);
+
+            if (serializer.IsReading)
+                _coriotors[i] = (DMeeple)RegistryManager.Instance.Request(meepleID); // TODO (metul): Do we need further type casting down the line (e.g. villager)?
+        }
+
+        if (serializer.IsReading)
+        {
+            _coriotorPositions = new Dictionary<ushort, DPosition>();
+            foreach (var corioter in _coriotors)
+                _coriotorPositions[corioter.ID] = corioter.Position.Current;
+        }
     }
 }

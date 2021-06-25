@@ -506,7 +506,7 @@ public class FieldManager : MonoBehaviour
             var tile = TileByPosition(p);
             tile.Interactable =
                 GameState.Instance.IsEmpty(p)
-                && p.GetRow() == Rules.ROWS;
+                && p.Row == Rules.ROWS;
 
             /*
             GameState.Instance.PathExists(

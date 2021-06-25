@@ -36,7 +36,7 @@ public class RetreatCommand : ResetCommand, INetworkSerializable
 
         return base.IsFeasible()
             && GameState.Instance.IsEmpty(_position)
-            && _position.GetRow() == Rules.ROWS;
+            && _position.Row == Rules.ROWS;
             
         /*&& GameState.Instance.PathExists(
                 DPosition.LastRow(),

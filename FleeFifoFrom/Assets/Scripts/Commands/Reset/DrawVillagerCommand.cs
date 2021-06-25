@@ -34,7 +34,7 @@ public class DrawVillagerCommand : ResetCommand, INetworkSerializable
         return base.IsFeasible()
             && _villager.State == DMeeple.MeepleState.OutOfBoard
             && GameState.Instance.IsEmpty(_position)
-            && _position.GetRow() == Rules.ROWS;
+            && _position.Row == Rules.ROWS;
             
             //&& GameState.Instance.PathExists(
                 //DPosition.LastRow(),

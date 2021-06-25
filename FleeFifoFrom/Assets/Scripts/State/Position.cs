@@ -99,17 +99,6 @@ public class DPosition : INetworkSerializable
         return GetRow(Rules.ROWS);
     }
 
-    // TODO (Anas-Mert): Are the two following functions necessary? (since both Row and Col are public fields)
-    public ushort GetRow()
-    {
-        return this.Row;
-    }
-
-    public ushort GetCol()
-    {
-        return this.Col;
-    }
-
     public void NetworkSerialize(NetworkSerializer serializer)
     {
         serializer.Serialize(ref Row);
