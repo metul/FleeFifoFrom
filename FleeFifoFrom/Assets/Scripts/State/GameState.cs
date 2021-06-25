@@ -209,12 +209,21 @@ public class GameState
         if (TurnType == TurnTypes.ActionTurn)
         {
             TurnType = TurnTypes.ResetTurn;
-            TurnPlayerIndex = RangeUtils.Normalize(TurnPlayerIndex + 2, Players.Length);
+
+            if (Players.Length>2)
+                TurnPlayerIndex = RangeUtils.Normalize(TurnPlayerIndex + 2, Players.Length);
+            //2 player game has unique situation where offset is 1 not 2
+            else 
+                TurnPlayerIndex = RangeUtils.Normalize(TurnPlayerIndex + 1, Players.Length);
         }
         else
         {
             TurnType = TurnTypes.ActionTurn;
-            TurnPlayerIndex = RangeUtils.Normalize(TurnPlayerIndex - 1, Players.Length);
+            if (Players.Length > 2)
+                TurnPlayerIndex = RangeUtils.Normalize(TurnPlayerIndex - 1, Players.Length);
+            //2 player game has unique situation where players play after each other
+            else
+                TurnPlayerIndex = RangeUtils.Normalize(TurnPlayerIndex - 0, Players.Length);
         }
 
         TurnActionCount.Current = 0;
