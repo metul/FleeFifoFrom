@@ -7,6 +7,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
+using RSG;
 
 public class FieldManager : MonoBehaviour
 {
@@ -176,7 +177,11 @@ public class FieldManager : MonoBehaviour
     {
         CommandProcessor.Instance.ExecuteCommand(
             new AuthorizeCommand(0, GameState.Instance.TurnPlayer(), worker, tile.Meeples[0].Core)
-        );
+        ).Then(() =>
+        {
+            // TODO (Anas-Mert) allow everything to continue here
+            Debug.Log("AuthorizeCommand.Then()");
+        });
     }
 
     public void Swap(Tile tile1, Tile tile2, DWorker worker)

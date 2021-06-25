@@ -1,6 +1,7 @@
 using MLAPI;
 using System;
 using System.Collections.Generic;
+using RSG;
 
 /// <summary>
 /// Manager class for processing issued commands.
@@ -30,8 +31,9 @@ public sealed class CommandProcessor
     /// Executes command and saves into history.
     /// </summary>
     /// <param name="command"> Command to be executed. </param>
-    public void ExecuteCommand(Command command)
+    public IPromise ExecuteCommand(Command command)
     {
+        var promise = new Promise();
         if (command.IsFeasible())
         {
             if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
@@ -41,7 +43,15 @@ public sealed class CommandProcessor
                 _commands.Push(command);
                 command.Execute();
             }
+            
+            // TODO (Anas-Mert) figure out the moment this promise can be fulfilled
+            promise.Resolve();
         }
+        else
+        {
+            promise.Reject(new Exception("command not feasible"));
+        }
+        return promise;
     }
 
     /// <summary>
