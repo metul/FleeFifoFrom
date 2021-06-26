@@ -170,8 +170,9 @@ public class GameState
 
         foreach (var player in Players)
         {
+            // TODO properly set the position of the knight and get one that is not on the field yet
             Knights
-              .First(knight => knight.Owner == player.Id)
+              .Last(knight => knight.Owner == player.Id)
               .Retreat(Rules.KNIGHT_POSITIONS[player.Id])
             ;
         }
