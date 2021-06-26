@@ -11,6 +11,9 @@ using RSG;
 
 public class FieldManager : MonoBehaviour
 {
+    private const float COMMAND_WAIT_TIME = 0.3f;
+    private readonly WaitForSeconds WAIT_FOR_COMMAND = new WaitForSeconds(COMMAND_WAIT_TIME);
+
     [SerializeField] private Meeple[] _villagerPrefabs;
     [SerializeField] private Knight _knightPrefab;
 
@@ -23,8 +26,6 @@ public class FieldManager : MonoBehaviour
     private Tile[][] _battleField;
     private Tile _tempStorageTile;
     private Tile _authorizeStorageTile;
-
-    #region Placeholder
 
     // store tile references for multi step actions
     private Tile _storeTile;
@@ -50,6 +51,7 @@ public class FieldManager : MonoBehaviour
             }
         }
     }
+
     public Tile StoreSecondTile
     {
         get => _storeSecondTile;
@@ -68,14 +70,13 @@ public class FieldManager : MonoBehaviour
         }
     }
 
-    #endregion
-
     #region Setup
 
     private void Awake()
     {
         _field = GetField(_rows);
-        _battleField = GetField(_squads); // TODO (metul): Do not register battlefield tiles (or register in a separate container)
+        _battleField =
+            GetField(_squads); // TODO (metul): Do not register battlefield tiles (or register in a separate container)
         _tempStorageTile = _tempStorage.GetComponent<Tile>();
         _authorizeStorageTile = _authorizeStorage.GetComponent<Tile>();
     }
@@ -110,7 +111,7 @@ public class FieldManager : MonoBehaviour
     {
         return (position == null) ? _tempStorageTile : _field[position.Row - 1][position.Col - 1];
     }
-    
+
     public Tile TileByStateAndPosition(DMeeple.MeepleState state, DPosition position)
     {
         return (state == DMeeple.MeepleState.Authorized) ? _authorizeStorageTile : TileByPosition(position);
@@ -173,52 +174,74 @@ public class FieldManager : MonoBehaviour
 
     // TODO: All issuer IDs are 0 by default, use actual client ID after network integration
 
-    public void Authorize(Tile tile, DWorker worker)
+    public IEnumerator Authorize(DWorker worker)
     {
         CommandProcessor.Instance.ExecuteCommand(
-            new AuthorizeCommand(0, GameState.Instance.TurnPlayer(), worker, tile.Meeples[0].Core)
-        ).Then(() =>
-        {
-            // TODO (Anas-Mert) allow everything to continue here
-            Debug.Log("AuthorizeCommand.Then()");
-        });
+            new AuthorizeCommand(
+                0,
+                GameState.Instance.TurnPlayer(),
+                worker,
+                StoreTile.Meeples[0].Core)
+        );
+
+        yield return WAIT_FOR_COMMAND;
+
+        StoreTile = null;
+        StateManager.CurrentState = StateManager.State.Default;
     }
 
-    public void Swap(Tile tile1, Tile tile2, DWorker worker)
+    public IEnumerator Swap(DWorker worker)
     {
         CommandProcessor.Instance.ExecuteCommand(
             new SwapCommand(
                 0, // --> TODO: should this be zero?
                 GameState.Instance.TurnPlayer(),
                 worker,
-                GameState.Instance.AtPosition(tile1.Position),
-                GameState.Instance.AtPosition(tile2.Position)
+                GameState.Instance.AtPosition(StoreTile.Position),
+                GameState.Instance.AtPosition(StoreSecondTile.Position)
             )
         );
+
+        yield return WAIT_FOR_COMMAND;
+
+        StoreTile = StoreSecondTile = null;
+        StateManager.CurrentState = StateManager.State.Default;
     }
 
-    public void RiotStep(Tile from, Tile to)
+    public IEnumerator RiotStep(Tile tile)
     {
-        var knight = (DKnight) GameState.Instance.AllAtPosition(from.Position, m => m.GetType() == typeof(DKnight))[0];
+        var previousTile = _riotPathStack.Peek();
+        _riotPathStack.Push(tile);
+        var knight =
+            (DKnight) GameState.Instance.AllAtPosition(previousTile.Position, m => m.GetType() == typeof(DKnight))[0];
         CommandProcessor.Instance.ExecuteCommand(
             new RiotStepCommand(
                 0,
                 GameState.Instance.TurnPlayer(),
                 knight,
-                to.Position
+                tile.Position
             )
         );
+
+        yield return WAIT_FOR_COMMAND;
+
+        StateManager.CurrentState =
+            tile.Position.IsFinal ? StateManager.State.RiotAuthorize : StateManager.State.RiotChoosePath;
     }
 
-    public void StartRiot(Tile tile, DWorker worker)
+    private IEnumerator StartRiot(DWorker worker)
     {
-        var meeple = GameState.Instance.AtPosition(tile.Position);
+        var meeple = GameState.Instance.AtPosition(_riotPathStack.Peek().Position);
         CommandProcessor.Instance.ExecuteCommand(new StartRiotCommand(
             0,
             GameState.Instance.TurnPlayer(),
             worker,
             meeple
         ));
+
+        yield return WAIT_FOR_COMMAND;
+
+        StateManager.CurrentState = StateManager.State.RiotChoosePath;
     }
 
     public void UndoRiotStep()
@@ -243,26 +266,41 @@ public class FieldManager : MonoBehaviour
                 tile.Position
             )
         );
-        
     }
 
-    public void Revive(Tile tile, DWorker worker)
+    public IEnumerator Revive(DWorker worker)
     {
         //var worker = new DWorker(GameState.Instance.TurnPlayer().Id);
-        CommandProcessor.Instance.ExecuteCommand(new ReviveCommand(0, GameState.Instance.TurnPlayer(), worker,
-            tile.Meeples[0].Core));
+        CommandProcessor.Instance.ExecuteCommand(new ReviveCommand(
+                0,
+                GameState.Instance.TurnPlayer(),
+                worker,
+                StoreTile.Meeples[0].Core
+            )
+        );
+
+        yield return WAIT_FOR_COMMAND;
+
+        StoreTile = null;
+        StateManager.CurrentState = StateManager.State.Default;
     }
 
-    public void Retreat(Tile battlefrontTile, Tile tile)
+    private IEnumerator Retreat(Tile tile)
     {
         CommandProcessor.Instance.ExecuteCommand(new RetreatCommand(
-            0,
-            battlefrontTile.Meeples[0].Core as DKnight,
-            tile.Position
-        ));
+                0,
+                StoreTile.Meeples[0].Core as DKnight,
+                tile.Position
+            )
+        );
+
+        yield return WAIT_FOR_COMMAND;
+
+        StoreSecondTile = null;
+        StateManager.CurrentState = StateManager.State.Default;
     }
 
-    public void Villager(Tile tile)
+    public IEnumerator Villager(Tile tile)
     {
         // if there is an villager in this list, that is not on the board
         // it must be due to an undo of the draw villager command
@@ -277,12 +315,24 @@ public class FieldManager : MonoBehaviour
         }
 
         CommandProcessor.Instance.ExecuteCommand(new DrawVillagerCommand(0, villager, tile.Position));
+
+        yield return WAIT_FOR_COMMAND;
+        
+        StateManager.CurrentState = StateManager.State.Default;
     }
 
-    public void MoveMeeple(Tile from, Tile to)
+    public IEnumerator MoveMeeple(Tile tile)
     {
-        CommandProcessor.Instance.ExecuteCommand(new MoveVillagerCommand(0, GameState.Instance.TurnPlayer(),
-            from.Meeples[0].Core, to.Position));
+        CommandProcessor.Instance.ExecuteCommand(new MoveVillagerCommand(
+            0, 
+            GameState.Instance.TurnPlayer(),
+            StoreTile.Meeples[0].Core, 
+            tile.Position));
+
+        yield return WAIT_FOR_COMMAND;
+        
+        StoreTile = null;
+        StateManager.CurrentState = StateManager.State.Default;
     }
 
     #endregion
@@ -313,17 +363,7 @@ public class FieldManager : MonoBehaviour
                 break;
             //TODO: Can we add a case for RiotChooseFollowerType
             case StateManager.State.RiotChoosePath:
-                var previousTile = _riotPathStack.Peek();
-                _riotPathStack.Push(tile);
-                RiotStep(previousTile, tile);
-                if (tile.Position.IsFinal)
-                {
-                    StateManager.CurrentState = StateManager.State.RiotAuthorize;
-                }
-                else
-                {
-                    StateManager.CurrentState = StateManager.State.RiotChoosePath;
-                }
+                StartCoroutine(RiotStep(tile));
                 break;
             case StateManager.State.Revive:
                 StoreTile = tile;
@@ -331,22 +371,17 @@ public class FieldManager : MonoBehaviour
                 break;
             // TODO (metul): Wait until command executed before changing state (latency on RPCs)
             case StateManager.State.RetreatChooseTile:
-                Retreat(StoreTile, tile);
-                StoreSecondTile = null;
-                StateManager.CurrentState = StateManager.State.Default;
+                StartCoroutine(Retreat(tile));
                 break;
             case StateManager.State.RetreatChooseKnight:
                 StoreTile = tile;
                 StateManager.CurrentState = StateManager.State.RetreatChooseTile;
                 break;
             case StateManager.State.Villager:
-                Villager(tile);
-                StateManager.CurrentState = StateManager.State.Default;
+                StartCoroutine(Villager(tile));
                 break;
             case StateManager.State.MoveMeeple:
-                MoveMeeple(StoreTile, tile);
-                StateManager.CurrentState = StateManager.State.Default;
-                StoreTile = null;
+                StartCoroutine(MoveMeeple(tile));
                 break;
             case StateManager.State.Default:
                 if (GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn)
@@ -354,6 +389,7 @@ public class FieldManager : MonoBehaviour
                     StoreTile = tile;
                     StateManager.CurrentState = StateManager.State.MoveMeeple;
                 }
+
                 break;
         }
     }
@@ -364,33 +400,28 @@ public class FieldManager : MonoBehaviour
         switch (action)
         {
             case StateManager.State.Authorize:
-                Authorize(StoreTile, worker);
-                StoreTile = null;
-                StateManager.CurrentState = StateManager.State.Default;
+                StartCoroutine(Authorize(worker));
                 break;
             case StateManager.State.Swap2:
-                Swap(StoreTile, StoreSecondTile, worker);
-                StoreTile = StoreSecondTile = null;
-                StateManager.CurrentState = StateManager.State.Default;
+                StartCoroutine(Swap(worker));
                 break;
             case StateManager.State.Revive:
-                Revive(StoreTile, worker);
-                StoreTile = null;
-                StateManager.CurrentState = StateManager.State.Default;
+                StartCoroutine(Revive(worker));
                 break;
             case StateManager.State.RiotChooseKnight:
-                StartRiot(_riotPathStack.Peek(), worker);
-                StateManager.CurrentState = StateManager.State.RiotChoosePath;
+                StartCoroutine(StartRiot(worker));
                 break;
         }
     }
 
     public void NetworkedUpdateInteractability()
     {
-        if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault() && (!NetworkManager.Singleton?.IsServer).GetValueOrDefault())
+        if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault() &&
+            (!NetworkManager.Singleton?.IsServer).GetValueOrDefault())
         {
             //NetworkLog.LogInfoServer($"NetworkedUpdateInteractability: {NetworkManager.Singleton.LocalClientId}");
-            if (PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId] == GameState.Instance.TurnPlayer().Id)
+            if (PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId] ==
+                GameState.Instance.TurnPlayer().Id)
                 UpdateInteractability();
             else
             {
@@ -596,9 +627,9 @@ public class FieldManager : MonoBehaviour
 
     private void EnableRiotPath()
     {
-        if(_riotPathStack.Count == 0)
+        if (_riotPathStack.Count == 0)
             return;
-        
+
         var last = _riotPathStack.Peek().Position;
 
         GameState.Instance.TraverseBoard(p =>

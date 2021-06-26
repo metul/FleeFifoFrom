@@ -1,3 +1,4 @@
+using System.Collections;
 using MLAPI;
 using MLAPI.Logging;
 using System.Linq;
@@ -6,6 +7,9 @@ using UnityEngine.UI;
 
 public class ButtonManager : MonoBehaviour
 {
+    private const float COMMAND_WAIT_TIME = 0.3f;
+    private readonly WaitForSeconds WAIT_FOR_COMMAND = new WaitForSeconds(COMMAND_WAIT_TIME);
+    
     [Header("Prefabs")]
     [SerializeField] private Worker _workerPrefab;
     [SerializeField] private PlayerTile _playerTilePrefab;
@@ -286,21 +290,30 @@ public class ButtonManager : MonoBehaviour
 
     public void Undo()
     {
-        // clear riot stack in field manager if current state is a riot path choosing state
-        if(StateManager.IsRiotStep())
-            _fieldManager.UndoRiotStep();
-        
         // undo 
         if (StateManager.IsCurrentStateMilestone())
         {
-            CommandProcessor.Instance.Undo();
-            StateManager.UndoUntilLastMilestone();
+            StartCoroutine(UndoCoroutine());
         }
         // undo current selection step
         else
         {
             StateManager.Undo();
         }
+    }
+
+
+    private IEnumerator UndoCoroutine()
+    {
+        CommandProcessor.Instance.Undo();
+        
+        yield return WAIT_FOR_COMMAND;
+        
+        // clear riot stack in field manager if current state is a riot path choosing state
+        if(StateManager.IsRiotStep())
+            _fieldManager.UndoRiotStep();
+        
+        StateManager.UndoUntilLastMilestone();
     }
 
     public void EndTurn()

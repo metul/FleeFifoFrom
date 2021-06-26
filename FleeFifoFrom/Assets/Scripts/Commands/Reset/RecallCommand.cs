@@ -70,6 +70,7 @@ public class RecallCommand : ResetCommand, INetworkSerializable
     {
         base.NetworkSerialize(serializer);
         serializer.Serialize(ref _tileId);
+        serializer.Serialize(ref _player);
 
         int workersLength = 0;
         if (!serializer.IsReading)
