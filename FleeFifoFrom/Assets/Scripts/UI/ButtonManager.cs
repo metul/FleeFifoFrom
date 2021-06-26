@@ -78,7 +78,7 @@ public class ButtonManager : MonoBehaviour
             if (PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId] == GameState.Instance.TurnPlayer().Id)
                 UpdateInteractability();
             else
-                EnableElements(false, false, false, endTurnAllowed: false);
+                EnableElements(false, false, false, endTurnAllowed: false, undoAllowed: false);
         }
         else // MARK: Allow local debugging (also updates interactability on server)
             UpdateInteractability();
@@ -124,7 +124,8 @@ public class ButtonManager : MonoBehaviour
         }
     }
 
-    private void EnableElements(bool tiles, bool worker, bool playerWorker, bool opponentTileWorkers = false, bool buttons = false, bool endTurnAllowed = true)
+    private void EnableElements(bool tiles, bool worker, bool playerWorker, 
+        bool opponentTileWorkers = false, bool buttons = false, bool undoAllowed = true, bool endTurnAllowed = true)
     {
         foreach (var actionTile in _actionTiles)
         {
@@ -160,9 +161,9 @@ public class ButtonManager : MonoBehaviour
             resetButton.interactable = resetButtons;
         
         _villagerButton.interactable = buttons && GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn;
-        _undoButton.interactable = CommandProcessor.Instance.IsUndoable ||
+        _undoButton.interactable = undoAllowed && CommandProcessor.Instance.IsUndoable ||
                                    StateManager.CurrentState != StateManager.State.Default;
-        _endTurnButton.interactable = GameState.Instance.CanEndTurn() && endTurnAllowed;
+        _endTurnButton.interactable = endTurnAllowed && GameState.Instance.CanEndTurn();
         
         // included this only half assed, is set true directly in the switch state on State RiotAuthorize
         _finishRiotButton.SetActive(false);
