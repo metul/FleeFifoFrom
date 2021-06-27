@@ -361,10 +361,7 @@ public class CommunicationManager : NetworkBehaviour
         CommandProcessor.Instance.Commands.Push(cmd);
         cmd.Execute();
         if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
-        {
-            NetworkCommandProcessor.Instance.CommandExecutionCount.Value++;
             NetworkCommandProcessor.Instance.RegisterCommand(NetworkManager.Singleton.LocalClientId);
-        }
     }
 
     public void RequestUndoCommand()
