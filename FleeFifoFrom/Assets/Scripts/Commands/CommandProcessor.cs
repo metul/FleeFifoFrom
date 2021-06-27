@@ -40,7 +40,6 @@ public sealed class CommandProcessor
         {
             if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
             {
-                NetworkCommandProcessor.Instance.CommandExecutionCount.Value = 0;
                 NetworkCommandProcessor.Instance.ResetCommandExecutionRegistry();
                 CommunicationManager.Instance.RequestExecuteCommand(command);
                 return _promiseTimer.WaitUntil(timeData =>

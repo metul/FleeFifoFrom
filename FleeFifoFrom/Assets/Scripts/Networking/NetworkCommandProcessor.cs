@@ -37,13 +37,6 @@ public class NetworkCommandProcessor : NetworkBehaviour
         }
     }
 
-    private NetworkVariableInt _commandExecutionCount = new NetworkVariableInt(new NetworkVariableSettings
-    {
-        WritePermission = NetworkVariablePermission.Everyone,
-        SendTickrate = 0
-    }, 0);
-    public NetworkVariableInt CommandExecutionCount => _commandExecutionCount; // TODO: Command execution count can not be updated synchronously (e.g. multiple clients update value (0 -> 1)
-
     private NetworkDictionary<ulong, bool> _commandExecutionRegistry = new NetworkDictionary<ulong, bool>(new NetworkVariableSettings
     {
         WritePermission = NetworkVariablePermission.Everyone,
@@ -53,23 +46,18 @@ public class NetworkCommandProcessor : NetworkBehaviour
 
     private void OnEnable()
     {
-        CommandExecutionCount.OnValueChanged += OnCommandExecutionCountChanged;
         CommandExecutionRegistry.OnDictionaryChanged += OnCommandExecutionRegistered;
     }
 
     private void OnDisable()
     {
-        CommandExecutionCount.OnValueChanged -= OnCommandExecutionCountChanged;
         CommandExecutionRegistry.OnDictionaryChanged -= OnCommandExecutionRegistered;
     }
 
-    private void OnCommandExecutionCountChanged(int prev, int next)
-    {
-        if (prev == next)
-            return;
-        NetworkLog.LogInfoServer($"Execution count change: ({prev} -> {next}).");
-    }
-
+    /// <summary>
+    /// Callback for command execution register.
+    /// </summary>
+    /// <param name="changeEvent"></param>
     private void OnCommandExecutionRegistered(NetworkDictionaryEvent<ulong, bool> changeEvent)
     {
         NetworkLog.LogInfoServer($"Command execution registered: ({changeEvent.Key} / {changeEvent.Value}).");
