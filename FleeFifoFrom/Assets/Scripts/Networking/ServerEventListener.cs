@@ -52,6 +52,7 @@ public class ServerEventListener : MonoBehaviour
             NetworkLog.LogInfoServer($"Mapping client ID {clientID} to player ID {playerID}.");
             _playerManager.NetworkPlayerIDs.Add(clientID, playerID);
             _playerManager.PlayerCount.Value++;
+            NetworkCommandProcessor.Instance.CommandExecutionRegistry.Add(clientID, false);
         }
     }
 

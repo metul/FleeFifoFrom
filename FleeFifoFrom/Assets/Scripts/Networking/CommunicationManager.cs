@@ -1,8 +1,5 @@
 using MLAPI;
-using MLAPI.Logging;
 using MLAPI.Messaging;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -363,6 +360,11 @@ public class CommunicationManager : NetworkBehaviour
     {
         CommandProcessor.Instance.Commands.Push(cmd);
         cmd.Execute();
+        if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
+        {
+            NetworkCommandProcessor.Instance.CommandExecutionCount.Value++;
+            NetworkCommandProcessor.Instance.RegisterCommand(NetworkManager.Singleton.LocalClientId);
+        }
     }
 
     public void RequestUndoCommand()

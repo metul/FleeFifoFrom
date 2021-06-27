@@ -27,6 +27,8 @@ public sealed class CommandProcessor
     private Stack<Command> _commands = new Stack<Command>();
     public Stack<Command> Commands => _commands;
 
+    private IPromiseTimer _promiseTimer = new PromiseTimer();
+
     /// <summary>
     /// Executes command and saves into history.
     /// </summary>
@@ -37,20 +39,24 @@ public sealed class CommandProcessor
         if (command.IsFeasible())
         {
             if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
+            {
+                NetworkCommandProcessor.Instance.CommandExecutionCount.Value = 0;
+                NetworkCommandProcessor.Instance.ResetCommandExecutionRegistry();
                 CommunicationManager.Instance.RequestExecuteCommand(command);
+                return _promiseTimer.WaitUntil(timeData =>
+                {
+                    return NetworkCommandProcessor.Instance.IsCommandExecuted();
+                });
+            }
             else // MARK: Allow local debugging
             {
                 _commands.Push(command);
                 command.Execute();
+                promise.Resolve();
             }
-            
-            // TODO (Anas-Mert) figure out the moment this promise can be fulfilled
-            promise.Resolve();
         }
         else
-        {
-            promise.Reject(new Exception("command not feasible"));
-        }
+            promise.Reject(new Exception("Command not feasible!"));
         return promise;
     }
 
