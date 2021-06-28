@@ -44,10 +44,7 @@ public class FieldManager : MonoBehaviour
                 _storeTile = value;
                 // MARK: Update tile if connected, supports local debugging
                 if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
-                {
-                    NetworkLog.LogInfoServer($"Store Tile set to {_storeTile}.");
                     NetworkFieldManager.Instance.NetworkStoreTile.Value = value;
-                }
             }
         }
     }
@@ -62,10 +59,7 @@ public class FieldManager : MonoBehaviour
                 _storeSecondTile = value;
                 // MARK: Update tile if connected, supports local debugging
                 if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault())
-                {
-                    NetworkLog.LogInfoServer($"Second Store Tile set to {_storeSecondTile}.");
                     NetworkFieldManager.Instance.NetworkStoreSecondTile.Value = value;
-                }
             }
         }
     }

@@ -89,7 +89,7 @@ public class NetworkFieldManager : NetworkBehaviour
     {
         if (prev == next || next == _fieldManager.StoreTile)
             return;
-        NetworkLog.LogInfoServer($"NetworkStoreTileChange invoked ({prev} -> {next}).");
+        //NetworkLog.LogInfoServer($"NetworkStoreTileChange invoked ({prev} -> {next}).");
         _fieldManager.StoreTile = next;
     }
 
@@ -97,7 +97,7 @@ public class NetworkFieldManager : NetworkBehaviour
     {
         if (prev == next || next == _fieldManager.StoreSecondTile)
             return;
-        NetworkLog.LogInfoServer($"NetworkStoreSecondTileChange invoked ({prev} -> {next}).");
+        //NetworkLog.LogInfoServer($"NetworkStoreSecondTileChange invoked ({prev} -> {next}).");
         _fieldManager.StoreSecondTile = next;
     }
 }

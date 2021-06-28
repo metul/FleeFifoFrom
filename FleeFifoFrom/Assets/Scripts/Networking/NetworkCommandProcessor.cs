@@ -60,7 +60,7 @@ public class NetworkCommandProcessor : NetworkBehaviour
     /// <param name="changeEvent"></param>
     private void OnCommandExecutionRegistered(NetworkDictionaryEvent<ulong, bool> changeEvent)
     {
-        NetworkLog.LogInfoServer($"Command execution registered: ({changeEvent.Key} / {changeEvent.Value}).");
+        //NetworkLog.LogInfoServer($"Command execution registered: ({changeEvent.Key} / {changeEvent.Value}).");
     }
 
     /// <summary>

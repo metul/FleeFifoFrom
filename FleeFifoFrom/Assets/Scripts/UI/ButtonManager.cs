@@ -74,7 +74,6 @@ public class ButtonManager : MonoBehaviour
     {
         if ((NetworkManager.Singleton?.IsConnectedClient).GetValueOrDefault() && (!NetworkManager.Singleton?.IsServer).GetValueOrDefault())
         {
-            //NetworkLog.LogInfoServer($"NetworkedUpdateInteractability: {NetworkManager.Singleton.LocalClientId}");
             if (PlayerManager.Instance.NetworkPlayerIDs[NetworkManager.Singleton.LocalClientId] == GameState.Instance.TurnPlayer().Id)
                 UpdateInteractability();
             else
