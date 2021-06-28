@@ -29,6 +29,7 @@ public class PriorityWorldDisplay : MonoBehaviour
     private List<LocalPrioData> _lowData = new List<LocalPrioData>();
     
 
+    // TODO: proper init with values prio values from rules and less hardcoding
     private void Start()
     {
         PRIO_DATA = new Dictionary<Transform, LocalPrioData>()
@@ -54,7 +55,7 @@ public class PriorityWorldDisplay : MonoBehaviour
                 {
                     trans = _merchantPrio,
                     prio = GameState.Instance.Priorities[typeof(DMerchant)].Value.Current,
-                    index = 2
+                    index = 0
                 }
             },
             {
@@ -62,7 +63,7 @@ public class PriorityWorldDisplay : MonoBehaviour
                 {
                     trans = _knightPrio,
                     prio = GameState.Instance.Priorities[typeof(DKnight)].Value.Current,
-                    index = 3
+                    index = 0
                 }
             },
         };
