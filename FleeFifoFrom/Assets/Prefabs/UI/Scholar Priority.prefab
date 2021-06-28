@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3630006184984612940, guid: 522a07e8776751b45b27f790bb5a4176, type: 3}
       propertyPath: m_Name
-      value: Priority Tile
+      value: Scholar Priority
       objectReference: {fileID: 0}
     - target: {fileID: 3630006184984612943, guid: 522a07e8776751b45b27f790bb5a4176, type: 3}
       propertyPath: m_Pivot.x
@@ -94,6 +94,30 @@ PrefabInstance:
     - target: {fileID: 3630006184984612943, guid: 522a07e8776751b45b27f790bb5a4176, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5718968777943861460, guid: 522a07e8776751b45b27f790bb5a4176, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: ed88cad83d12fe74d9939533d12cba0a, type: 3}
+    - target: {fileID: 5718968777943861460, guid: 522a07e8776751b45b27f790bb5a4176, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5718968777943861460, guid: 522a07e8776751b45b27f790bb5a4176, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5718968777943861460, guid: 522a07e8776751b45b27f790bb5a4176, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7309199207571150468, guid: 522a07e8776751b45b27f790bb5a4176, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7309199207571150468, guid: 522a07e8776751b45b27f790bb5a4176, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 522a07e8776751b45b27f790bb5a4176, type: 3}

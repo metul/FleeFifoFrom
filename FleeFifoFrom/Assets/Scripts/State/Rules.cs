@@ -37,9 +37,9 @@ public class Rules
   
   public static readonly Dictionary<Type, DPrio.PrioValue> START_PRIO_ARRAY = new Dictionary<Type, DPrio.PrioValue>()
   {
-    {typeof(DFarmer), DPrio.PrioValue.Medium},
+    {typeof(DFarmer), DPrio.PrioValue.Low},
     {typeof(DMerchant), DPrio.PrioValue.Medium},
     {typeof(DScholar), DPrio.PrioValue.Medium},
-    {typeof(DKnight), DPrio.PrioValue.Medium}
+    {typeof(DKnight), DPrio.PrioValue.High}
   };
 }
