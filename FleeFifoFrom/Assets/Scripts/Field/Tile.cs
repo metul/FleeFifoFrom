@@ -5,8 +5,7 @@ using UnityEngine.EventSystems;
 
 public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    // TODO: deprecate this with Position (keep in mind Pos starts with 1 not 0)
-    public Vector2 ID { get; set; }
+    public Vector3 ID { get; set; } // (PosX - 1, PosY - 1, IsBattleFieldTile ? -1 : 1)
     public DPosition Position
     {
         get => new DPosition((ushort) (ID.x + 1), (ushort) (ID.y + 1));
@@ -69,7 +68,7 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
         else
         {
             Tile otherTile = (Tile)other;
-            return (ID.x == otherTile.ID.x) && (ID.y == otherTile.ID.y);
+            return  (ID.z == otherTile.ID.z) && (ID.x == otherTile.ID.x) && (ID.y == otherTile.ID.y);
         }
     }
 }

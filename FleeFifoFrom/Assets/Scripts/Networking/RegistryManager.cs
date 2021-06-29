@@ -30,7 +30,7 @@ public sealed class RegistryManager
     /// <summary>
     /// Dictionary storing object data.
     /// </summary>
-    private Dictionary<Vector2, Tile> _tileRegistry = new Dictionary<Vector2, Tile>();
+    private Dictionary<Vector3, Tile> _tileRegistry = new Dictionary<Vector3, Tile>();
 
     /// <summary>
     /// Registers a local object.
@@ -77,7 +77,7 @@ public sealed class RegistryManager
     {
         if (!_playerRegistry.ContainsKey(key))
             _playerRegistry.Add(key, value);
-        else if (_playerRegistry[key] != value) // TODO: Probably need to override Equals() on DObject
+        else if (_playerRegistry[key] != value)
             throw new Exception($"Another local player with the same ID {key} already registered!");
     }
 
@@ -109,19 +109,19 @@ public sealed class RegistryManager
     /// </summary>
     /// <param name="key"> Key for registering the tile. </param>
     /// <param name="value"> Local tile to store. </param>
-    public void Register(Vector2 key, Tile value)
+    public void Register(Vector3 key, Tile value)
     {
         if (!_tileRegistry.ContainsKey(key))
             _tileRegistry.Add(key, value);
-        //else if (_tileRegistry[key] != value)
-        //    throw new Exception($"Another local tile with the same ID {key} already registered!"); // TODO (metul): Temporary fix
+        else if (_tileRegistry[key] != value)
+            throw new Exception($"Another local tile with the same ID {key} already registered!");
     }
 
     /// <summary>
     /// Deregisters a local tile.
     /// </summary>
     /// <param name="key"> Key for deregistering the tile. </param>
-    public void Deregister(Vector2 key)
+    public void Deregister(Vector3 key)
     {
         if (!_tileRegistry.Remove(key))
             throw new Exception($"No local tile with the ID {key} is registered!");
@@ -132,7 +132,7 @@ public sealed class RegistryManager
     /// </summary>
     /// <param name="key"> Key to use for retrieval. </param>
     /// <returns> Registered local tile. </returns>
-    public Tile Request(Vector2 key)
+    public Tile Request(Vector3 key)
     {
         if (!_tileRegistry.ContainsKey(key))
             throw new Exception($"No local tile with the ID {key} is registered!");

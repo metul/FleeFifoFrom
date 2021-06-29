@@ -51,13 +51,13 @@ public class NetworkFieldManager : NetworkBehaviour
         {
             using (var writer = PooledNetworkWriter.Get(stream))
             {
-                writer.WriteVector2Packed(instance.ID);
+                writer.WriteVector3Packed(instance.ID);
             }
         }, (Stream stream) =>
         {
             using (var reader = PooledNetworkReader.Get(stream))
             {
-                return RegistryManager.Instance.Request(reader.ReadVector2Packed());
+                return RegistryManager.Instance.Request(reader.ReadVector3Packed());
             }
         });
         NetworkStoreTile.OnValueChanged += OnNetworkStoreTileChanged;

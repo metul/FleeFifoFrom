@@ -48,4 +48,15 @@ public class DPlayer
         }
         return CreateAnonymousPlayers(ids);
     }
+
+    public override bool Equals(object obj)
+    {
+        if ((obj == null) || !GetType().Equals(obj.GetType()))
+            return false;
+        else
+        {
+            DPlayer otherPlayer = (DPlayer)obj;
+            return (Id == otherPlayer.Id) && Name.Equals(otherPlayer.Name);
+        }
+    }
 }

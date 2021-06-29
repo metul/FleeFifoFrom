@@ -18,4 +18,15 @@ public class DObject
         ID_CURSOR++;
         RegistryManager.Instance.Register(ID, this);
     }
+
+    public override bool Equals(object obj)
+    {
+        if ((obj == null) || !GetType().Equals(obj.GetType()))
+            return false;
+        else
+        {
+            DObject otherObject = (DObject)obj;
+            return ID == otherObject.ID;
+        }
+    }
 }

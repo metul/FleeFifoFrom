@@ -54,7 +54,7 @@ public class NetworkStateManager : NetworkBehaviour
 
     private void OnNetworkStateChanged(int prev, int next)
     {
-        if (prev == next || next == (int)StateManager.CurrentState) // TODO (metul): Will cause error for StateX -> StateX transitions (riot step)
+        if (prev == next || next == (int)StateManager.CurrentState) // TODO (metul): Might cause error for StateX -> StateX transitions (riot step)
             return;
         NetworkLog.LogInfoServer($"NetworkStateChange invoked ({prev} -> {next}).");
         StateManager.CurrentState = (StateManager.State)next;

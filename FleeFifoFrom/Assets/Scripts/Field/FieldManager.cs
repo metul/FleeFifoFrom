@@ -68,9 +68,8 @@ public class FieldManager : MonoBehaviour
 
     private void Awake()
     {
-        _field = GetField(_rows);
-        _battleField =
-            GetField(_squads); // TODO (metul): Do not register battlefield tiles (or register in a separate container)
+        _field = GetField(_rows, false);
+        _battleField = GetField(_squads, true);
         _tempStorageTile = _tempStorage.GetComponent<Tile>();
         _authorizeStorageTile = _authorizeStorage.GetComponent<Tile>();
     }
@@ -81,7 +80,7 @@ public class FieldManager : MonoBehaviour
         StateManager.OnStateUpdate += state => NetworkedUpdateInteractability();
     }
 
-    private Tile[][] GetField(Transform[] sourceArray)
+    private Tile[][] GetField(Transform[] sourceArray, bool isBattleField)
     {
         // init field reference
         var field = new Tile[sourceArray.Length][];
@@ -93,7 +92,7 @@ public class FieldManager : MonoBehaviour
             // set id's
             for (var j = 0; j < tiles.Length; j++)
             {
-                tiles[j].ID = new Vector2(i, j);
+                tiles[j].ID = new Vector3(i, j, isBattleField ? -1 : 1);
                 RegistryManager.Instance.Register(tiles[j].ID, tiles[j]);
             }
         }
@@ -525,7 +524,6 @@ public class FieldManager : MonoBehaviour
             var tile = TileByPosition(p);
             tile.Interactable = _storeSecondTile.Position.Neighbors(tile.Position) &&
                                 (!overwriteInjured || GameState.Instance.HealthyMeepleAtPosition(p));
-            Debug.Log($"Tile {tile.Position}: {tile.Interactable}");
         });
     }
 
