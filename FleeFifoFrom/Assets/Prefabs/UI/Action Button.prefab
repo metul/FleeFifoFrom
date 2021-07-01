@@ -298,8 +298,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8971783447137158544}
   - component: {fileID: 9132995624633182457}
-  - component: {fileID: 2250552821838621644}
   - component: {fileID: 1987574861187542230}
+  - component: {fileID: 6747097624733622671}
   m_Layer: 5
   m_Name: Action Button
   m_TagString: Untagged
@@ -343,32 +343,6 @@ MonoBehaviour:
   _workerAnchor: {fileID: 8971783448276737519}
   Id: 0
   _tileButton: {fileID: 8971783448276737518}
---- !u!114 &2250552821838621644
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8971783447137158545}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 4
-  m_Spacing: 3
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!114 &1987574861187542230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -383,6 +357,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 2
+--- !u!114 &6747097624733622671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8971783447137158545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 3
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1001 &3757839693618538890
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -424,11 +424,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5234496444504568933, guid: c598f8425f30d524c9cce4d121fd5932, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 75
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 5234496444504568933, guid: c598f8425f30d524c9cce4d121fd5932, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 5234496444504568933, guid: c598f8425f30d524c9cce4d121fd5932, type: 3}
       propertyPath: m_LocalPosition.x

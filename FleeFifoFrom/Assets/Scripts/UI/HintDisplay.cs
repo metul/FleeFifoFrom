@@ -4,13 +4,17 @@ using UnityEngine.UI;
 public class HintDisplay : MonoBehaviour
 {
     private Text _text;
+    private Image _image;
 
     private void Awake()
     {
         _text = GetComponentInChildren<Text>();
+        _image = GetComponentInChildren<Image>();
         StateManager.OnStateUpdate += state =>
         {
             _text.text = Hint(state);
+            _image.color = ColorUtils.GetPlayerColor(GameState.Instance.TurnPlayer().Id);
+            _text.color = _image.color.TextColor();
         };
     }
 
