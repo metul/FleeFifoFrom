@@ -27,13 +27,13 @@ public sealed class CommandProcessor
     private Stack<Command> _commands = new Stack<Command>();
     public Stack<Command> Commands => _commands;
 
-    private IPromiseTimer _promiseTimer = new PromiseTimer();
+    //private IPromiseTimer _promiseTimer = new PromiseTimer();
 
     /// <summary>
     /// Executes command and saves into history.
     /// </summary>
     /// <param name="command"> Command to be executed. </param>
-    public IPromise ExecuteCommand(Command command)
+    public void ExecuteCommand(Command command)
     {
         var promise = new Promise();
         if (command.IsFeasible())
@@ -42,21 +42,22 @@ public sealed class CommandProcessor
             {
                 NetworkCommandProcessor.Instance.ResetCommandExecutionRegistry();
                 CommunicationManager.Instance.RequestExecuteCommand(command);
-                return _promiseTimer.WaitUntil(timeData =>
-                {
-                    return NetworkCommandProcessor.Instance.IsCommandExecuted();
-                });
+                //return _promiseTimer.WaitUntil(timeData =>
+                //{
+                //    return NetworkCommandProcessor.Instance.IsCommandExecuted();
+                //});
             }
             else // MARK: Allow local debugging
             {
                 _commands.Push(command);
                 command.Execute();
-                promise.Resolve();
+                //promise.Resolve();
             }
         }
         else
-            promise.Reject(new Exception("Command not feasible!"));
-        return promise;
+            UnityEngine.Debug.LogError("Command not feasible!");
+            //promise.Reject(new Exception("Command not feasible!"));
+        //return promise;
     }
 
     /// <summary>

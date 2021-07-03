@@ -39,7 +39,7 @@ public class DPlayer
         return result.ToArray();
     }
 
-    public static DPlayer[] CreateAnonymousPlayers(ushort num = 4) // TODO: revert
+    public static DPlayer[] CreateAnonymousPlayers(ushort num = 2) // TODO: revert
     {
         ID[] ids = new ID[num];
         for (ushort i = 0; i < num; i++)
