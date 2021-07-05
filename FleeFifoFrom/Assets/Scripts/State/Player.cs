@@ -39,10 +39,10 @@ public class DPlayer
         return result.ToArray();
     }
 
-    public static DPlayer[] CreateAnonymousPlayers(ushort num = 4) // TODO: revert
+    public static DPlayer[] CreateAnonymousPlayers() // TODO: revert
     {
-        ID[] ids = new ID[num];
-        for (ushort i = 0; i < num; i++)
+        ID[] ids = new ID[GameState.PlayerCount];
+        for (ushort i = 0; i < GameState.PlayerCount; i++)
         {
             ids[i] = Rules.DEFAULT_PLAYERS[i];
         }

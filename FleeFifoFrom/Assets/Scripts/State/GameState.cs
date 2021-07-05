@@ -38,6 +38,9 @@ public class GameState
         ResetTurn,
     }
 
+    public static int PlayerCount = Rules.MAX_PLAYER_COUNT;
+    public static bool LocalGame = true;
+
     public DPosition[][] Board { get; private set; }
     public DWorker[] Workers { get; private set; }
     public DKnight[] Knights { get; private set; }
@@ -96,7 +99,8 @@ public class GameState
         //#endif
 
         // MARK: Temporary switch between local debugging and online (Uncomment following line for local)
-        DrawMeeple();
+        if(LocalGame)
+            DrawMeeple();
         UpdateVillagerBagCount(); // TODO (Anas-Mert): May have to be networked, haven't checked yet
     }
 

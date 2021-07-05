@@ -6,9 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
+    path: Assets/Scenes/OldNetworkScene.unity
+    guid: c5dc44420de13cb49a0f14ebbeffc5e1
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: b7b282a3414f0784db5fdd86bd81b697
+  - enabled: 1
     path: Assets/Scenes/Game.unity
     guid: e6b87c4513c77724e9d3b5ac95097103
   - enabled: 1
-    path: Assets/Scenes/OldNetworkScene.unity
-    guid: c5dc44420de13cb49a0f14ebbeffc5e1
+    path: Assets/Scenes/NetworkScene.unity
+    guid: 4dda5e06e78d0e94fb53f0685b9263c0
   m_configObjects: {}
