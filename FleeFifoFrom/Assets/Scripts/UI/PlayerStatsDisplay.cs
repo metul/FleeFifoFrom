@@ -18,13 +18,13 @@ public class PlayerStatsDisplay : MonoBehaviour
         var colorPlayer = ColorUtils.GetPlayerColor(player.Id);
         var colorText = colorPlayer.TextColor();
 
-        _textHonor.color = colorText;
-        _textSaved.color = colorText;
-        _textTotal.color = colorText;
+        _textHonor.color = colorPlayer;
+        _textSaved.color = colorPlayer;
+        _textTotal.color = colorPlayer;
 
-        _imageHonor.color = colorPlayer;
-        _imageSaved.color = colorPlayer;
-        _imageTotal.color = colorPlayer;
+        // _imageHonor.color = colorPlayer;
+        // _imageSaved.color = colorPlayer;
+        // _imageTotal.color = colorPlayer;
 
         player.Honor.Score.OnChange += h =>
         {
