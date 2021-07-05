@@ -39,7 +39,7 @@ public class GameState
     }
 
     public static int PlayerCount = Rules.MAX_PLAYER_COUNT;
-    public static bool LocalGame = true;
+    public static bool LocalGame;
 
     public DPosition[][] Board { get; private set; }
     public DWorker[] Workers { get; private set; }
