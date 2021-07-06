@@ -54,7 +54,7 @@ public class ButtonManager : MonoBehaviour
         foreach (var dWorker in GameState.Instance.Workers)
         {
             var worker = Instantiate(_workerPrefab, _canvasTransform);
-            worker.Initialize(dWorker, this);
+            worker.Initialize(dWorker, this, _canvasTransform);
         }
 
         StateManager.OnStateUpdate += state => NetworkedUpdateInteractability();

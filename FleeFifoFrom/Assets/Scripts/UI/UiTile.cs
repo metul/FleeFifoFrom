@@ -5,10 +5,10 @@ public abstract class UiTile : MonoBehaviour
 {
     public List<Worker> Workers { get; set; }= new List<Worker>();
 
-    public Transform Transform { get => _workerAnchor; }
+    public RectTransform Transform { get => _workerAnchor; }
     
     protected ButtonManager _buttonManager;
-    [SerializeField] protected Transform _workerAnchor;
+    [SerializeField] protected RectTransform _workerAnchor;
 
     protected void Awake()
     {

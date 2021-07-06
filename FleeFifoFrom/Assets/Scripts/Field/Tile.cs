@@ -11,7 +11,17 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
         get => new DPosition((ushort) (ID.x + 1), (ushort) (ID.y + 1));
     }
     public DPlayer.ID NominalOwner { get => _nominalOwner; }
-    public bool Interactable { get; set; }
+
+    public bool Interactable
+    {
+        get => _interactable;
+        set
+        {
+           if(_hovered && value)
+               _onHighlight?.Invoke();
+           _interactable = value;
+        }
+    }
     public List<Meeple> Meeples { get; private set; } = new List<Meeple>();
     public Transform Transform { get; private set; }
 
@@ -27,6 +37,8 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
     // Actions
     private Action _onHighlight;
     private Action _onDefault;
+    private bool _hovered;
+    private bool _interactable;
 
     private void Awake()
     {
@@ -48,17 +60,21 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
             _audioSource.Play();
         }
     }
-
+    
     public void OnPointerEnter(PointerEventData eventData)
     {
         if(Interactable)
             _onHighlight?.Invoke();
         else
+        {
+            _hovered = true;
             _onDefault?.Invoke();
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        _hovered = false;
         _onDefault?.Invoke();
     }
 

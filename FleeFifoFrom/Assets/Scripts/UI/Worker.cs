@@ -16,14 +16,15 @@ public class Worker : MonoBehaviour
     private UiTile _tile;
     private Button _button;
     private ButtonManager _buttonManager;
-    private Transform _transform;
+    private RectTransform _canvasTransform;
+    private RectTransform _transform;
 
-    public void Initialize(DWorker core, ButtonManager buttonManager)
+    public void Initialize(DWorker core, ButtonManager buttonManager, RectTransform canvas)
     {
         Core = core;
         _buttonManager = buttonManager;
         _button = GetComponent<Button>();
-        _transform = transform;
+        _transform = GetComponent<RectTransform>();
         
         Interactable = false;
         SetColor(Core.Owner);
@@ -40,7 +41,8 @@ public class Worker : MonoBehaviour
             _tile.Workers.Remove(this);
         _tile = tile;
         _tile.Workers.Add(this);
-        _transform.SetParent(_tile.Transform);
+        _transform.SetParent(_tile.Transform, true);
+        
     }
 
     private void SetTo(DActionPosition position)
