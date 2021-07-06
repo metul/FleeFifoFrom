@@ -15,7 +15,7 @@ public class StateManager : MonoBehaviour
         Swap2,
         RiotChooseKnight,
         RiotChoosePath,
-        RiotAuthorize, // <- current debug state
+        RiotAuthorize,
         Revive,
         Reprioritize,
         RetreatChooseTile,
@@ -38,6 +38,7 @@ public class StateManager : MonoBehaviour
 
     private static State _currentState;
     private static Stack<State> _stateStack = new Stack<State>();
+    
     public static Action<State> OnStateUpdate;
 
     public static State CurrentlyPayingFor;

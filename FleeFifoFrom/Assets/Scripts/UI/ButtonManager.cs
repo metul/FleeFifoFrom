@@ -31,11 +31,13 @@ public class ButtonManager : MonoBehaviour
     // References
     private PlayerTile[] _playerTiles;
     private FieldManager _fieldManager;
+    private RectTransform _canvasTransform;
 
     private void Start()
     {
         // get references
         _fieldManager = FindObjectOfType<FieldManager>();
+        _canvasTransform = FindObjectOfType<Canvas>().GetComponent<RectTransform>();
 
         // init player tiles
         _playerTiles = new PlayerTile[GameState.Instance.Players.Length];
@@ -51,7 +53,7 @@ public class ButtonManager : MonoBehaviour
         // init worker
         foreach (var dWorker in GameState.Instance.Workers)
         {
-            var worker = Instantiate(_workerPrefab);
+            var worker = Instantiate(_workerPrefab, _canvasTransform);
             worker.Initialize(dWorker, this);
         }
 

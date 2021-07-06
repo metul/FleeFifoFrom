@@ -14,13 +14,18 @@ public class FieldManager : MonoBehaviour
     private const float COMMAND_WAIT_TIME = 0.3f;
     private readonly WaitForSeconds WAIT_FOR_COMMAND = new WaitForSeconds(COMMAND_WAIT_TIME);
 
+    [Header("Prefabs")]
     [SerializeField] private Meeple[] _villagerPrefabs;
     [SerializeField] private Knight _knightPrefab;
 
+    [Header("Field")]
     [SerializeField] private Transform[] _rows;
     [SerializeField] private Transform[] _squads;
     [SerializeField] private Transform _tempStorage;
     [SerializeField] private Transform _authorizeStorage;
+    
+    [Header("Other")]
+    [SerializeField] private AttackerEffects _attackerEffects;
 
     private Tile[][] _field;
     private Tile[][] _battleField;
@@ -286,9 +291,11 @@ public class FieldManager : MonoBehaviour
                 tile.Position
             )
         );
+        
+        _attackerEffects.Play();
 
         yield return WAIT_FOR_COMMAND;
-
+        
         StoreSecondTile = null;
         StateManager.CurrentState = StateManager.State.Default;
     }
