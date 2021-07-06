@@ -38,7 +38,7 @@ public class GameState
 
     public static int PlayerCount = Rules.MAX_PLAYER_COUNT;
     public int GiantStrength = Rules.GIANT_STRENGTH;
-    public static bool LocalGame = true;
+    public static bool LocalGame;
 
     public DPosition[][] Board { get; private set; }
     public DWorker[] Workers { get; private set; }
