@@ -530,7 +530,7 @@ public class FieldManager : MonoBehaviour
         {
             var tile = TileByPosition(p);
             tile.Interactable = _storeSecondTile.Position.Neighbors(tile.Position) &&
-                                (!overwriteInjured || GameState.Instance.HealthyMeepleAtPosition(p));
+                                (overwriteInjured || GameState.Instance.HealthyMeepleAtPosition(p));
         });
     }
 
