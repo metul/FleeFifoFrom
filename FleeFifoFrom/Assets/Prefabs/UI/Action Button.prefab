@@ -512,7 +512,7 @@ MonoBehaviour:
   m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 15, y: 15}
+  m_CellSize: {x: 12, y: 12}
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 1
@@ -557,7 +557,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5234496444504568933, guid: c598f8425f30d524c9cce4d121fd5932, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 65
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 5234496444504568933, guid: c598f8425f30d524c9cce4d121fd5932, type: 3}
       propertyPath: m_SizeDelta.y
