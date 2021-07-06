@@ -1,10 +1,8 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Random = UnityEngine.Random;
-using MLAPI;
 using UnityEngine;
-using MLAPI.Logging;
+using Random = UnityEngine.Random;
 
 public class GameState
 {
@@ -39,6 +37,7 @@ public class GameState
     }
 
     public static int PlayerCount = Rules.MAX_PLAYER_COUNT;
+    public int GiantStrength = Rules.GIANT_STRENGTH;
     public static bool LocalGame = true;
 
     public DPosition[][] Board { get; private set; }
@@ -68,10 +67,14 @@ public class GameState
     public GameState(DPlayer[] players)
     {
         Players = players;
+        
+        // adjust giant strength
+        Debug.Log("Player count" + PlayerCount);
+        GiantStrength = (int) (Rules.GIANT_STRENGTH * ((float) PlayerCount / (float) Rules.MAX_PLAYER_COUNT));
+        
         _initializeBoard();
         _initializeWorkers();
-
-
+        
         _initializeKnights();
         _initializeVillagers();
         _initPrio();

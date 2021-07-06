@@ -6,9 +6,9 @@ public class KnightsVsGiantsDisplay : MonoBehaviour
     [SerializeField] private Text _knightCounter;
     [SerializeField] private Text _giantCounter;
 
-    void Start()
+    private void Start()
     {
-        _giantCounter.text = Rules.GIANT_STRENGTH.ToString();
+        _giantCounter.text = GameState.Instance.GiantStrength.ToString();
         _knightCounter.text = GameState.Instance.KnightsFightingCount.Current.ToString();
         GameState.Instance.KnightsFightingCount.OnChange = i =>
         {
