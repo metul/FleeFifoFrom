@@ -6,10 +6,8 @@ using UnityEngine.UI;
 
 public class QuitButton : MonoBehaviour
 {
-    [SerializeField] private Button _button;
-    
-    private void Start()
+    public void QuitApplication()
     {
-        _button.onClick.AddListener(() => { Application.Quit();});
+        Application.Quit();
     }
 }

@@ -31,11 +31,13 @@ public class ButtonManager : MonoBehaviour
     // References
     private PlayerTile[] _playerTiles;
     private FieldManager _fieldManager;
+    private RectTransform _canvasTransform;
 
     private void Start()
     {
         // get references
         _fieldManager = FindObjectOfType<FieldManager>();
+        _canvasTransform = FindObjectOfType<Canvas>().GetComponent<RectTransform>();
 
         // init player tiles
         _playerTiles = new PlayerTile[GameState.Instance.Players.Length];
@@ -51,8 +53,8 @@ public class ButtonManager : MonoBehaviour
         // init worker
         foreach (var dWorker in GameState.Instance.Workers)
         {
-            var worker = Instantiate(_workerPrefab);
-            worker.Initialize(dWorker, this);
+            var worker = Instantiate(_workerPrefab, _canvasTransform);
+            worker.Initialize(dWorker, this, _canvasTransform);
         }
 
         StateManager.OnStateUpdate += state => NetworkedUpdateInteractability();
@@ -159,7 +161,8 @@ public class ButtonManager : MonoBehaviour
         foreach (var resetButton in _resetButtons)
             resetButton.interactable = resetButtons;
         
-        _villagerButton.interactable = buttons && GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn;
+        _villagerButton.interactable = buttons && GameState.Instance.TurnType == GameState.TurnTypes.ResetTurn 
+                                               && GameState.Instance.VillagerBagCount.Current > 0;
         _undoButton.interactable = undoAllowed && CommandProcessor.Instance.IsUndoable ||
                                    StateManager.CurrentState != StateManager.State.Default;
         _endTurnButton.interactable = endTurnAllowed && GameState.Instance.CanEndTurn();

@@ -1,10 +1,8 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Random = UnityEngine.Random;
-using MLAPI;
 using UnityEngine;
-using MLAPI.Logging;
+using Random = UnityEngine.Random;
 
 public class GameState
 {
@@ -39,7 +37,8 @@ public class GameState
     }
 
     public static int PlayerCount = Rules.MAX_PLAYER_COUNT;
-    public static bool LocalGame = true;
+    public int GiantStrength = Rules.GIANT_STRENGTH;
+    public static bool LocalGame;
 
     public DPosition[][] Board { get; private set; }
     public DWorker[] Workers { get; private set; }
@@ -55,6 +54,7 @@ public class GameState
     // notification for the visual managers that some changes happened
     public Action<TurnTypes> OnTurnChange;
     public Action OnUndo;
+    public Action OnGameOver;
 
     public Observable<int> TurnActionCount;
     public Observable<int> KnightsFightingCount;
@@ -68,10 +68,14 @@ public class GameState
     public GameState(DPlayer[] players)
     {
         Players = players;
+        
+        // adjust giant strength
+        Debug.Log("Player count" + PlayerCount);
+        GiantStrength = (int) (Rules.GIANT_STRENGTH * ((float) PlayerCount / (float) Rules.MAX_PLAYER_COUNT));
+        
         _initializeBoard();
         _initializeWorkers();
-
-
+        
         _initializeKnights();
         _initializeVillagers();
         _initPrio();
@@ -101,7 +105,28 @@ public class GameState
         // MARK: Temporary switch between local debugging and online (Uncomment following line for local)
         if(LocalGame)
             DrawMeeple();
+        
         UpdateVillagerBagCount(); // TODO (Anas-Mert): May have to be networked, haven't checked yet
+        
+        // check end game condition on turn change
+        OnTurnChange += _ =>
+        {
+            if (GiantStrength > KnightsFightingCount.Current)
+                OnGameOver?.Invoke();
+            else if (VillagerBagCount.Current == 0)
+            {
+                bool someoneLeft = false;
+                TraverseBoard(p =>
+                {
+                    if (!IsEmpty(p))
+                    {
+                        someoneLeft = true;
+                    }
+                });
+                if (!someoneLeft)
+                    OnGameOver?.Invoke();
+            }
+        };
     }
 
     private void _initializeBoard()

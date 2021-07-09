@@ -10,27 +10,42 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
     {
         get => new DPosition((ushort) (ID.x + 1), (ushort) (ID.y + 1));
     }
-    public bool Interactable { get; set; }
+    public DPlayer.ID NominalOwner { get => _nominalOwner; }
+
+    public bool Interactable
+    {
+        get => _interactable;
+        set
+        {
+           if(_hovered && value)
+               _onHighlight?.Invoke();
+           _interactable = value;
+        }
+    }
     public List<Meeple> Meeples { get; private set; } = new List<Meeple>();
-    //public List<Villager> Villagers { get; private set; } = new List<Villager>();
     public Transform Transform { get; private set; }
 
     [SerializeField] private Color _heightlightColor;
     [SerializeField] private DPlayer.ID _nominalOwner;
 
-    public DPlayer.ID NominalOwner { get => _nominalOwner; }
-    
+    // References
     private FieldManager _fieldManager;
-    private Action _onHighlight;
-    private Action _onDefault;
+    private AudioSource _audioSource;
     private Material _material;
     private Color _defaultColor;
+    
+    // Actions
+    private Action _onHighlight;
+    private Action _onDefault;
+    private bool _hovered;
+    private bool _interactable;
 
     private void Awake()
     {
         Transform = transform;
         _fieldManager = FindObjectOfType<FieldManager>();
         _material = transform.GetChild(0).GetComponent<Renderer>().material;
+        _audioSource = GetComponent<AudioSource>();
         _defaultColor = _material.color;
 
         _onHighlight += () => ChangeColor(_heightlightColor);
@@ -39,20 +54,27 @@ public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IP
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if(Interactable)
+        if (Interactable)
+        {
             _fieldManager.ProcessClickedTile(this);
+            _audioSource.Play();
+        }
     }
-
+    
     public void OnPointerEnter(PointerEventData eventData)
     {
         if(Interactable)
             _onHighlight?.Invoke();
         else
+        {
+            _hovered = true;
             _onDefault?.Invoke();
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        _hovered = false;
         _onDefault?.Invoke();
     }
 
