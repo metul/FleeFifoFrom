@@ -343,6 +343,4 @@ public static int CountType(PlayerID player)
     {
         return 0;
     }
-
-
 }

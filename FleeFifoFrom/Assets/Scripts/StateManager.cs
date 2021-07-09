@@ -28,7 +28,8 @@ public class StateManager : MonoBehaviour
         PoachSelectCard,
         Recall,
         Cooperate,
-        PayForAction
+        PayForAction,
+        GameOver
     }
 
     private static readonly State[] UNDO_MILESTONES =
