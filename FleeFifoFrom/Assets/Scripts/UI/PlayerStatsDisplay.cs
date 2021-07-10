@@ -38,10 +38,5 @@ public class PlayerStatsDisplay : MonoBehaviour
             _textSaved.text = GameStateUtils.AuthorizedVillagers(GameState.Instance, player.Id).Length.ToString();
             _textTotal.text = GameState.Instance.PlayerScore(player.Id).ToString();
         };
-
-        GameState.Instance.OnGameOver += () =>
-        {
-            Debug.Log("Game Over");
-        };
     }
 }

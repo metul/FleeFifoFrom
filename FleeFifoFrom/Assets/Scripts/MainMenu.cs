@@ -3,11 +3,9 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-
     private const int LOCAL_SCENE_INDEX = 1;
     private const int ONLINE_SCENE_INDEX = 2;
-    private const int RULES_SCENE_INDEX = 3;
-    
+
     public void LoadLocalGame()
     {
         GameState.LocalGame = true;
@@ -17,12 +15,11 @@ public class MainMenu : MonoBehaviour
     public void LoadOnlineGame()
     {
         GameState.LocalGame = false;
+        
+        // TODO dummy-removal: set custom player count
+        GameState.PlayerCount = Rules.MAX_PLAYER_COUNT;
+        
         SceneManager.LoadScene(ONLINE_SCENE_INDEX);
-    }
-    
-    public void LoadRules()
-    {
-        SceneManager.LoadScene(RULES_SCENE_INDEX);
     }
 
     public void ChangePlayerCount(int val)

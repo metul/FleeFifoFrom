@@ -112,7 +112,7 @@ public class GameState
         OnTurnChange += _ =>
         {
             if (GiantStrength > KnightsFightingCount.Current)
-                OnGameOver?.Invoke();
+                StateManager.CurrentState = StateManager.State.GameOver;
             else if (VillagerBagCount.Current == 0)
             {
                 bool someoneLeft = false;
@@ -124,7 +124,7 @@ public class GameState
                     }
                 });
                 if (!someoneLeft)
-                    OnGameOver?.Invoke();
+                    StateManager.CurrentState = StateManager.State.GameOver;
             }
         };
     }
@@ -312,6 +312,33 @@ public class GameState
         //Added a placeholder knights value to offset the castle (2x mult)
         //In fact knights should always be at least 1 pt anyway
         return this.AuthorizedVillagers(player).Length + PlayerById(player).Honor.Score.Current + 2 * this.AuthorizedKnights(player).Length;
+    }
+
+    public List<DPlayer> GetWinner()
+    {
+        var max = int.MinValue;
+        var winner = new List<DPlayer>();
+        
+        foreach (var player in Players)
+        {
+            var score = PlayerScore(player.Id);
+            
+            // tie
+            if (score == max)
+            {
+                winner.Add(player);
+            }
+            
+            // new winning
+            else if(score > max)
+            {
+                max = score;
+                winner.Clear();
+                winner.Add(player);
+            }
+        }
+
+        return winner;
     }
 
     public DPrio GetPrio(DMeeple meeple)

@@ -63,6 +63,8 @@ public class HintDisplay : MonoBehaviour
                 return "Select an opponents worker to return them to their owner. Gain honor.";
             case StateManager.State.PayForAction:
                 return "Choose a Worker from your display to pay for your chosen action";
+            case StateManager.State.GameOver:
+                return "Game over! Click the red 'X' button in the right corner to exit the game";
             default:
                 return "Well, well, what will you do?";
         }
