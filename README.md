@@ -17,7 +17,10 @@ In addition to local single-device multiplayer, our project supports online mult
 
 Players who are connected to the same network can easily start a session without modifying any settings. Clients only have to type in the local IPv4 address of the device hosting the server into the input field before starting the game as shown in the following image:
 
-![alt text][connection_ui]
+<p align="center">
+  <img width="460" height="300" src=https://github.com/metul/FleeFifoFrom/blob/networking_merge/Docs/ConnectionUI.PNG "Connection UI">
+</p>
+
 
 In case you wish to use a different port than the default one (7777), you should also append that into to IP address when using the input field (e.g. 192.168.0.10:8080).
 
@@ -49,7 +52,3 @@ TODO: Add license attributions
  * License: [LicenseType]()
  * Creator: [Creator (Alias)]()
 
-
-TODO: Add image references
-
-[connection_ui]: https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Connection UI"
