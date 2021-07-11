@@ -54,11 +54,21 @@ After setting up port-forwarding, simply run a server instance on the device you
 
 This project contains third-party content governed by the license(s) indicated below. For more information about the content, see the following sections.
 
-TODO: Add license attributions
+### Game Icons by Kenny
 
-### Asset by Creator (Alias)
+ * Link: [Game Icons](https://www.kenney.nl/assets/game-icons)
+ * License: [CC0 1.0 Universal (CC0 1.0)](https://creativecommons.org/publicdomain/zero/1.0/)
+ * Creator: [Kenny](https://www.kenney.nl/)
 
- * Link: [Asset]()
- * License: [LicenseType]()
- * Creator: [Creator (Alias)]()
+### Generic Items by Kenny
+
+ * Link: [Generic Items](https://www.kenney.nl/assets/generic-items)
+ * License: [CC0 1.0 Universal (CC0 1.0)](https://creativecommons.org/publicdomain/zero/1.0/)
+ * Creator: [Kenny](https://www.kenney.nl/)
+
+### UI Audio by Kenny
+
+ * Link: [UI Audio](https://www.kenney.nl/assets/ui-audio)
+ * License: [CC0 1.0 Universal (CC0 1.0)](https://creativecommons.org/publicdomain/zero/1.0/)
+ * Creator: [Kenny](https://www.kenney.nl/)
 
