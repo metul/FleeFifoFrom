@@ -502,24 +502,25 @@ MonoBehaviour:
     with the Reset marker plays their Reset turn. After both players complete their
     Action and Reset turns respectively, they move each marker clockwise.\n\n\nAction
     Turn: The player may play up to 2 Actions, including:\n\n1.\tAuthorize: Permit
-    someone into the city while maintaining priority\r\n\n2.\tSwap: Interchange the
-    position of two connected tiles\r\n\n3.\tRiot: Create chaos with a Guild Knight
-    and run into the city. \n   Commoners may follow. Receive Disgrace based on injuries
-    caused.\r\n\n4.\tRevive: Assist an injured villager up and gain Honor\r\n\nReset
-    Turn: The player must move the queue forward while maintaining priority and add
-    new villagers to fill up any empty spots. They may also play up to 2 Actions
-    including\n\n1. Reprioritize: Change the priority of 1 type\r\n\n2. Retreat:
-    Move a knight from the battlefront to the queue\n\r\n3. Recall: Reset all workers
-    on an action tile. \n     Earn Honor if at least one opponent is reset.\r\n\nPriority
-    Rules:\r As a rule abiding society, the city of Kota prides itself on its organization.
-    Each type of piece has a priority displayed on the tracker. When moving a piece
-    forward from a row, all higher priority pieces must be moved first. Players must
-    take a Disgrace if breaking priority.\r\n\n\nGlory Tracker:\r Your good and bad
-    deeds are being observed! Add these points to your end game score.\r\n\n\n\nUndo
-    and End Turn:\r Made a mistake? No worries, you can undo at any point during
-    your turn! After both players end their turn, the action and reset markers move
-    by 1 each clockwise.\r\n\nGame End:\r The Game ends when either all villagers
-    are saved or all knights have retreated from the battlefield.\r\n"
+    someone into the city while maintaining priority\r.\n\n2.\tSwap: Interchange
+    the position of people on two connected tiles\r.\n\n3.\tRiot: Create chaos with
+    a Guild Knight and run into the city. \n   Commoners may follow. Receive Disgrace
+    based on injuries caused.\r\n\n4.\tRevive: Assist an injured villager up and
+    gain Honor.\r\n\nReset Turn: The player must move the queue forward while maintaining
+    priority and add new villagers to fill up any empty spots. They may also play
+    up to 2 Actions including:\n\n1. Reprioritize: Change the priority of 1 type.\r\n\n2.
+    Retreat: Move a knight from the battlefront to the queue.\n\r\n3. Recall: Reset
+    all workers on an action tile. \n     Earn Honor if at least one opponent is
+    reset.\r\n\nPriority Rules:\r As a rule abiding society, the city of Kota prides
+    itself on its organization. Each type of piece has a priority displayed on the
+    tracker. When moving a piece forward from a row, all higher priority pieces must
+    be moved first. Players must take a Disgrace if breaking priority.\r\n\n\nGlory
+    Tracker:\r Your good and bad deeds are being observed! Add these points to your
+    end game score.\r\n\n\n\nUndo and End Turn:\r Made a mistake? No worries, you
+    can undo at any point during your turn! After both players end their turn, the
+    action and reset markers move by 1 each clockwise.\r\n\nGame End:\r The game
+    ends when either all villagers are saved or all knights have retreated from the
+    battlefield.\r\n"
 --- !u!1 &5414415155047722890
 GameObject:
   m_ObjectHideFlags: 0
