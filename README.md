@@ -15,10 +15,10 @@ In addition to local single-device multiplayer, our project supports online mult
 
 ### LAN Multiplayer
 
-Players who are connected to the same network can easily start a session without modifying any settings. Clients only have to type in the local IPv4 address of the device hosting the server into the input field before starting the game as shown in the following image:
+Players who are connected to the same network can easily start a session without modifying any settings. Clients only have to type in the **private (local)** IPv4 address of the device hosting the server into the input field before starting the game as shown in the following image:
 
 <p align="center">
-  <img width="460" height="300" src=https://github.com/metul/FleeFifoFrom/blob/networking_merge/Docs/ConnectionUI.PNG "Connection UI">
+  <img width="460" height="280" src=https://github.com/metul/FleeFifoFrom/blob/networking_merge/Docs/ConnectionUI_Filled.PNG "Connection UI">
 </p>
 
 
