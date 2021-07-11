@@ -32,7 +32,13 @@ The current version of our project supports over the internet connections throug
 
 #### Relay Server
 
-TODO
+In order to establish internet connection through the relay server, some transport settings need to be adjusted and the project has to be rebuilt (both server and client). After opening the Unity project, switch to the *NetworkScene* (Scenes/NetworkScene.unity) and click on the *NetworkManager* game object in the hierarchy. In the *U Net Transport* component of the *NetworkManager*, make sure if the box *Use MLAPI Relay* is checked and build the project again. Both server and client can easily be rebuilt by using the editor button *Build/BuildAll*. Since we are continuously hosting a relay server on an AWS Linux instance, you do not have to change any other settings in the *U Net Transport* component which is already set up with our relay server information (3.17.61.242/8888). However, if you wish to connect through your own relay server instance, you also have manually change *MLAPI Relay Address* and *MLAPI Relay Port* fields in the aforementioned component. 
+
+<p align="center">
+  <img width="420" height="280" src=https://github.com/metul/FleeFifoFrom/blob/networking_merge/Docs/UNetTransport.PNG "Transport Settings">
+</p>
+
+**Do not forget to uncheck the *Use MLAPI Relay* box for the remaining kind of multiplayer sessions (e.g. LAN, Port-Forwarding) or you will not be able to establish connection!**
 
 #### Port-Forwarding
 
