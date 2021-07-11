@@ -2,7 +2,7 @@
 
 ## Project Description
 
-TODO: Add project description
+Flee FiFo From is a student project as part of the course Computer Games Laboratory at the Technical University of Munich. The project itself is a local/online multiplayer digital board game and is designed/implemented by Anastasia Pomelova, Eugene Ghanizadeh Khoub, Mert Ülker and Shyam Rangarajan.
 
 ## Tech Stack
 
@@ -72,3 +72,8 @@ This project contains third-party content governed by the license(s) indicated b
  * License: [CC0 1.0 Universal (CC0 1.0)](https://creativecommons.org/publicdomain/zero/1.0/)
  * Creator: [Kenny](https://www.kenney.nl/)
 
+## Contact
+
+Mert Uelker - Technical University of Munich
+
+mert.uelker@tum.de
