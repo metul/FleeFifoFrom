@@ -69,6 +69,7 @@ public class ButtonManager : MonoBehaviour
         
         // init other intractability
         _undoButton.interactable = false;
+        _finishRiotButton.SetActive(false);
         GameState.Instance.OnUndo += () => NetworkedUpdateInteractability();
     }
 
