@@ -2,7 +2,8 @@ using UnityEditor;
 
 public class Builder
 {
-    private static readonly string _scenePath = "Assets/Scenes/NetworkScene.unity";
+    private static readonly string _mainMenuScenePath = "Assets/Scenes/MainMenu.unity";
+    private static readonly string _networkScenePath = "Assets/Scenes/NetworkScene.unity";
     private static readonly string _buildPathServer = "Builds/Server/FleeFiFoFrom_Server.exe";
     private static readonly string _buildPathClient = "Builds/Client/FleeFiFoFrom_Client.exe";
     private static readonly string _buildPathServerLinux = "Builds/ServerLinux/FleeFiFoFrom_Server.exe";
@@ -19,7 +20,7 @@ public class Builder
     {
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
         {
-            scenes = new[] { _scenePath },
+            scenes = new[] { _networkScenePath },
             locationPathName = _buildPathServer,
             target = BuildTarget.StandaloneWindows64,
             options = BuildOptions.EnableHeadlessMode
@@ -32,7 +33,7 @@ public class Builder
     {
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
         {
-            scenes = new[] { _scenePath },
+            scenes = new[] { _mainMenuScenePath, _networkScenePath },
             locationPathName = _buildPathClient,
             target = BuildTarget.StandaloneWindows64,
             options = BuildOptions.Development // MARK: Remove for release
@@ -45,7 +46,7 @@ public class Builder
     {
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
         {
-            scenes = new[] { _scenePath },
+            scenes = new[] { _networkScenePath },
             locationPathName = _buildPathServerLinux,
             target = BuildTarget.StandaloneLinux64,
             options = BuildOptions.EnableHeadlessMode

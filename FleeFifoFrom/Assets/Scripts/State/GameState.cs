@@ -70,7 +70,7 @@ public class GameState
         Players = players;
         
         // adjust giant strength
-        Debug.Log("Player count" + PlayerCount);
+        //Debug.Log("Player count " + PlayerCount);
         GiantStrength = (int) (Rules.GIANT_STRENGTH * ((float) PlayerCount / (float) Rules.MAX_PLAYER_COUNT));
         
         _initializeBoard();
