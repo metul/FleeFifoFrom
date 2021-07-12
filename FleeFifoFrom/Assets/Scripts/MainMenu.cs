@@ -3,13 +3,13 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    private const int LOCAL_SCENE_INDEX = 1;
-    private const int ONLINE_SCENE_INDEX = 2;
+    private const string LOCAL_SCENE_NAME = "Game";
+    private const string ONLINE_SCENE_NAME = "NetworkScene";
 
     public void LoadLocalGame()
     {
         GameState.LocalGame = true;
-        SceneManager.LoadScene(LOCAL_SCENE_INDEX);
+        SceneManager.LoadScene(LOCAL_SCENE_NAME);
     }
     
     public void LoadOnlineGame()
@@ -19,7 +19,7 @@ public class MainMenu : MonoBehaviour
         // TODO dummy-removal: set custom player count
         GameState.PlayerCount = Rules.MAX_PLAYER_COUNT;
         
-        SceneManager.LoadScene(ONLINE_SCENE_INDEX);
+        SceneManager.LoadScene(ONLINE_SCENE_NAME);
     }
 
     public void ChangePlayerCount(int val)
