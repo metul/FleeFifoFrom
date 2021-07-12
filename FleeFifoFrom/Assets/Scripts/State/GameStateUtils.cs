@@ -249,8 +249,26 @@ public static class GameStateUtils
         return result;*/
         return true; //remove this
     }
+    public static bool CanEndTurn(this GameState state)
+    {
+        // always true for action turns or when no villager left to draw
+        if (state.TurnType == GameState.TurnTypes.ActionTurn || state.VillagerBagCount.Current == 0)
+        {
+            return true;
+        }
 
-
+        // villager left: check for empty tiles that can be got to from last row without overpassing
+        // an injured villager
+        var valid = true;
+        state.TraverseBoard(p =>
+        {
+            if (state.IsEmpty(p) && 
+              state.PathExists(DPosition.LastRow(), p, _p => !state.InjuredVillagerAtPosition(_p))) {
+              valid = false;
+            }
+        });
+        return valid;
+    }
 
     /// <summary>
     /// Obj Helper functions
