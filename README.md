@@ -2,7 +2,7 @@
 
 ## Project Description
 
-TODO: Add project description
+"Flee FiFo From" is a student project as part of the course Computer Games Laboratory at the Technical University of Munich. The project itself is a local/online multiplayer digital board game and is designed/implemented by Anastasia Pomelova, Eugene Ghanizadeh Khoub, Mert Ülker and Shyam Rangarajan.
 
 ## Tech Stack
 
@@ -28,7 +28,7 @@ It is also technically possible to establish LAN connection inbetween multiple c
 
 ### Internet Multiplayer
 
-The current version of our project supports over the internet connections through two different alternatives, namely **Relay Server** and **Port-Forwarding**. Since MLAPI does not have an official release for a relay server up to this date, this alternative can be rather unstable at times and we strongly recommend establishing internet multiplayer session by using port-forwarding. However, we still provide documentations for establishing connection over both alternatives.
+The current version of our project supports over the internet connections through two different alternatives, namely **Relay Server** and **Port-Forwarding**. Since MLAPI does not have an official release for a relay server up to this date, this alternative can be rather unstable at times and we strongly recommend establishing internet multiplayer session by using port-forwarding. However, we still provide documentations for establishing connection over both alternatives. Contrary to LAN connection, with internet connection version you have to type in the **public** IPv4 address of the device running the server instance in the input field, instead of a private address.
 
 #### Relay Server
 
@@ -42,7 +42,11 @@ In order to establish internet connection through the relay server, some transpo
 
 #### Port-Forwarding
 
-TODO
+Port-forwarding alternative offers the most stable connection over the internet and therefore should be preferred over relay servers. However, it also requires a more advanced setup than other options. In order to establish internet connection with this approach you have to open UDP port 7777, which is the default port set in the *NetworkManager* in *NetworkScene*. If you would like to use another port instead, you can do so by modifying the *Connect Port* and *Server Listen Port* fields in the *U Net Transport* component of the *NetworkManager*. 
+
+It is also recommended to set up a static IP address for the device running the server build in order to avoid any potential connection issues. [Port Forward Website](https://portforward.com/) contains detailed information on setting up a static IP for your device and enabling port forwarding for a wide variety of routers.
+
+After setting up port-forwarding, simply run a server instance on the device you're forwarding ports to and connect to this server from other clients by typing in the **public** IPv4 address (and the port in case you are using a different port than 7777) of the server device into the input field and clicking *Start Client*.
 
 ## License & 3rd Party Content
 
@@ -50,11 +54,26 @@ TODO
 
 This project contains third-party content governed by the license(s) indicated below. For more information about the content, see the following sections.
 
-TODO: Add license attributions
+### Game Icons by Kenny
 
-### Asset by Creator (Alias)
+ * Link: [Game Icons](https://www.kenney.nl/assets/game-icons)
+ * License: [CC0 1.0 Universal (CC0 1.0)](https://creativecommons.org/publicdomain/zero/1.0/)
+ * Creator: [Kenny](https://www.kenney.nl/)
 
- * Link: [Asset]()
- * License: [LicenseType]()
- * Creator: [Creator (Alias)]()
+### Generic Items by Kenny
 
+ * Link: [Generic Items](https://www.kenney.nl/assets/generic-items)
+ * License: [CC0 1.0 Universal (CC0 1.0)](https://creativecommons.org/publicdomain/zero/1.0/)
+ * Creator: [Kenny](https://www.kenney.nl/)
+
+### UI Audio by Kenny
+
+ * Link: [UI Audio](https://www.kenney.nl/assets/ui-audio)
+ * License: [CC0 1.0 Universal (CC0 1.0)](https://creativecommons.org/publicdomain/zero/1.0/)
+ * Creator: [Kenny](https://www.kenney.nl/)
+
+## Contact
+
+Mert Uelker - Technical University of Munich
+
+mert.uelker@tum.de
