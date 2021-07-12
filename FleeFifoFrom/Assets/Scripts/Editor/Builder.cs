@@ -3,6 +3,7 @@ using UnityEditor;
 public class Builder
 {
     private static readonly string _mainMenuScenePath = "Assets/Scenes/MainMenu.unity";
+    private static readonly string _localScenePath = "Assets/Scenes/Game.unity";
     private static readonly string _networkScenePath = "Assets/Scenes/NetworkScene.unity";
     private static readonly string _buildPathServer = "Builds/Server/FleeFiFoFrom_Server.exe";
     private static readonly string _buildPathClient = "Builds/Client/FleeFiFoFrom_Client.exe";
@@ -33,7 +34,7 @@ public class Builder
     {
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
         {
-            scenes = new[] { _mainMenuScenePath, _networkScenePath },
+            scenes = new[] { _mainMenuScenePath, _localScenePath, _networkScenePath }, // MARK: Local scene path might be unnecessary
             locationPathName = _buildPathClient,
             target = BuildTarget.StandaloneWindows64,
             options = BuildOptions.Development // MARK: Remove for release
