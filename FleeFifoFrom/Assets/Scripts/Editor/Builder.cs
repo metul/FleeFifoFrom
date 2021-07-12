@@ -45,7 +45,7 @@ public class Builder
             scenes = new[] { _mainMenuScenePath, _localScenePath, _networkScenePath }, // MARK: Local scene path might be unnecessary
             locationPathName = _buildPathClientWindows,
             target = BuildTarget.StandaloneWindows64,
-            options = BuildOptions.Development // MARK: Remove for release
+            //options = BuildOptions.Development // MARK: Remove for release
         };
         BuildPipeline.BuildPlayer(buildPlayerOptions);
     }
